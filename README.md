@@ -8,7 +8,7 @@ H1a (In-group Favouritism): Third parties will punish out-group aggressors more 
 
 H1b (Black Sheep Effect): Third parties will punish in-group aggressors more harshly than out-group aggressors, controlling for victim status.
 
-Our data supports H1a In-group Favouritism instead H1b Black Sheep Effect.
+Our data supports H1a In-group Favouritism instead H1b Black Sheep Effect. That is a medium to large positive effect of out-group aggressor on punishment.
 
 ![](fig/H1_Forest.tiff)
 
@@ -16,6 +16,6 @@ Our data supports H1a In-group Favouritism instead H1b Black Sheep Effect.
 
 Third parties will punish more strongly when the victim is an in-group member than when the victim is an out-group member.
 
-Our data supports H2.
+Our data supports H2. That is a small to medium positive effect of in-group victim on punishment.
 
 ![](fig/H2_Forest.tiff)
