@@ -15,7 +15,7 @@ install_and_Load(required_packages)
 # reading the data
 MA_dat <- read_csv("Coding Sample - Coding Merged.csv", skip = 1)
 
-# H1 The Effects of Aggressor’s Identity on Punishment
+# H1 The Effects of Violator’s Identity on Punishment
 fair_condition <- c("Fair", "Cooperate", "Neutral", "Generous")
 unfair_condition <- c("Unfair", "Defect", "Selfish", "Cheat")
 H1_data <- MA_dat %>%
@@ -117,7 +117,7 @@ dev.off()
 # funnel plot
 metafor::funnel(H2_model)
 
-# Interaction Effect between Aggressor’s Identity and Victim Salience
+# Interaction Effect between Violator’s Identity and Victim Salience
 # The Mantel-Haenszel method
 MH_dat <- MA_dat %>%
   group_by(No., Study) %>%
