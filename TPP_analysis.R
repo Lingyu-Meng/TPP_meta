@@ -116,3 +116,58 @@ dev.off()
 
 # funnel plot
 metafor::funnel(H2_model)
+
+# Interaction Effect between Aggressor’s Identity and Victim Salience
+# The Mantel-Haenszel method
+MH_dat <- MA_dat %>%
+  group_by(No., Study) %>%
+  # keep only studies that have all four A×B combinations
+  filter(
+    n_distinct(`Person A affiliation`) >= 2,
+    n_distinct(`Recipient/Player B Affliation`) >= 2,
+    all(expand.grid(
+      `Person A affiliation` = c("Ingroup", "Outgroup"),
+      `Recipient/Player B Affliation` = c("Ingroup", "Outgroup")
+    ) %>%
+      apply(1, paste, collapse = "_") %in%
+      paste(`Person A affiliation`, `Recipient/Player B Affliation`, sep = "_"))
+  ) %>%
+  ungroup()
+
+I_I <- MH_dat %>%
+  filter(
+    `Person A affiliation` == "Ingroup",
+    `Recipient/Player B Affliation` == "Ingroup"
+  )
+I_O <- MH_dat %>%
+  filter(
+    `Person A affiliation` == "Ingroup",
+    `Recipient/Player B Affliation` == "Outgroup"
+  )
+O_I <- MH_dat %>%
+  filter(
+    `Person A affiliation` == "Outgroup",
+    `Recipient/Player B Affliation` == "Ingroup"
+  )
+O_O <- MH_dat %>%
+  filter(
+    `Person A affiliation` == "Outgroup",
+    `Recipient/Player B Affliation` == "Outgroup"
+  )
+n1i <- I_I$`N by condition` + I_O$`N by condition`
+n2i <- O_I$`N by condition` + O_O$`N by condition`
+
+MH_model <- rma.mh(I_I$P_Frequency, #  I O
+  I_O$P_Frequency, # I  a b
+  O_I$P_Frequency, # O  c d
+  O_O$P_Frequency,
+  n1i,
+  n2i,
+  measure = "RR"
+)
+summary(MH_model)
+# k = 8 studies included
+MH_model$beta
+forest(MH_model)
+# RR = (a/(a+b)) / (c/(c+d))
+# when person A is an ingroup member punishment probablity
