@@ -74,7 +74,7 @@ metafor::funnel(H1_model)
 H2_data <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness of Person A` %in% unfair_condition,
-    `Person A affiliation` %in% c("Ingroup", "Outgroup")
+    `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   group_by(No., Study, `Recipient/Player B Affliation`) %>%
   summarise(
