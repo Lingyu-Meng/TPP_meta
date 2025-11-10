@@ -171,3 +171,19 @@ MH_model$beta
 forest(MH_model)
 # RR = (a/(a+b)) / (c/(c+d))
 # when person A is an ingroup member punishment probablity
+
+# The regression method
+H3_model <- MH_dat %>%
+  mutate(
+    `Total Trials` = as.numeric(`Total Trials`),
+    `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Outgroup")),
+    `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Outgroup")),
+    P_SV = `P_SD invested amount`^2 * `Total Trials` / ( `Total Trials` - 1) # Sampling variance of punishment amount
+  ) %>%
+  rma.mv(yi = `P_Average Invested Amount`, V = P_SV,
+  mods = ~ `Person A` * `Person B`,
+  random = ~ 1 | No. / Study,
+  data = .,
+  method = "REML",
+)
+summary(H3_model)
