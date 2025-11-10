@@ -123,6 +123,7 @@ MH_dat <- MA_dat %>%
   group_by(No., Study) %>%
   # keep only studies that have all four A×B combinations
   filter(
+    `Fairness/Cooperativeness of Person A` %in% unfair_condition,
     n_distinct(`Person A affiliation`) >= 2,
     n_distinct(`Recipient/Player B Affliation`) >= 2,
     all(expand.grid(
