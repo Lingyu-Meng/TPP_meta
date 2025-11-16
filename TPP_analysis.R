@@ -23,27 +23,31 @@ H1_data <- MA_dat %>%
     `Fairness/Cooperativeness of Person A` %in% unfair_condition,
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
-  group_by(No., Study, `Person A affiliation`) %>% # For main effect
-  summarise(
-    # weighted mean across B conditions
-    mean = weighted.mean(`P_Average Invested Amount`, `N by condition`),
-    # pooled SD across B conditions
-    sd = sqrt(sum((`N by condition` - 1) * `P_SD invested amount`^2) / sum(`N by condition` - 1)),
-    n = sum(`N by condition`),
-    .groups = "drop"
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    Levels, `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`
   ) %>%
-  filter(!is.na(mean)) %>% # Exclude mean is NA
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   pivot_wider(
     names_from = `Person A affiliation`,
-    values_from = c(mean, sd, n)
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
   ) %>%
   escalc(
     measure = "SMDH", # Hedges' g
-    m1i = mean_Outgroup, sd1i = sd_Outgroup, n1i = n_Outgroup,
-    m2i = mean_Ingroup, sd2i = sd_Ingroup, n2i = n_Ingroup,
-    data = .
-  )
-H1_model <- rma.mv(yi, vi, random = ~ 1 | No. / Study, data = H1_data, method = "REML")
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+V_H1 <- vcalc(H1_data$vi, cluster=H1_data$No., subgroup = H1_data$Study, rho = 0.5) # we don't have sample ID right now. assuming same sample within study
+H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
 summary(H1_model)
 
 # checking likelihood profile plots
@@ -70,31 +74,38 @@ dev.off()
 # funnel plot
 metafor::funnel(H1_model)
 
-# H2 (Victim Salience Effect):
+# H2 (Deterrence perspective):
 H2_data <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness of Person A` %in% unfair_condition,
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
-  group_by(No., Study, `Recipient/Player B Affliation`) %>%
-  summarise(
-    mean = weighted.mean(`P_Average Invested Amount`, `N by condition`),
-    sd = sqrt(sum((`N by condition` - 1) * `P_SD invested amount`^2) / sum(`N by condition` - 1)),
-    n = sum(`N by condition`),
-    .groups = "drop"
+  # group_by(No., Study, `Recipient/Player B Affliation`) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    Levels, `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`
   ) %>%
-  filter(!is.na(mean)) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   pivot_wider(
     names_from = `Recipient/Player B Affliation`,
-    values_from = c(mean, sd, n)
-  ) %>%
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>% 
   escalc(
     measure = "SMDH", # Hedges' g
-    m1i = mean_Ingroup, sd1i = sd_Ingroup, n1i = n_Ingroup,
-    m2i = mean_Outgroup, sd2i = sd_Outgroup, n2i = n_Outgroup,
-    data = .
-  )
-H2_model <- rma.mv(yi, vi, random = ~ 1 | No. / Study, data = H2_data, method = "REML")
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+V_H2 <- vcalc(H2_data$vi, cluster=H2_data$No., subgroup = H2_data$Study, rho = 0.5) # we don't have sample ID right now. assuming same sample within study
+H2_model <- rma.mv(yi, V_H2, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML")
 summary(H2_model)
 
 # checking likelihood profile plots
