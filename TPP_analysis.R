@@ -199,3 +199,91 @@ H3_model <- MH_dat %>%
   method = "REML",
 )
 summary(H3_model)
+
+################ Fair Condition Analysis ################
+# H5 The Effects of Violator’s Identity on Punishment
+H5_data <- MA_dat %>%
+  filter(
+    `Fairness/Cooperativeness of Person A` %in% fair_condition,
+    `Person A affiliation` %in% c("Ingroup", "Outgroup")
+  ) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    Levels, `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`
+  ) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
+  pivot_wider(
+    names_from = `Person A affiliation`,
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>%
+  escalc(
+    measure = "SMDH", # Hedges' g
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+V_H5 <- vcalc(H5_data$vi, cluster=H5_data$No., subgroup = H5_data$Study, rho = 0.5) # we don't have sample ID right now. assuming same sample within study
+H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
+summary(H5_model)
+
+# forest plot
+H5_f <- forest(H5_model, slab = paste(H5_data$No., H5_data$Study, sep = "."))
+# saving forest plot to a file
+tiff("fig/H5_Forest.tiff", height = 12, width = 8, units = "in", res = 300)
+forest(H5_model, slab = paste(H5_data$No., H5_data$Study, sep = "."))
+dev.off()
+
+# funnel plot
+metafor::funnel(H5_model)
+
+# H6 
+H6_data <- MA_dat %>%
+  filter(
+    `Fairness/Cooperativeness of Person A` %in% fair_condition,
+    `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
+  ) %>%
+  # group_by(No., Study, `Recipient/Player B Affliation`) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    Levels, `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`
+  ) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
+  pivot_wider(
+    names_from = `Recipient/Player B Affliation`,
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>% 
+  escalc(
+    measure = "SMDH", # Hedges' g
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+V_H6 <- vcalc(H6_data$vi, cluster=H6_data$No., subgroup = H6_data$Study, rho = 0.5) # we don't have sample ID right now. assuming same sample within study
+H6_model <- rma.mv(yi, V_H6, random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
+summary(H6_model)
+
+# forest plot
+H6_f <- forest(H6_model, slab = paste(H6_data$No., H6_data$Study, sep = "."))
+# saving forest plot to a file
+tiff("fig/H6_Forest.tiff", height = 12, width = 8, units = "in", res = 300)
+forest(H6_model, slab = paste(H6_data$No., H6_data$Study, sep = "."))
+dev.off()
+
+# funnel plot
+metafor::funnel(H6_model)
