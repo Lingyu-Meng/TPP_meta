@@ -74,7 +74,7 @@ if (!dir.exists("fig")) {
   dir.create("fig")
 }
 # saving forest plot to a file
-tiff("fig/H1_Forest.tiff", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H1_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H1_model, slab = paste(H1_data$No., H1_data$Study, sep = "."))
 dev.off()
 
@@ -135,7 +135,7 @@ sum(H2_model$sigma2)
 # forest plot
 H2_f <- forest(H2_model, slab = paste(H2_data$Intext.Citation, "S", H2_data$Study, sep = " "))
 # saving forest plot to a file
-tiff("fig/H2_Forest.tiff", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H2_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H2_model, slab = paste(H2_data$Intext.Citation, "S", H2_data$Study, sep = " "))
 dev.off()
 
@@ -199,21 +199,21 @@ metafor::funnel(H2_model)
 # # when person A is an ingroup member punishment probablity
 
 # The regression method
-H3_model <- MH_dat %>%
-  mutate(
-    `Total Trials` = as.numeric(`Total Trials`),
-    `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Outgroup")),
-    `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Outgroup")),
-    P_SV = as.numeric(`P_SD invested amount`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
-    `P_Average Invested Amount` = as.numeric(`P_Average Invested Amount`)
-  ) %>%
-  rma.mv(yi = `P_Average Invested Amount`, V = P_SV,
-  mods = ~ `Person A` * `Person B`,
-  random = ~ 1 | No. / Study,
-  data = .,
-  method = "REML",
-)
-summary(H3_model)
+# H3_model <- MH_dat %>%
+#   mutate(
+#     `Total Trials` = as.numeric(`Total Trials`),
+#     `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Outgroup")),
+#     `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Outgroup")),
+#     P_SV = as.numeric(`P_SD invested amount`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
+#     `P_Average Invested Amount` = as.numeric(`P_Average Invested Amount`)
+#   ) %>%
+#   rma.mv(yi = `P_Average Invested Amount`, V = P_SV,
+#   mods = ~ `Person A` * `Person B`,
+#   random = ~ 1 | No. / Study,
+#   data = .,
+#   method = "REML",
+# )
+# summary(H3_model)
 
 ################ Fair Condition Analysis ################
 # H5 The Effects of Violator’s Identity on Punishment
@@ -259,7 +259,7 @@ summary(H5_model)
 # forest plot
 H5_f <- forest(H5_model, slab = paste(H5_data$Intext.Citation, "S", H5_data$Study, sep = " "))
 # saving forest plot to a file
-tiff("fig/H5_Forest.tiff", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H5_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H5_model, slab = paste(H5_data$Intext.Citation, "S", H5_data$Study, sep = " "))
 dev.off()
 
@@ -310,7 +310,7 @@ summary(H6_model)
 # forest plot
 H6_f <- forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
 # saving forest plot to a file
-tiff("fig/H6_Forest.tiff", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H6_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
 dev.off()
 
