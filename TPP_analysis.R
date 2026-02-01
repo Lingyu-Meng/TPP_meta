@@ -14,13 +14,14 @@ install_and_Load(required_packages)
 
 # reading the data
 MA_dat <- read_csv("Coding Sample - Final Meta Data.csv", skip = 1)
+MA_dat$`Fairness/Cooperativeness A Binary` <- as.numeric(MA_dat$`Fairness/Cooperativeness A Binary`)
 
 # H1 The Effects of Violator’s Identity on Punishment
-fair_condition <- c("Fair", "Cooperate", "Neutral", "Generous")
-unfair_condition <- c("Unfair", "Defect", "Selfish", "Cheat")
+# fair_condition <- c("Fair", "Cooperate", "Neutral", "Generous")
+# unfair_condition <- c("Unfair", "Defect", "Selfish", "Cheat")
 H1_data <- MA_dat %>%
   filter(
-    `Fairness/Cooperativeness of Person A` %in% unfair_condition,
+    `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
@@ -84,7 +85,7 @@ metafor::funnel(H1_model)
 # H2 (Deterrence perspective):
 H2_data <- MA_dat %>%
   filter(
-    `Fairness/Cooperativeness of Person A` %in% unfair_condition,
+    `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   # group_by(No., Study, `Recipient/Player B Affliation`) %>%
@@ -219,7 +220,7 @@ metafor::funnel(H2_model)
 # H5 The Effects of Violator’s Identity on Punishment
 H5_data <- MA_dat %>%
   filter(
-    `Fairness/Cooperativeness of Person A` %in% fair_condition,
+    `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
@@ -269,7 +270,7 @@ metafor::funnel(H5_model)
 # H6 
 H6_data <- MA_dat %>%
   filter(
-    `Fairness/Cooperativeness of Person A` %in% fair_condition,
+    `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   # group_by(No., Study, `Recipient/Player B Affliation`) %>%
