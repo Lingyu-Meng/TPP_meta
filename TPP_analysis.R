@@ -75,7 +75,7 @@ if (!dir.exists("fig")) {
 }
 # saving forest plot to a file
 jpeg("fig/H1_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
-forest(H1_model, slab = paste(H1_data$No., H1_data$Study, sep = "."))
+forest(H1_model, slab = paste(H1_data$Intext.Citation, "S", H1_data$Study, sep = " "))
 dev.off()
 
 # funnel plot
