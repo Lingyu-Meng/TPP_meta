@@ -20,6 +20,16 @@ Our data supports H2. That is a small to medium positive effect of in-group vict
 
 ![](fig/H2_Forest.jpeg)
 
+## H3: The Interaction Effect of Aggressor’s Identity and Victim’s Identity on Punishment in unfair condition
+
+We did not find a significant interaction effect of aggressor’s identity and victim’s identity on punishment in unfair condition.
+
+Multiple methods were used to test the interaction effect, including the Mantel-Haenszel method, meta-regression, and moderator analysis. The results consistently showed no significant interaction effect. We are showing results from moderator analysis here.
+
+Red represents the effect of out-group aggressor on punishment when the victim is an in-group member, and blue represents the effect of out-group aggressor on punishment when the victim is an out-group member. Gray represents the effect of out-group aggressor on punishment when the victim is a neutral member.
+
+![](fig/H3_Forest.jpeg)
+
 ## H5: The Effects of Aggressor’s Identity on Punishment in fair condition
 
 ![](fig/H5_Forest.jpeg)
