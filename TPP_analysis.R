@@ -131,6 +131,10 @@ dev.off()
 # funnel plot
 metafor::funnel(H1_model)
 
+# contour-enhanced funnel plot
+metafor::funnel(H1_model, refline=0, level=c(95, 99), 
+                shade=c("white", "grey"))
+
 ## H2 (Deterrence perspective): ----
 H2_data <- MA_dat %>%
   filter(
@@ -239,6 +243,10 @@ dev.off()
 
 # funnel plot
 metafor::funnel(H2_model)
+
+# contour-enhanced funnel plot
+metafor::funnel(H2_model, refline=0, level=c(95, 99), 
+                shade=c("white", "grey"))
 
 ## H3 Interaction Effect between Violator’s Identity and Victim Salience ----
 ### The Mantel-Haenszel method ----
@@ -462,6 +470,10 @@ dev.off()
 # funnel plot
 metafor::funnel(H5_model)
 
+# contour-enhanced funnel plot
+metafor::funnel(H5_model, refline=0, level=c(95, 99), 
+                shade=c("white", "grey"))
+
 ## H6 The Effects of Victim’s Identity on Punishment ----
 H6_data <- MA_dat %>%
   filter(
@@ -559,3 +571,7 @@ dev.off()
 
 # funnel plot
 metafor::funnel(H6_model)
+
+# contour-enhanced funnel plot
+metafor::funnel(H6_model, refline=0, level=c(95, 99), 
+                shade=c("white", "grey"))
