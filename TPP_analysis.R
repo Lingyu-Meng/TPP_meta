@@ -55,6 +55,54 @@ H1_data <- MA_dat %>%
   ) %>% 
   ungroup() %>%
   filter(!is.na(yi)) # Exclude effect size is NA
+
+# deal with between data (assign temporary sample ID)
+H1_Between_Data <- MA_dat %>% 
+  filter(
+    `Between or Within?...37` == "Between",
+    `Fairness/Cooperativeness A Binary` == 0, # unfair condition
+    `Person A affiliation` %in% c("Ingroup", "Outgroup")
+  ) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`
+  ) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
+  group_by(No., Study,`Person A affiliation`) %>% 
+  mutate(
+    ID_n = row_number(),
+    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+  ) %>% 
+  select(-ID_n) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    names_from = `Person A affiliation`,
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>% 
+  mutate(`P_Average Invested Amount_Outgroup` = as.numeric(`P_Average Invested Amount_Outgroup`),
+         `P_Average Invested Amount_Ingroup` = as.numeric(`P_Average Invested Amount_Ingroup`),
+         `P_SD invested amount_Outgroup` = as.numeric(`P_SD invested amount_Outgroup`),
+         `P_SD invested amount_Ingroup` = as.numeric(`P_SD invested amount_Ingroup`),
+         `N by condition_Outgroup` = as.numeric(`N by condition_Outgroup`),
+         `N by condition_Ingroup` = as.numeric(`N by condition_Ingroup`)
+  ) %>%
+  escalc(
+    measure = "SMDH", # Hedges' g
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+
+H1_data <- rbind(H1_data, H1_Between_Data)
+
 V_H1 <- vcalc(H1_data$vi, cluster=H1_data$Sample.ID, rho = 0.5)
 H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
 summary(H1_model)
@@ -120,6 +168,54 @@ H2_data <- MA_dat %>%
   ) %>% 
   ungroup() %>%
   filter(!is.na(yi)) # Exclude effect size is NA
+
+# deal with between data (assign temporary sample ID)
+H2_Between_Data <- MA_dat %>% 
+  filter(
+    `Between or Within?...39` == "Between",
+    `Fairness/Cooperativeness A Binary` == 0, # unfair condition
+    `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
+  ) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`
+  ) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
+  group_by(No., Study,`Recipient/Player B Affliation`) %>% 
+  mutate(
+    ID_n = row_number(),
+    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+  ) %>% 
+  select(-ID_n) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    names_from = `Recipient/Player B Affliation`,
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>% 
+  mutate(`P_Average Invested Amount_Outgroup` = as.numeric(`P_Average Invested Amount_Outgroup`),
+         `P_Average Invested Amount_Ingroup` = as.numeric(`P_Average Invested Amount_Ingroup`),
+         `P_SD invested amount_Outgroup` = as.numeric(`P_SD invested amount_Outgroup`),
+         `P_SD invested amount_Ingroup` = as.numeric(`P_SD invested amount_Ingroup`),
+         `N by condition_Outgroup` = as.numeric(`N by condition_Outgroup`),
+         `N by condition_Ingroup` = as.numeric(`N by condition_Ingroup`)
+  ) %>%
+  escalc(
+    measure = "SMDH", # Hedges' g
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+
+H2_data <- rbind(H2_data, H2_Between_Data)
+
 V_H2 <- vcalc(H2_data$vi, cluster=H2_data$Sample.ID, rho = 0.5)
 H2_model <- rma.mv(yi, V_H2, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML")
 summary(H2_model)
@@ -305,6 +401,53 @@ H5_data <- MA_dat %>%
   ) %>% 
   ungroup() %>%
   filter(!is.na(yi)) # Exclude effect size is NA
+
+H5_Between_Data <- MA_dat %>% 
+  filter(
+    `Between or Within?...37` == "Between",
+    `Fairness/Cooperativeness A Binary` == 1, # fair condition
+    `Person A affiliation` %in% c("Ingroup", "Outgroup")
+  ) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`
+  ) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
+  group_by(No., Study,`Person A affiliation`) %>% 
+  mutate(
+    ID_n = row_number(),
+    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+  ) %>% 
+  select(-ID_n) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    names_from = `Person A affiliation`,
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>% 
+  mutate(`P_Average Invested Amount_Outgroup` = as.numeric(`P_Average Invested Amount_Outgroup`),
+         `P_Average Invested Amount_Ingroup` = as.numeric(`P_Average Invested Amount_Ingroup`),
+         `P_SD invested amount_Outgroup` = as.numeric(`P_SD invested amount_Outgroup`),
+         `P_SD invested amount_Ingroup` = as.numeric(`P_SD invested amount_Ingroup`),
+         `N by condition_Outgroup` = as.numeric(`N by condition_Outgroup`),
+         `N by condition_Ingroup` = as.numeric(`N by condition_Ingroup`)
+  ) %>%
+  escalc(
+    measure = "SMDH", # Hedges' g
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+
+H5_data <- rbind(H5_data, H5_Between_Data)
+
 V_H5 <- vcalc(H5_data$vi, cluster=H5_data$Sample.ID, rho = 0.5)
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
 summary(H5_model)
@@ -356,7 +499,54 @@ H6_data <- MA_dat %>%
   ) %>% 
   ungroup() %>%
   filter(!is.na(yi)) # Exclude effect size is NA
-V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5) # we don't have sample ID right now. assuming same sample within study
+
+H6_Between_Data <- MA_dat %>% 
+  filter(
+    `Between or Within?...39` == "Between",
+    `Fairness/Cooperativeness A Binary` == 1, # fair condition
+    `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
+  ) %>%
+  select(
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
+    `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`
+  ) %>%
+  filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
+  group_by(No., Study,`Recipient/Player B Affliation`) %>% 
+  mutate(
+    ID_n = row_number(),
+    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+  ) %>% 
+  select(-ID_n) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    names_from = `Recipient/Player B Affliation`,
+    values_from = c(`P_Average Invested Amount`, `P_SD invested amount`, `N by condition`,`Total Trials`)
+  ) %>% 
+  mutate(`P_Average Invested Amount_Outgroup` = as.numeric(`P_Average Invested Amount_Outgroup`),
+         `P_Average Invested Amount_Ingroup` = as.numeric(`P_Average Invested Amount_Ingroup`),
+         `P_SD invested amount_Outgroup` = as.numeric(`P_SD invested amount_Outgroup`),
+         `P_SD invested amount_Ingroup` = as.numeric(`P_SD invested amount_Ingroup`),
+         `N by condition_Outgroup` = as.numeric(`N by condition_Outgroup`),
+         `N by condition_Ingroup` = as.numeric(`N by condition_Ingroup`)
+  ) %>%
+  escalc(
+    measure = "SMDH", # Hedges' g
+    m1i = `P_Average Invested Amount_Outgroup`, sd1i = `P_SD invested amount_Outgroup`, n1i = `N by condition_Outgroup`,
+    m2i = `P_Average Invested Amount_Ingroup`,  sd2i = `P_SD invested amount_Ingroup`,  n2i = `N by condition_Ingroup`,
+    data = .,
+  ) %>% 
+  group_by(No., Study) %>%
+  mutate(
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  ) %>% 
+  ungroup() %>%
+  filter(!is.na(yi)) # Exclude effect size is NA
+
+H6_data <- rbind(H6_data, H6_Between_Data)
+
+V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5)
 H6_model <- rma.mv(yi, V_H6, random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
 summary(H6_model)
 
