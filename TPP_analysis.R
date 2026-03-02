@@ -119,6 +119,13 @@ conf_int(H1_model, vcov = "CR2")
 # calculating the overall amount of heterogeneity
 sum(H1_model$sigma2)
 
+# obtaining I2 value
+W <- diag(1/H1_data$vi)
+X <- model.matrix(H1_model)
+P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
+100 * sum(H1_model$sigma2) / (sum(H1_model$sigma2) + (H1_model$k-H1_model$p)/sum(diag(P))) # overall I2
+100 * H1_model$sigma2 / (sum(H1_model$sigma2) + (H1_model$k-H1_model$p)/sum(diag(P)))  # I2 per levels
+
 # forest plot
 forest(H1_model, slab = paste(H1_data$Intext.Citation, "S", H1_data$Study, sep = " "))
 # Save fig in folder fig
@@ -238,6 +245,12 @@ conf_int(H2_model, vcov = "CR2")
 # calculating the overall amount of heterogeneity
 sum(H2_model$sigma2)
 
+# obtaining I2 value
+W <- diag(1/H2_data$vi)
+X <- model.matrix(H2_model)
+P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
+100 * sum(H2_model$sigma2) / (sum(H2_model$sigma2) + (H2_model$k-H2_model$p)/sum(diag(P))) # overall I2
+
 # forest plot
 H2_f <- forest(H2_model, slab = paste(H2_data$Intext.Citation, "S", H2_data$Study, sep = " "))
 # saving forest plot to a file
@@ -317,6 +330,11 @@ H3_model <- H1_data %>%
   method = "REML",
 )
 summary(H3_model)
+
+# obtaining robust variance estimates
+coef_test(H3_model, vcov = "CR2")
+conf_int(H3_model, vcov = "CR2")
+
 # asign color for ingroup, outgroup, and neutral
 H3_col <- ifelse(H1_data$Recipient.Player.B.Affliation == "Ingroup", "blue",
                  ifelse(H1_data$Recipient.Player.B.Affliation == "Outgroup", "red", "gray"))
@@ -338,7 +356,11 @@ H3_model2 <-H3_data  %>%
          data = .,
          method = "REML",
 )
-summary(H3_model)
+summary(H3_model2)
+
+# obtaining robust variance estimates
+coef_test(H3_model2, vcov = "CR2")
+conf_int(H3_model2, vcov = "CR2")
 
 #### Robustness check 2: Using the H2_data ----
 H3_model3 <- H2_data %>%
@@ -466,6 +488,20 @@ V_H5 <- vcalc(H5_data$vi, cluster=H5_data$Sample.ID, rho = 0.5)
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
 summary(H5_model)
 
+# obtaining robust variance estimates
+coef_test(H5_model, vcov = "CR2")
+conf_int(H5_model, vcov = "CR2")
+
+# calculating the overall amount of heterogeneity
+sum(H5_model$sigma2)
+
+# obtaining I2 value
+W <- diag(1/H5_data$vi)
+X <- model.matrix(H5_model)
+P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
+100 * sum(H5_model$sigma2) / (sum(H5_model$sigma2) + (H5_model$k-H5_model$p)/sum(diag(P))) # overall I2
+100 * H5_model$sigma2 / (sum(H5_model$sigma2) + (H5_model$k-H5_model$p)/sum(diag(P)))  # I2 per levels
+
 # forest plot
 H5_f <- forest(H5_model, slab = paste(H5_data$Intext.Citation, "S", H5_data$Study, sep = " "))
 # saving forest plot to a file
@@ -577,6 +613,19 @@ jpeg("fig/H6_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
 dev.off()
 
+# obtaining robust variance estimates
+coef_test(H6_model, vcov = "CR2")
+conf_int(H6_model, vcov = "CR2")
+
+# calculating the overall amount of heterogeneity
+sum(H6_model$sigma2)
+
+# obtaining I2 value
+W <- diag(1/H6_data$vi)
+X <- model.matrix(H6_model)
+P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
+100 * sum(H6_model$sigma2) / (sum(H6_model$sigma2) + (H6_model$k-H6_model$p)/sum(diag(P))) # overall I2
+
 # funnel plot
 metafor::funnel(H6_model)
 
@@ -613,6 +662,9 @@ H1_lab_model <- rma.mv(yi, V_H1_lab,
                         mods = ~ Lab.or.Online,
                         random = ~ 1 | No. / Study / effectID, data = H1_lab_dat, method = "REML")
 summary(H1_lab_model)
+coef_test(H1_lab_model, vcov = "CR2")
+conf_int(H1_lab_model, vcov = "CR2")
+predict(H1_lab_model)
 
 # saving forest plot to a file
 H1_lab_col <- ifelse(H1_lab_dat$Lab.or.Online == "Online", "blue", "red")
@@ -629,6 +681,8 @@ H1_group_model <- rma.mv(yi, V_H1_group,
                        mods = ~ Group.Manipulation,
                        random = ~ 1 | No. / Study / effectID, data = H1_group_dat, method = "REML")
 summary(H1_group_model)
+coef_test(H1_group_model, vcov = "CR2")
+conf_int(H1_group_model, vcov = "CR2")
 
 # saving forest plot to a file
 H1_group_col <- ifelse(H1_group_dat$Group.Manipulation == "Natural", "blue", "red")
@@ -688,6 +742,8 @@ H2_lab_model <- rma.mv(yi, V_H2_lab,
                        mods = ~ Lab.or.Online,
                        random = ~ 1 | No. / Study / effectID, data = H2_lab_dat, method = "REML")
 summary(H2_lab_model)
+coef_test(H2_lab_model, vcov = "CR2")
+conf_int(H2_lab_model, vcov = "CR2")
 
 ### Group Manipulation ----
 H2_group_dat <- H2_data %>% 
@@ -697,6 +753,8 @@ H2_group_model <- rma.mv(yi, V_H2_group,
                          mods = ~ Group.Manipulation,
                          random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML")
 summary(H2_group_model)
+coef_test(H2_group_model, vcov = "CR2")
+conf_int(H2_group_model, vcov = "CR2")
 
 ### Game Type ----
 H2_game_dat <- H2_data %>% 
@@ -725,6 +783,9 @@ H5_country_model <- rma.mv(yi, vi, # correlated V is close to singular
                            mods = ~ Country,
                            random = ~ 1 | No./ Study / effectID, data = H5_country_dat, method = "REML")
 summary(H5_country_model)
+coef_test(H5_country_model, vcov = "CR2")
+conf_int(H5_country_model, vcov = "CR2")
+predict(H5_country_model)
 
 # saving forest plot to a file
 H5_country_col <- ifelse(H5_country_dat$Country == "China", "red",
@@ -754,6 +815,8 @@ H5_lab_model <- rma.mv(yi, V_H5_lab,
                        mods = ~ Lab.or.Online,
                        random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML")
 summary(H5_lab_model)
+coef_test(H5_lab_model, vcov = "CR2")
+conf_int(H5_lab_model, vcov = "CR2")
 
 ### Group Manipulation ----
 H5_group_dat <- H5_data %>% 
@@ -763,6 +826,8 @@ H5_group_model <- rma.mv(yi, V_H5_group,
                          mods = ~ Group.Manipulation,
                          random = ~ 1 | No. / Study / effectID, data = H5_group_dat, method = "REML")
 summary(H5_group_model)
+coef_test(H5_group_model, vcov = "CR2")
+conf_int(H5_group_model, vcov = "CR2")
 
 # saving forest plot to a file
 H5_group_col <- ifelse(H5_group_dat$Group.Manipulation == "Natural", "blue", "red")
@@ -817,6 +882,8 @@ H6_lab_model <- rma.mv(yi, V_H6_lab,
                        mods = ~ Lab.or.Online,
                        random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML")
 summary(H6_lab_model)
+coef_test(H6_lab_model, vcov = "CR2")
+conf_int(H6_lab_model, vcov = "CR2")
 
 ### Group Manipulation ----
 # Not appliable, all data is Natural group
