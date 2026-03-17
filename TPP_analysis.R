@@ -26,7 +26,7 @@ H1_data <- MA_dat %>%
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -65,7 +65,7 @@ H1_Between_Data <- MA_dat %>%
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -152,7 +152,7 @@ H2_data <- MA_dat %>%
   ) %>%
   # group_by(No., Study, `Recipient/Player B Affliation`) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -191,7 +191,7 @@ H2_Between_Data <- MA_dat %>%
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -406,7 +406,7 @@ H5_data <- MA_dat %>%
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -444,7 +444,7 @@ H5_Between_Data <- MA_dat %>%
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -524,7 +524,7 @@ H6_data <- MA_dat %>%
   ) %>%
   # group_by(No., Study, `Recipient/Player B Affliation`) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
@@ -562,7 +562,7 @@ H6_Between_Data <- MA_dat %>%
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
     Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
