@@ -297,13 +297,14 @@ V_H3 <- vcalc(H3_data$vi, cluster=H3_data$Sample.ID, rho = 0.5)
 
 H3_model2 <-H3_data  %>%
   rma.mv(yi, V_H3,
-         mods = ~ Recipient.Player.B.Affliation,
+         mods = ~ Recipient.Player.B.Affliation - 1,
          random = ~ 1 | No. / Study / effectID,
          data = .,
          method = "REML",
 )
 summary(H3_model2)
 
+Wald_test(H3_model2, constraints = constrain_equal(1:2), vcov = "CR2")
 # obtaining robust variance estimates
 coef_test(H3_model2, vcov = "CR2") # only case that interaction is significant
 conf_int(H3_model2, vcov = "CR2")
@@ -311,14 +312,14 @@ conf_int(H3_model2, vcov = "CR2")
 #### Robustness check 2: Using the H2_data ----
 H3_model3 <- H2_data %>%
   rma.mv(yi, V_H2,
-         mods = ~ Person.A.affiliation,
+         mods = ~ Person.A.affiliation - 1,
          random = ~ 1 | No. / Study / effectID,
          data = .,
          method = "REML",
 )
 summary(H3_model3)
 
-Wald_test(H3_model3, constrain_zero(2:3), vcov = "CR2")
+Wald_test(H3_model3, constrain_equal(1:3), vcov = "CR2")
 
 #### Robustness check 3: Using H2_data &Exclude studies with neutral recipient/player B affiliation ----
 H3_data2 <- H2_data %>%
@@ -328,13 +329,14 @@ V_H3_2 <- vcalc(H3_data2$vi, cluster=H3_data2$Sample.ID, rho = 0.5)
 
 H3_model4 <-H3_data2  %>%
   rma.mv(yi, V_H3_2,
-         mods = ~ Person.A.affiliation,
+         mods = ~ Person.A.affiliation - 1,
          random = ~ 1 | No. / Study / effectID,
          data = .,
          method = "REML",
   )
 summary(H3_model4)
 
+Wald_test(H3_model4, constrain_equal(1:2), vcov = "CR2")
 # obtaining robust variance estimates
 coef_test(H3_model4, vcov = "CR2")
 conf_int(H3_model4, vcov = "CR2")
@@ -610,13 +612,30 @@ H1_country_dat <- H1_data %>%
   filter(!is.na(Country))
 V_H1_country <- vcalc(H1_country_dat$vi, cluster=H1_country_dat$Sample.ID, rho = 0.5)
 H1_country_model <- rma.mv(yi, V_H1_country,
-                           mods = ~ Country,
+                           mods = ~ Country - 1,
                            random = ~ 1 | No. / Study / effectID, data = H1_country_dat, method = "REML")
 summary(H1_country_model)
 
-Wald_test(H1_country_model, constraints = constrain_zero(3:7), vcov = "CR2") # 2:7 returns NA
+Wald_test(H1_country_model, constraints = constrain_equal(1:7), vcov = "CR2", test = "EDT") # HTZ returns NA
 coef_test(H1_country_model, vcov = "CR2")
 conf_int(H1_country_model, vcov = "CR2")
+
+# saving forest plot to a file
+H1_country_col <- case_match(
+  H1_country_dat$Country,
+  "China"  ~ "red",
+  "Turkey" ~ "green",
+  "US"     ~ "blue",
+  "UK/US"  ~ "cyan",
+  "Argentina" ~ "purple",
+  "Switzerland" ~ "yellow",
+  "Papua New Guinea" ~ "orange"
+)
+
+jpeg("fig/H1_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+forest(H1_country_model, slab = paste(H1_country_dat$Intext.Citation, "S", H1_country_dat$Study, sep = " "),
+       colout = H1_country_col)
+dev.off()
 
 ### The cost ----
 H1_cost_dat <- H1_data %>% 
@@ -627,18 +646,19 @@ H1_cost_model <- rma.mv(yi, V_H1_cost,
                            mods = ~ Punishment.Cost.Ratio,
                            random = ~ 1 | No. / Study / effectID, data = H1_cost_dat, method = "REML")
 summary(H1_cost_model)
+coef_test(H1_cost_model, vcov = "CR2")
 
 ### Lab or online ----
 H1_lab_dat <- H1_data %>% 
   filter(!is.na(Lab.or.Online))
 V_H1_lab <- vcalc(H1_lab_dat$vi, cluster=H1_lab_dat$Sample.ID, rho = 0.5)
 H1_lab_model <- rma.mv(yi, V_H1_lab,
-                        mods = ~ Lab.or.Online,
+                        mods = ~ Lab.or.Online - 1,
                         random = ~ 1 | No. / Study / effectID, data = H1_lab_dat, method = "REML")
 summary(H1_lab_model)
+Wald_test(H1_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_lab_model, vcov = "CR2")
 conf_int(H1_lab_model, vcov = "CR2")
-predict(H1_lab_model)
 
 # saving forest plot to a file
 H1_lab_col <- ifelse(H1_lab_dat$Lab.or.Online == "Online", "blue", "red")
@@ -652,9 +672,10 @@ H1_group_dat <- H1_data %>%
   filter(!is.na(Group.Manipulation))
 V_H1_group <- vcalc(H1_group_dat$vi, cluster=H1_group_dat$Sample.ID, rho = 0.5)
 H1_group_model <- rma.mv(yi, V_H1_group,
-                       mods = ~ Group.Manipulation,
+                       mods = ~ Group.Manipulation - 1,
                        random = ~ 1 | No. / Study / effectID, data = H1_group_dat, method = "REML")
 summary(H1_group_model)
+Wald_test(H1_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_group_model, vcov = "CR2")
 conf_int(H1_group_model, vcov = "CR2")
 
@@ -663,10 +684,10 @@ H1_game_dat <- H1_data %>%
   filter(!is.na(Game.Type))
 V_H1_game <- vcalc(H1_game_dat$vi, cluster=H1_game_dat$Sample.ID, rho = 0.5)
 H1_game_model <- rma.mv(yi, V_H1_game,
-                         mods = ~ Game.Type,
+                         mods = ~ Game.Type - 1,
                          random = ~ 1 | No. / Study / effectID, data = H1_game_dat, method = "REML")
 summary(H1_game_model)
-Wald_test(H1_game_model, constraints = constrain_zero(2:4), vcov = "CR2")
+Wald_test(H1_game_model, constraints = constrain_equal(1:4), vcov = "CR2")
 coef_test(H1_game_model, vcov = "CR2")
 conf_int(H1_game_model, vcov = "CR2")
 
@@ -710,9 +731,10 @@ H1_interact_dat <- H1_data %>%
   filter(!is.na(Real.or.Deception))
 V_H1_interact <- vcalc(H1_interact_dat$vi, cluster=H1_interact_dat$Sample.ID, rho = 0.5)
 H1_interact_model <- rma.mv(yi, V_H1_interact,
-                        mods = ~ Real.or.Deception,
+                        mods = ~ Real.or.Deception - 1,
                         random = ~ 1 | No. / Study / effectID, data = H1_interact_dat, method = "REML")
 summary(H1_interact_model)
+Wald_test(H1_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_interact_model, vcov = "CR2")
 conf_int(H1_endow_model, vcov = "CR2")
 
@@ -721,9 +743,10 @@ H1_stu_dat <- H1_data %>%
   filter(!is.na(Student.Sample))
 V_H1_stu <- vcalc(H1_stu_dat$vi, cluster=H1_stu_dat$Sample.ID, rho = 0.5)
 H1_stu_model <- rma.mv(yi, V_H1_stu,
-                       mods = ~ Student.Sample,
+                       mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H1_stu_dat, method = "REML")
 summary(H1_stu_model)
+Wald_test(H1_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_stu_model, vcov = "CR2")
 conf_int(H1_stu_model, vcov = "CR2")
 
@@ -735,10 +758,10 @@ H2_country_dat <- H2_data %>%
   filter(!is.na(Country))
 V_H2_country <- vcalc(H2_country_dat$vi, cluster=H2_country_dat$Sample.ID, rho = 0.5)
 H2_country_model <- rma.mv(yi, V_H2_country,
-                           mods = ~ Country,
+                           mods = ~ Country - 1,
                            random = ~ 1 | No. / Study / effectID, data = H2_country_dat, method = "REML")
 summary(H2_country_model)
-Wald_test(H2_country_model, constraints = constrain_zero(2:5), vcov = "CR2")
+Wald_test(H2_country_model, constraints = constrain_equal(1:5), vcov = "CR2")
 coef_test(H2_country_model, vcov = "CR2")
 conf_int(H2_country_model, vcov = "CR2")
 
@@ -760,9 +783,10 @@ H2_lab_dat <- H2_data %>%
   filter(!is.na(Lab.or.Online))
 V_H2_lab <- vcalc(H2_lab_dat$vi, cluster=H2_lab_dat$Sample.ID, rho = 0.5)
 H2_lab_model <- rma.mv(yi, V_H2_lab,
-                       mods = ~ Lab.or.Online,
+                       mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H2_lab_dat, method = "REML")
 summary(H2_lab_model)
+Wald_test(H2_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_lab_model, vcov = "CR2")
 conf_int(H2_lab_model, vcov = "CR2")
 
@@ -778,9 +802,10 @@ H2_group_dat <- H2_data %>%
   filter(!is.na(Group.Manipulation))
 V_H2_group <- vcalc(H2_group_dat$vi, cluster=H2_group_dat$Sample.ID, rho = 0.5)
 H2_group_model <- rma.mv(yi, V_H2_group,
-                         mods = ~ Group.Manipulation,
+                         mods = ~ Group.Manipulation - 1,
                          random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML")
 summary(H2_group_model)
+Wald_test(H2_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_group_model, vcov = "CR2")
 conf_int(H2_group_model, vcov = "CR2")
 
@@ -789,9 +814,10 @@ H2_game_dat <- H2_data %>%
   filter(!is.na(Game.Type))
 V_H2_game <- vcalc(H2_game_dat$vi, cluster=H2_game_dat$Sample.ID, rho = 0.5)
 H2_game_model <- rma.mv(yi, V_H2_game,
-                        mods = ~ Game.Type,
+                        mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H2_game_dat, method = "REML")
 summary(H2_game_model)
+Wald_test(H2_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_game_model, vcov = "CR2")
 
 ### Sex Ratio ----
@@ -832,9 +858,10 @@ H2_interact_dat <- H2_data %>%
   filter(!is.na(Real.or.Deception))
 V_H2_interact <- vcalc(H2_interact_dat$vi, cluster=H2_interact_dat$Sample.ID, rho = 0.5)
 H2_interact_model <- rma.mv(yi, V_H2_interact,
-                            mods = ~ Real.or.Deception,
+                            mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H2_interact_dat, method = "REML")
 summary(H2_interact_model)
+Wald_test(H2_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_interact_model, vcov = "CR2")
 
 ### Student Sample ----
@@ -842,9 +869,10 @@ H2_stu_dat <- H2_data %>%
   filter(!is.na(Student.Sample))
 V_H2_stu <- vcalc(H2_stu_dat$vi, cluster=H2_stu_dat$Sample.ID, rho = 0.5)
 H2_stu_model <- rma.mv(yi, V_H2_stu,
-                       mods = ~ Student.Sample,
+                       mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H2_stu_dat, method = "REML")
 summary(H2_stu_model)
+Wald_test(H2_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_stu_model, vcov = "CR2")
 conf_int(H2_stu_model, vcov = "CR2")
 
@@ -856,11 +884,29 @@ H5_country_dat <- H5_data %>%
   filter(!is.na(Country)) 
 V_H5_country <- vcalc(H5_country_dat$vi, cluster=H5_country_dat$Sample.ID, rho = 0.5)
 H5_country_model <- rma.mv(yi, V_H5_country, 
-                           mods = ~ Country,
+                           mods = ~ Country - 1,
                            random = ~ 1 | No./ Study / effectID, data = H5_country_dat, method = "REML")
 summary(H5_country_model)
-Wald_test(H5_country_model, constraints = constrain_zero(3:6), vcov = "CR2")
+Wald_test(H5_country_model, constraints = constrain_equal(1:6), vcov = "CR2", test = "EDT") # HTZ returns NA
 coef_test(H5_country_model, vcov = "CR2")
+conf_int(H5_country_model, vcov = "CR2")
+
+# saving forest plot to a file
+H5_country_col <- case_match(
+    H5_country_dat$Country,
+    "China"  ~ "red",
+    "Turkey" ~ "green",
+    "US"     ~ "blue",
+    "UK/US"  ~ "cyan",
+    "Argentina" ~ "purple",
+    "Switzerland" ~ "yellow",
+    "Papua New Guinea" ~ "orange",
+    "Italy" ~ "pink"
+  )
+jpeg("fig/H5_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+forest(H5_country_model, slab = paste(H5_country_dat$Intext.Citation, "S", H5_country_dat$Study, sep = " "),
+       colout = H5_country_col)
+dev.off()
 
 ### The cost ----
 H5_cost_dat <- H5_data %>% 
@@ -879,9 +925,10 @@ H5_lab_dat <- H5_data %>%
   filter(!is.na(Lab.or.Online))
 V_H5_lab <- vcalc(H5_lab_dat$vi, cluster=H5_lab_dat$Sample.ID, rho = 0.5)
 H5_lab_model <- rma.mv(yi, V_H5_lab,
-                       mods = ~ Lab.or.Online,
+                       mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML")
 summary(H5_lab_model)
+Wald_test(H5_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_lab_model, vcov = "CR2")
 conf_int(H5_lab_model, vcov = "CR2")
 
@@ -890,9 +937,10 @@ H5_group_dat <- H5_data %>%
   filter(!is.na(Group.Manipulation))
 V_H5_group <- vcalc(H5_group_dat$vi, cluster=H5_group_dat$Sample.ID, rho = 0.5)
 H5_group_model <- rma.mv(yi, V_H5_group,
-                         mods = ~ Group.Manipulation,
+                         mods = ~ Group.Manipulation - 1,
                          random = ~ 1 | No. / Study / effectID, data = H5_group_dat, method = "REML")
 summary(H5_group_model)
+Wald_test(H5_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_group_model, vcov = "CR2")
 conf_int(H5_group_model, vcov = "CR2")
 
@@ -908,10 +956,10 @@ H5_game_dat <- H5_data %>%
   filter(!is.na(Game.Type))
 V_H5_game <- vcalc(H5_game_dat$vi, cluster=H5_game_dat$Sample.ID, rho = 0.5)
 H5_game_model <- rma.mv(yi, V_H5_game,
-                        mods = ~ Game.Type,
+                        mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H5_game_dat, method = "REML")
 summary(H5_game_model)
-Wald_test(H5_game_model, constraints = constrain_zero(2:3), vcov = "CR2")
+Wald_test(H5_game_model, constraints = constrain_equal(1:3), vcov = "CR2")
 
 ### Sex Ratio ----
 H5_sex_dat <- H5_data %>% 
@@ -951,9 +999,10 @@ H5_interact_dat <- H5_data %>%
   filter(!is.na(Real.or.Deception))
 V_H5_interact <- vcalc(H5_interact_dat$vi, cluster=H5_interact_dat$Sample.ID, rho = 0.5)
 H5_interact_model <- rma.mv(yi, V_H5_interact,
-                            mods = ~ Real.or.Deception,
+                            mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H5_interact_dat, method = "REML")
 summary(H5_interact_model)
+Wald_test(H5_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_interact_model, vcov = "CR2")
 
 ### Student Sample ----
@@ -961,9 +1010,10 @@ H5_stu_dat <- H5_data %>%
   filter(!is.na(Student.Sample))
 V_H5_stu <- vcalc(H5_stu_dat$vi, cluster=H5_stu_dat$Sample.ID, rho = 0.5)
 H5_stu_model <- rma.mv(yi, V_H5_stu,
-                       mods = ~ Student.Sample,
+                       mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML")
 summary(H5_stu_model)
+Wald_test(H5_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_stu_model, vcov = "CR2")
 conf_int(H5_stu_model, vcov = "CR2")
 
@@ -975,10 +1025,10 @@ H6_country_dat <- H6_data %>%
   filter(!is.na(Country)) 
 V_H6_country <- vcalc(H6_country_dat$vi, cluster=H6_country_dat$Sample.ID, rho = 0.5)
 H6_country_model <- rma.mv(yi, V_H6_country,
-                           mods = ~ Country,
+                           mods = ~ Country - 1,
                            random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML")
 summary(H6_country_model)
-Wald_test(H6_country_model, constraints = constrain_zero(3:5), vcov = "CR2")
+# Wald_test(H6_country_model, constraints = constrain_equal(1:5), vcov = "CR2", test = "chi-sq") # V is singular
 coef_test(H6_country_model, vcov = "CR2")
 conf_int(H6_country_model, vcov = "CR2")
 
@@ -999,9 +1049,10 @@ H6_lab_dat <- H6_data %>%
   filter(!is.na(Lab.or.Online))
 V_H6_lab <- vcalc(H6_lab_dat$vi, cluster=H6_lab_dat$Sample.ID, rho = 0.5)
 H6_lab_model <- rma.mv(yi, V_H6_lab,
-                       mods = ~ Lab.or.Online,
+                       mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML")
 summary(H6_lab_model)
+Wald_test(H6_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_lab_model, vcov = "CR2")
 conf_int(H6_lab_model, vcov = "CR2")
 
@@ -1020,9 +1071,10 @@ H6_game_dat <- H6_data %>%
   filter(!is.na(Game.Type))
 V_H6_game <- vcalc(H6_game_dat$vi, cluster=H6_game_dat$Sample.ID, rho = 0.5)
 H6_game_model <- rma.mv(yi, V_H6_game,
-                        mods = ~ Game.Type,
+                        mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H6_game_dat, method = "REML")
 summary(H6_game_model)
+Wald_test(H6_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_game_model, vcov = "CR2")
 
 ### Sex Ratio ----
@@ -1063,9 +1115,10 @@ H6_interact_dat <- H6_data %>%
   filter(!is.na(Real.or.Deception))
 V_H6_interact <- vcalc(H6_interact_dat$vi, cluster=H6_interact_dat$Sample.ID, rho = 0.5)
 H6_interact_model <- rma.mv(yi, V_H6_interact,
-                            mods = ~ Real.or.Deception,
+                            mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H6_interact_dat, method = "REML")
 summary(H6_interact_model)
+Wald_test(H6_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_interact_model, vcov = "CR2")
 
 ### Student Sample ----
@@ -1073,8 +1126,9 @@ H6_stu_dat <- H6_data %>%
   filter(!is.na(Student.Sample))
 V_H6_stu <- vcalc(H6_stu_dat$vi, cluster=H6_stu_dat$Sample.ID, rho = 0.5)
 H6_stu_model <- rma.mv(yi, V_H6_stu,
-                       mods = ~ Student.Sample,
+                       mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H6_stu_dat, method = "REML")
 summary(H6_stu_model)
+Wald_test(H6_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_stu_model, vcov = "CR2")
 conf_int(H6_stu_model, vcov = "CR2")
