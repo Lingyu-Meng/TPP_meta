@@ -59,3 +59,24 @@ Similarly, participants tended to punish aggressors more when the victim was an 
 ![Fig.8](fig/H2_lab_Forest.jpeg)
 
 However, this moderator was not significant in the fair condition.
+
+## Nationality
+
+We found that in the unfair condition, participants’ nationality was a significant moderator. For both of aggressors affiliations (Fig. 9) and victims affiliations (Fig. 10).
+
+```         
+"China"  ~ "red",
+"Turkey" ~ "green",
+"US"     ~ "blue",
+"UK/US"  ~ "cyan",
+"Argentina" ~ "purple",
+"Switzerland" ~ "yellow",
+"Papua New Guinea" ~ "orange",
+"Italy" ~ "pink"
+```
+
+![Fig.9](fig/H1_country_Forest.jpeg)
+
+![Fig.10](fig/H5_country_Forest.jpeg)
+
+However, this moderator was not significant in the unfair condition.
