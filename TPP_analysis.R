@@ -26,10 +26,10 @@ H1_data <- MA_dat %>%
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`, `Age (mean)`,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   pivot_wider(
@@ -60,15 +60,15 @@ H1_data <- MA_dat %>%
 # deal with between data (assign temporary sample ID)
 H1_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...37` == "Between",
+    `Between or Within?...38` == "Between",
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Person A affiliation`) %>% 
@@ -152,10 +152,10 @@ H2_data <- MA_dat %>%
   ) %>%
   # group_by(No., Study, `Recipient/Player B Affliation`) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   pivot_wider(
@@ -186,15 +186,15 @@ H2_data <- MA_dat %>%
 # deal with between data (assign temporary sample ID)
 H2_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...39` == "Between",
+    `Between or Within?...40` == "Between",
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Recipient/Player B Affliation`) %>% 
@@ -266,61 +266,6 @@ metafor::funnel(H2_model, refline=0, level=c(95, 99),
                 shade=c("white", "grey"))
 
 ## H3 Interaction Effect between Violator’s Identity and Victim Salience ----
-### The Mantel-Haenszel method ----
-MH_dat <- MA_dat %>%
-  group_by(No., Study) %>%
-  # keep only studies that have all four A×B combinations
-  filter(
-    `Fairness/Cooperativeness A Binary` == 0,
-    n_distinct(`Person A affiliation`) >= 2,
-    n_distinct(`Recipient/Player B Affliation`) >= 2,
-    all(expand.grid(
-      `Person A affiliation` = c("Ingroup", "Outgroup"),
-      `Recipient/Player B Affliation` = c("Ingroup", "Outgroup")
-    ) %>%
-      apply(1, paste, collapse = "_") %in%
-      paste(`Person A affiliation`, `Recipient/Player B Affliation`, sep = "_"))
-  ) %>%
-  ungroup()
-# 
-# I_I <- MH_dat %>%
-#   filter(
-#     `Person A affiliation` == "Ingroup",
-#     `Recipient/Player B Affliation` == "Ingroup"
-#   )
-# I_O <- MH_dat %>%
-#   filter(
-#     `Person A affiliation` == "Ingroup",
-#     `Recipient/Player B Affliation` == "Outgroup"
-#   )
-# O_I <- MH_dat %>%
-#   filter(
-#     `Person A affiliation` == "Outgroup",
-#     `Recipient/Player B Affliation` == "Ingroup"
-#   )
-# O_O <- MH_dat %>%
-#   filter(
-#     `Person A affiliation` == "Outgroup",
-#     `Recipient/Player B Affliation` == "Outgroup"
-#   )
-# n1i <- I_I$`N by condition` + I_O$`N by condition`
-# n2i <- O_I$`N by condition` + O_O$`N by condition`
-# 
-# MH_model <- rma.mh(I_I$P_Frequency, #  I O
-#   I_O$P_Frequency, # I  a b
-#   O_I$P_Frequency, # O  c d
-#   O_O$P_Frequency,
-#   n1i,
-#   n2i,
-#   measure = "RR"
-# )
-# summary(MH_model)
-# # k = 8 studies included
-# MH_model$beta
-# forest(MH_model)
-# # RR = (a/(a+b)) / (c/(c+d))
-# # when person A is an ingroup member punishment probablity
-
 ### The moderator method ----
 H3_model <- H1_data %>%
   rma.mv(yi, V_H1,
@@ -331,6 +276,7 @@ H3_model <- H1_data %>%
 )
 summary(H3_model)
 
+Wald_test(H3_model, constrain_zero(2:3), vcov = "CR2")
 # obtaining robust variance estimates
 coef_test(H3_model, vcov = "CR2")
 conf_int(H3_model, vcov = "CR2")
@@ -359,7 +305,7 @@ H3_model2 <-H3_data  %>%
 summary(H3_model2)
 
 # obtaining robust variance estimates
-coef_test(H3_model2, vcov = "CR2")
+coef_test(H3_model2, vcov = "CR2") # only case that interaction is significant
 conf_int(H3_model2, vcov = "CR2")
 
 #### Robustness check 2: Using the H2_data ----
@@ -371,6 +317,27 @@ H3_model3 <- H2_data %>%
          method = "REML",
 )
 summary(H3_model3)
+
+Wald_test(H3_model3, constrain_zero(2:3), vcov = "CR2")
+
+#### Robustness check 3: Using H2_data &Exclude studies with neutral recipient/player B affiliation ----
+H3_data2 <- H2_data %>%
+  filter(Person.A.affiliation != "Neutral")
+
+V_H3_2 <- vcalc(H3_data2$vi, cluster=H3_data2$Sample.ID, rho = 0.5)
+
+H3_model4 <-H3_data2  %>%
+  rma.mv(yi, V_H3_2,
+         mods = ~ Person.A.affiliation,
+         random = ~ 1 | No. / Study / effectID,
+         data = .,
+         method = "REML",
+  )
+summary(H3_model4)
+
+# obtaining robust variance estimates
+coef_test(H3_model4, vcov = "CR2")
+conf_int(H3_model4, vcov = "CR2")
 
 ### The regression method ----
 H3_data_r <- MA_dat %>%
@@ -390,7 +357,7 @@ H3_data_r <- MA_dat %>%
   )
 
 H3_model_r <- H3_data_r %>%
-  rma.mv(yi = `P_Average Invested Amount_Standardized`, V = P_SV,
+  rma(yi = `P_Average Invested Amount_Standardized`, sei = P_SV, # V close to singular
   mods = ~ `Person A` * `Person B`,
   random = ~ 1 | No.,
   data = .,
@@ -406,10 +373,10 @@ H5_data <- MA_dat %>%
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   pivot_wider(
@@ -439,15 +406,15 @@ H5_data <- MA_dat %>%
 
 H5_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...37` == "Between",
+    `Between or Within?...38` == "Between",
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Person A affiliation`) %>% 
@@ -524,10 +491,10 @@ H6_data <- MA_dat %>%
   ) %>%
   # group_by(No., Study, `Recipient/Player B Affliation`) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `Sample ID`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   pivot_wider(
@@ -557,15 +524,15 @@ H6_data <- MA_dat %>%
 
 H6_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...39` == "Between",
+    `Between or Within?...40` == "Between",
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
   select(
-    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`,
+    No., Study, `Person A affiliation`, `Recipient/Player B Affliation`, `IV 1 Levels`, `Age (mean)`,,
     `Fairness/Cooperativeness of Person A`, `Fairness/Cooperativeness of Person B`,
     `P_Average Invested Amount`, `P_SD invested amount`, `N by condition`, `Total Trials`, `Intext-Citation`,
-    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`
+    Country, `Punishment-Cost Ratio`, `Lab or Online`, `Group Manipulation`, Female, Male, `Game Type`, `Relative Endowments`, `Real or Deception`, `Student Sample`
   ) %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Recipient/Player B Affliation`) %>% 
@@ -602,8 +569,9 @@ H6_Between_Data <- MA_dat %>%
 
 H6_data <- rbind(H6_data, H6_Between_Data)
 
-V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5)
-H6_model <- rma.mv(yi, V_H6, random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
+# V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5)
+H6_model <- rma.mv(yi, vi, # V close to singular
+                   random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
 summary(H6_model)
 
 # forest plot
@@ -633,6 +601,8 @@ metafor::funnel(H6_model)
 metafor::funnel(H6_model, refline=0, level=c(95, 99), 
                 shade=c("white", "grey"))
 
+
+
 # Single moderator analyses ################
 ## H1 The Effects of Violator’s Identity on Punishment moderator analyses ----
 ### The culture ----
@@ -644,10 +614,14 @@ H1_country_model <- rma.mv(yi, V_H1_country,
                            random = ~ 1 | No. / Study / effectID, data = H1_country_dat, method = "REML")
 summary(H1_country_model)
 
+Wald_test(H1_country_model, constraints = constrain_zero(3:7), vcov = "CR2") # 2:7 returns NA
+coef_test(H1_country_model, vcov = "CR2")
+conf_int(H1_country_model, vcov = "CR2")
+
 ### The cost ----
 H1_cost_dat <- H1_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio)) %>% 
-  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio))
+  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
+  filter(!is.na(Punishment.Cost.Ratio))
 V_H1_cost <- vcalc(H1_cost_dat$vi, cluster=H1_cost_dat$Sample.ID, rho = 0.5)
 H1_cost_model <- rma.mv(yi, V_H1_cost,
                            mods = ~ Punishment.Cost.Ratio,
@@ -656,7 +630,7 @@ summary(H1_cost_model)
 
 ### Lab or online ----
 H1_lab_dat <- H1_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio))
+  filter(!is.na(Lab.or.Online))
 V_H1_lab <- vcalc(H1_lab_dat$vi, cluster=H1_lab_dat$Sample.ID, rho = 0.5)
 H1_lab_model <- rma.mv(yi, V_H1_lab,
                         mods = ~ Lab.or.Online,
@@ -684,13 +658,6 @@ summary(H1_group_model)
 coef_test(H1_group_model, vcov = "CR2")
 conf_int(H1_group_model, vcov = "CR2")
 
-# saving forest plot to a file
-H1_group_col <- ifelse(H1_group_dat$Group.Manipulation == "Natural", "blue", "red")
-jpeg("fig/H1_group_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
-forest(H1_group_model, slab = paste(H1_group_dat$Intext.Citation, "S", H1_group_dat$Study, sep = " "),
-       colout = H1_group_col)
-dev.off()
-
 ### Game Type ----
 H1_game_dat <- H1_data %>% 
   filter(!is.na(Game.Type))
@@ -699,6 +666,9 @@ H1_game_model <- rma.mv(yi, V_H1_game,
                          mods = ~ Game.Type,
                          random = ~ 1 | No. / Study / effectID, data = H1_game_dat, method = "REML")
 summary(H1_game_model)
+Wald_test(H1_game_model, constraints = constrain_zero(2:4), vcov = "CR2")
+coef_test(H1_game_model, vcov = "CR2")
+conf_int(H1_game_model, vcov = "CR2")
 
 ### Sex Ratio ----
 H1_sex_dat <- H1_data %>% 
@@ -708,6 +678,56 @@ H1_sex_model <- rma.mv(yi, V_H1_sex,
                         mods = ~ male.ratio,
                         random = ~ 1 | No. / Study / effectID, data = H1_sex_dat, method = "REML")
 summary(H1_sex_model)
+coef_test(H1_sex_model, vcov = "CR2")
+conf_int(H1_sex_model, vcov = "CR2")
+
+### Age
+H1_age_dat <- H1_data %>%
+  mutate(Age..mean. = as.numeric(Age..mean.)) %>% 
+  filter(!is.na(Age..mean.))
+V_H1_age <- vcalc(H1_age_dat$vi, cluster=H1_age_dat$Sample.ID, rho = 0.5)
+H1_age_model <- rma.mv(yi, V_H1_age,
+                         mods = ~ Age..mean.,
+                         random = ~ 1 | No. / Study / effectID, data = H1_age_dat, method = "REML")
+summary(H1_age_model)
+coef_test(H1_age_model, vcov = "CR2")
+conf_int(H1_age_model, vcov = "CR2")
+
+### Relative endowment
+H1_endow_dat <- H1_data %>%
+  mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
+  filter(!is.na(Relative.Endowments))
+V_H1_endow <- vcalc(H1_endow_dat$vi, cluster=H1_endow_dat$Sample.ID, rho = 0.5)
+H1_endow_model <- rma.mv(yi, V_H1_endow,
+                       mods = ~ Relative.Endowments,
+                       random = ~ 1 | No. / Study / effectID, data = H1_endow_dat, method = "REML")
+summary(H1_endow_model)
+coef_test(H1_endow_model, vcov = "CR2")
+conf_int(H1_endow_model, vcov = "CR2")
+
+### Real Interaction
+H1_interact_dat <- H1_data %>% 
+  filter(!is.na(Real.or.Deception))
+V_H1_interact <- vcalc(H1_interact_dat$vi, cluster=H1_interact_dat$Sample.ID, rho = 0.5)
+H1_interact_model <- rma.mv(yi, V_H1_interact,
+                        mods = ~ Real.or.Deception,
+                        random = ~ 1 | No. / Study / effectID, data = H1_interact_dat, method = "REML")
+summary(H1_interact_model)
+coef_test(H1_interact_model, vcov = "CR2")
+conf_int(H1_endow_model, vcov = "CR2")
+
+### Student Sample ----
+H1_stu_dat <- H1_data %>% 
+  filter(!is.na(Student.Sample))
+V_H1_stu <- vcalc(H1_stu_dat$vi, cluster=H1_stu_dat$Sample.ID, rho = 0.5)
+H1_stu_model <- rma.mv(yi, V_H1_stu,
+                       mods = ~ Student.Sample,
+                       random = ~ 1 | No. / Study / effectID, data = H1_stu_dat, method = "REML")
+summary(H1_stu_model)
+coef_test(H1_stu_model, vcov = "CR2")
+conf_int(H1_stu_model, vcov = "CR2")
+
+
 
 ## H2 (Deterrence perspective): ----
 ### The culture ----
@@ -718,25 +738,26 @@ H2_country_model <- rma.mv(yi, V_H2_country,
                            mods = ~ Country,
                            random = ~ 1 | No. / Study / effectID, data = H2_country_dat, method = "REML")
 summary(H2_country_model)
+Wald_test(H2_country_model, constraints = constrain_zero(2:5), vcov = "CR2")
+coef_test(H2_country_model, vcov = "CR2")
+conf_int(H2_country_model, vcov = "CR2")
 
 ### The cost ----
-H2_cost_dat <- H2_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio)) %>% 
-  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio))
-V_H2_cost <- vcalc(H2_cost_dat$vi, cluster=H2_cost_dat$Sample.ID, rho = 0.5)
-H2_cost_model <- rma.mv(yi, V_H2_cost,
-                        mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | No. / Study / effectID, data = H2_cost_dat, method = "REML")
-summary(H2_cost_model)
-
-# plotting the cost-punishment relationship
-plot(H2_cost_dat$Punishment.Cost.Ratio, H2_cost_dat$yi, 
-     xlab="Punishment Cost Ratio", ylab="Effect Size", main="Scatter plot")
+# Not appliable, all data is 3
+# H2_cost_dat <- H2_data %>% 
+#   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
+#   filter(!is.na(Punishment.Cost.Ratio))
+# V_H2_cost <- vcalc(H2_cost_dat$vi, cluster=H2_cost_dat$Sample.ID, rho = 0.5)
+# H2_cost_model <- rma.mv(yi, V_H2_cost,
+#                         mods = ~ Punishment.Cost.Ratio,
+#                         random = ~ 1 | No. / Study / effectID, data = H2_cost_dat, method = "REML")
+# summary(H2_cost_model)
+# coef_test(H2_cost_model, vcov = "CR2")
+# conf_int(H2_cost_model, vcov = "CR2")
 
 ### Lab or online ----
 H2_lab_dat <- H2_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio)) %>% 
-  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio))
+  filter(!is.na(Lab.or.Online))
 V_H2_lab <- vcalc(H2_lab_dat$vi, cluster=H2_lab_dat$Sample.ID, rho = 0.5)
 H2_lab_model <- rma.mv(yi, V_H2_lab,
                        mods = ~ Lab.or.Online,
@@ -744,6 +765,13 @@ H2_lab_model <- rma.mv(yi, V_H2_lab,
 summary(H2_lab_model)
 coef_test(H2_lab_model, vcov = "CR2")
 conf_int(H2_lab_model, vcov = "CR2")
+
+# saving forest plot to a file
+H2_lab_col <- ifelse(H2_lab_dat$Lab.or.Online == "Online", "blue", "red")
+jpeg("fig/H2_lab_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+forest(H2_lab_model, slab = paste(H2_lab_dat$Intext.Citation, "S", H2_lab_dat$Study, sep = " "),
+       colout = H2_lab_col)
+dev.off()
 
 ### Group Manipulation ----
 H2_group_dat <- H2_data %>% 
@@ -764,6 +792,7 @@ H2_game_model <- rma.mv(yi, V_H2_game,
                         mods = ~ Game.Type,
                         random = ~ 1 | No. / Study / effectID, data = H2_game_dat, method = "REML")
 summary(H2_game_model)
+coef_test(H2_game_model, vcov = "CR2")
 
 ### Sex Ratio ----
 H2_sex_dat <- H2_data %>% 
@@ -773,43 +802,81 @@ H2_sex_model <- rma.mv(yi, V_H2_sex,
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H2_sex_dat, method = "REML")
 summary(H2_sex_model)
+coef_test(H2_sex_model, vcov = "CR2")
 
-## H5 The Effects of Violator’s Identity on Punishment moderator analyses ----
+### Age
+H2_age_dat <- H2_data %>% 
+  filter(!is.na(Age..mean.)) %>%
+  mutate(Age..mean. = as.numeric(Age..mean.))
+V_H2_age <- vcalc(H2_age_dat$vi, cluster=H2_age_dat$Sample.ID, rho = 0.5)
+H2_age_model <- rma.mv(yi, V_H2_age,
+                       mods = ~ Age..mean.,
+                       random = ~ 1 | No. / Study / effectID, data = H2_age_dat, method = "REML")
+summary(H2_age_model)
+coef_test(H2_age_model, vcov = "CR2")
+conf_int(H2_age_model, vcov = "CR2")
+
+### relative endowment
+H2_endow_dat <- H2_data %>% 
+  filter(!is.na(Relative.Endowments)) %>%
+  mutate(Relative.Endowments = as.numeric(Relative.Endowments))
+V_H2_endow <- vcalc(H2_endow_dat$vi, cluster=H2_endow_dat$Sample.ID, rho = 0.5)
+H2_endow_model <- rma.mv(yi, V_H2_endow,
+                         mods = ~ Relative.Endowments,
+                         random = ~ 1 | No. / Study / effectID, data = H2_endow_dat, method = "REML")
+summary(H2_endow_model)
+coef_test(H2_endow_model, vcov = "CR2")
+
+### Real Interaction
+H2_interact_dat <- H2_data %>% 
+  filter(!is.na(Real.or.Deception))
+V_H2_interact <- vcalc(H2_interact_dat$vi, cluster=H2_interact_dat$Sample.ID, rho = 0.5)
+H2_interact_model <- rma.mv(yi, V_H2_interact,
+                            mods = ~ Real.or.Deception,
+                            random = ~ 1 | No. / Study / effectID, data = H2_interact_dat, method = "REML")
+summary(H2_interact_model)
+coef_test(H2_interact_model, vcov = "CR2")
+
+### Student Sample ----
+H2_stu_dat <- H2_data %>% 
+  filter(!is.na(Student.Sample))
+V_H2_stu <- vcalc(H2_stu_dat$vi, cluster=H2_stu_dat$Sample.ID, rho = 0.5)
+H2_stu_model <- rma.mv(yi, V_H2_stu,
+                       mods = ~ Student.Sample,
+                       random = ~ 1 | No. / Study / effectID, data = H2_stu_dat, method = "REML")
+summary(H2_stu_model)
+coef_test(H2_stu_model, vcov = "CR2")
+conf_int(H2_stu_model, vcov = "CR2")
+
+
+
+## H5 The Effects of Violator’s Identity on Punishment When Fair moderator analyses ----
 ### The culture ----
 H5_country_dat <- H5_data %>% 
   filter(!is.na(Country)) 
-# V_H5_country <- vcalc(H5_country_dat$vi, cluster=H5_country_dat$Sample.ID, rho = 0.5)
-H5_country_model <- rma.mv(yi, vi, # correlated V is close to singular
+V_H5_country <- vcalc(H5_country_dat$vi, cluster=H5_country_dat$Sample.ID, rho = 0.5)
+H5_country_model <- rma.mv(yi, V_H5_country, 
                            mods = ~ Country,
                            random = ~ 1 | No./ Study / effectID, data = H5_country_dat, method = "REML")
 summary(H5_country_model)
+Wald_test(H5_country_model, constraints = constrain_zero(3:6), vcov = "CR2")
 coef_test(H5_country_model, vcov = "CR2")
-conf_int(H5_country_model, vcov = "CR2")
-predict(H5_country_model)
-
-# saving forest plot to a file
-H5_country_col <- ifelse(H5_country_dat$Country == "China", "red",
-                         ifelse(H5_country_dat$Country == "Turkey", "green",
-                                ifelse(H5_country_dat$Country == "USA", "blue", "purple"))
-                         )
-jpeg("fig/H5_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
-forest(H5_country_model, slab = paste(H5_country_dat$Intext.Citation, "S", H5_country_dat$Study, sep = " "),
-       colout = H5_country_col)
-dev.off()
 
 ### The cost ----
 H5_cost_dat <- H5_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio)) %>% 
-  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio))
+  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
+  filter(!is.na(Punishment.Cost.Ratio))
 V_H5_cost <- vcalc(H5_cost_dat$vi, cluster=H5_cost_dat$Sample.ID, rho = 0.5)
 H5_cost_model <- rma.mv(yi, V_H5_cost,
                         mods = ~ Punishment.Cost.Ratio,
                         random = ~ 1 | No. / Study / effectID, data = H5_cost_dat, method = "REML")
 summary(H5_cost_model)
+coef_test(H5_cost_model, vcov = "CR2")
+conf_int(H5_cost_model, vcov = "CR2")
 
 ### Lab or online ----
 H5_lab_dat <- H5_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio))
+  filter(!is.na(Lab.or.Online))
 V_H5_lab <- vcalc(H5_lab_dat$vi, cluster=H5_lab_dat$Sample.ID, rho = 0.5)
 H5_lab_model <- rma.mv(yi, V_H5_lab,
                        mods = ~ Lab.or.Online,
@@ -844,6 +911,7 @@ H5_game_model <- rma.mv(yi, V_H5_game,
                         mods = ~ Game.Type,
                         random = ~ 1 | No. / Study / effectID, data = H5_game_dat, method = "REML")
 summary(H5_game_model)
+Wald_test(H5_game_model, constraints = constrain_zero(2:3), vcov = "CR2")
 
 ### Sex Ratio ----
 H5_sex_dat <- H5_data %>% 
@@ -853,8 +921,55 @@ H5_sex_model <- rma.mv(yi, V_H5_sex,
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H5_sex_dat, method = "REML")
 summary(H5_sex_model)
+coef_test(H5_sex_model, vcov = "CR2")
 
-## H6 The Effects of Victim’s Identity on Punishment moderator analyses ----
+### Age
+H5_age_dat <- H5_data %>%
+  mutate(Age..mean. = as.numeric(Age..mean.)) %>% 
+  filter(!is.na(Age..mean.))
+V_H5_age <- vcalc(H5_age_dat$vi, cluster=H5_age_dat$Sample.ID, rho = 0.5)
+H5_age_model <- rma.mv(yi, V_H5_age,
+                       mods = ~ Age..mean.,
+                       random = ~ 1 | No. / Study / effectID, data = H5_age_dat, method = "REML")
+summary(H5_age_model)
+coef_test(H5_age_model, vcov = "CR2")
+conf_int(H5_age_model, vcov = "CR2")
+
+### relative endowment
+H5_endow_dat <- H5_data %>%
+  mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
+  filter(!is.na(Relative.Endowments))
+V_H5_endow <- vcalc(H5_endow_dat$vi, cluster=H5_endow_dat$Sample.ID, rho = 0.5)
+H5_endow_model <- rma.mv(yi, V_H5_endow,
+                         mods = ~ Relative.Endowments,
+                         random = ~ 1 | No. / Study / effectID, data = H5_endow_dat, method = "REML")
+summary(H5_endow_model)
+coef_test(H5_endow_model, vcov = "CR2")
+
+### Real Interaction
+H5_interact_dat <- H5_data %>% 
+  filter(!is.na(Real.or.Deception))
+V_H5_interact <- vcalc(H5_interact_dat$vi, cluster=H5_interact_dat$Sample.ID, rho = 0.5)
+H5_interact_model <- rma.mv(yi, V_H5_interact,
+                            mods = ~ Real.or.Deception,
+                            random = ~ 1 | No. / Study / effectID, data = H5_interact_dat, method = "REML")
+summary(H5_interact_model)
+coef_test(H5_interact_model, vcov = "CR2")
+
+### Student Sample ----
+H5_stu_dat <- H5_data %>% 
+  filter(!is.na(Student.Sample))
+V_H5_stu <- vcalc(H5_stu_dat$vi, cluster=H5_stu_dat$Sample.ID, rho = 0.5)
+H5_stu_model <- rma.mv(yi, V_H5_stu,
+                       mods = ~ Student.Sample,
+                       random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML")
+summary(H5_stu_model)
+coef_test(H5_stu_model, vcov = "CR2")
+conf_int(H5_stu_model, vcov = "CR2")
+
+
+
+## H6 The Effects of Victim’s Identity on Punishment When Fair moderator analyses ----
 ### The culture ----
 H6_country_dat <- H6_data %>% 
   filter(!is.na(Country)) 
@@ -863,20 +978,25 @@ H6_country_model <- rma.mv(yi, V_H6_country,
                            mods = ~ Country,
                            random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML")
 summary(H6_country_model)
+Wald_test(H6_country_model, constraints = constrain_zero(3:5), vcov = "CR2")
+coef_test(H6_country_model, vcov = "CR2")
+conf_int(H6_country_model, vcov = "CR2")
 
 ### The cost ----
 H6_cost_dat <- H6_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio)) %>% 
-  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio))
+  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
+  filter(!is.na(Punishment.Cost.Ratio))
 V_H6_cost <- vcalc(H6_cost_dat$vi, cluster=H6_cost_dat$Sample.ID, rho = 0.5)
 H6_cost_model <- rma.mv(yi, V_H6_cost,
                         mods = ~ Punishment.Cost.Ratio,
                         random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML")
 summary(H6_cost_model)
+coef_test(H6_cost_model, vcov = "CR2")
+conf_int(H6_cost_model, vcov = "CR2")
 
 ### Lab or online ----
 H6_lab_dat <- H6_data %>% 
-  filter(!is.na(Punishment.Cost.Ratio))
+  filter(!is.na(Lab.or.Online))
 V_H6_lab <- vcalc(H6_lab_dat$vi, cluster=H6_lab_dat$Sample.ID, rho = 0.5)
 H6_lab_model <- rma.mv(yi, V_H6_lab,
                        mods = ~ Lab.or.Online,
@@ -887,7 +1007,7 @@ conf_int(H6_lab_model, vcov = "CR2")
 
 ### Group Manipulation ----
 # Not appliable, all data is Natural group
-# H6_group_dat <- H6_data %>% 
+# H6_group_dat <- H6_data %>%
 #   filter(!is.na(Group.Manipulation))
 # V_H6_group <- vcalc(H6_group_dat$vi, cluster=H6_group_dat$Sample.ID, rho = 0.5)
 # H6_group_model <- rma.mv(yi, V_H6_group,
@@ -898,11 +1018,12 @@ conf_int(H6_lab_model, vcov = "CR2")
 ### Game Type ----
 H6_game_dat <- H6_data %>% 
   filter(!is.na(Game.Type))
-# V_H6_game <- vcalc(H6_game_dat$vi, cluster=H6_game_dat$Sample.ID, rho = 0.5)
-H6_game_model <- rma.mv(yi, vi, # V is close to singular
+V_H6_game <- vcalc(H6_game_dat$vi, cluster=H6_game_dat$Sample.ID, rho = 0.5)
+H6_game_model <- rma.mv(yi, V_H6_game,
                         mods = ~ Game.Type,
                         random = ~ 1 | No. / Study / effectID, data = H6_game_dat, method = "REML")
 summary(H6_game_model)
+coef_test(H6_game_model, vcov = "CR2")
 
 ### Sex Ratio ----
 H6_sex_dat <- H6_data %>% 
@@ -912,3 +1033,48 @@ H6_sex_model <- rma.mv(yi, V_H6_sex,
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H6_sex_dat, method = "REML")
 summary(H6_sex_model)
+coef_test(H6_sex_model, vcov = "CR2")
+
+### Age
+H6_age_dat <- H6_data %>% 
+  filter(!is.na(Age..mean.)) %>%
+  mutate(Age..mean. = as.numeric(Age..mean.))
+V_H6_age <- vcalc(H6_age_dat$vi, cluster=H6_age_dat$Sample.ID, rho = 0.5)
+H6_age_model <- rma.mv(yi, V_H6_age,
+                       mods = ~ Age..mean.,
+                       random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML")
+summary(H6_age_model)
+coef_test(H6_age_model, vcov = "CR2")
+conf_int(H6_age_model, vcov = "CR2")
+
+### relative endowment
+H6_endow_dat <- H6_data %>% 
+  filter(!is.na(Relative.Endowments)) %>%
+  mutate(Relative.Endowments = as.numeric(Relative.Endowments))
+V_H6_endow <- vcalc(H6_endow_dat$vi, cluster=H6_endow_dat$Sample.ID, rho = 0.5)
+H6_endow_model <- rma.mv(yi, V_H6_endow,
+                         mods = ~ Relative.Endowments,
+                         random = ~ 1 | No. / Study / effectID, data = H6_endow_dat, method = "REML")
+summary(H6_endow_model)
+coef_test(H6_endow_model, vcov = "CR2")
+
+### Real Interaction
+H6_interact_dat <- H6_data %>% 
+  filter(!is.na(Real.or.Deception))
+V_H6_interact <- vcalc(H6_interact_dat$vi, cluster=H6_interact_dat$Sample.ID, rho = 0.5)
+H6_interact_model <- rma.mv(yi, V_H6_interact,
+                            mods = ~ Real.or.Deception,
+                            random = ~ 1 | No. / Study / effectID, data = H6_interact_dat, method = "REML")
+summary(H6_interact_model)
+coef_test(H6_interact_model, vcov = "CR2")
+
+### Student Sample ----
+H6_stu_dat <- H6_data %>% 
+  filter(!is.na(Student.Sample))
+V_H6_stu <- vcalc(H6_stu_dat$vi, cluster=H6_stu_dat$Sample.ID, rho = 0.5)
+H6_stu_model <- rma.mv(yi, V_H6_stu,
+                       mods = ~ Student.Sample,
+                       random = ~ 1 | No. / Study / effectID, data = H6_stu_dat, method = "REML")
+summary(H6_stu_model)
+coef_test(H6_stu_model, vcov = "CR2")
+conf_int(H6_stu_model, vcov = "CR2")
