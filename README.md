@@ -24,7 +24,7 @@ Our data supports H2. That is a small to medium positive effect of in-group vict
 
 We did not find a significant interaction effect of aggressor’s identity and victim’s identity on punishment in unfair condition.
 
-Multiple methods were used to test the interaction effect, including the Mantel-Haenszel method, meta-regression, and moderator analysis. The results consistently showed no significant interaction effect. We are showing results from moderator analysis here.
+Multiple methods were used to test the interaction effect, including meta-regression, and moderator analysis. The results consistently showed no significant interaction effect. We are showing results from moderator analysis here.
 
 Red represents the effect of out-group aggressor on punishment when the victim is an in-group member, and blue represents the effect of out-group aggressor on punishment when the victim is an out-group member. Gray represents the effect of out-group aggressor on punishment when the victim is a neutral member.
 
@@ -44,22 +44,18 @@ We analysed how participants’ nationality, the cost of punishment, the experim
 
 ## Group Manipulation
 
-We found that participants tended to punish outgroup aggressors more in the experimental group (red) than in the natural group (blue), in both the unfair condition (Fig. 6) and the fair condition (Fig. 7).
+We found that participants tended to punish outgroup aggressors more in the experimental group (red) than in the natural group (blue), in the fair condition (Fig. 6).
 
-![Fig.6](fig/H1_group_Forest.jpeg)
-
-![Fig.7](fig/H5_group_Forest.jpeg)
+![Fig.6](fig/H5_group_Forest.jpeg)
 
 ## Experimental Platform
 
-We found that in the unfair condition, participants tended to punish outgroup aggressors more in the in-lab study (red) than in the online study (blue). However, this moderator was not significant in the fair condition.
+We found that in the unfair condition, participants tended to punish outgroup aggressors more in the in-lab study (red) than in the online study (blue).
 
-![Fig.8](fig/H1_lab_Forest.jpeg)
+![Fig.7](fig/H1_lab_Forest.jpeg)
 
-## Nationality
+Similarly, participants tended to punish aggressors more when the victim was an in-group member compared with an out-group member, and this effect was stronger in the in-lab study (red) than in the online study (blue).
 
-We found that in the fair condition, participants’ nationality was a significant moderator. Participants in Turkey (green) tended not to punish outgroup targets. Participants in the US (blue) showed a slight tendency to punish outgroup targets. Participants in Switzerland (purple) punished outgroup targets more than those in the US. Participants in China (red) punished outgroup targets most strongly.
+![Fig.8](fig/H2_lab_Forest.jpeg)
 
-However, this moderator was not significant in the unfair condition.
-
-![Fig.9](fig/H5_country_Forest.jpeg)
+However, this moderator was not significant in the fair condition.
