@@ -273,14 +273,14 @@ dev.off()
 ### The moderator method ----
 H3_model <- H1_data %>%
   rma.mv(yi, V_H1,
-  mods = ~ Recipient.Player.B.Affliation,
+  mods = ~ Recipient.Player.B.Affliation - 1,
   random = ~ 1 | No. / Study / effectID,
   data = .,
   method = "REML",
 )
 summary(H3_model)
 
-Wald_test(H3_model, constrain_zero(2:3), vcov = "CR2")
+Wald_test(H3_model, constrain_equal(1:3), vcov = "CR2")
 # obtaining robust variance estimates
 coef_test(H3_model, vcov = "CR2")
 conf_int(H3_model, vcov = "CR2")
@@ -577,8 +577,8 @@ H6_Between_Data <- MA_dat %>%
 
 H6_data <- rbind(H6_data, H6_Between_Data)
 
-# V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5)
-H6_model <- rma.mv(yi, vi, # V close to singular
+V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5)
+H6_model <- rma.mv(yi, V_H6,
                    random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
 summary(H6_model)
 
