@@ -141,8 +141,10 @@ dev.off()
 metafor::funnel(H1_model)
 
 # contour-enhanced funnel plot
+jpeg("fig/H1_funnel.jpeg", height = 6, width = 6, units = "in", res = 300)
 metafor::funnel(H1_model, refline=0, level=c(95, 99), 
                 shade=c("white", "grey"))
+dev.off()
 
 ## H2 (Deterrence perspective): ----
 H2_data <- MA_dat %>%
@@ -262,8 +264,10 @@ dev.off()
 metafor::funnel(H2_model)
 
 # contour-enhanced funnel plot
+jpeg("fig/H2_funnel.jpeg", height = 6, width = 6, units = "in", res = 300)
 metafor::funnel(H2_model, refline=0, level=c(95, 99), 
                 shade=c("white", "grey"))
+dev.off()
 
 ## H3 Interaction Effect between Violator’s Identity and Victim Salience ----
 ### The moderator method ----
@@ -482,8 +486,10 @@ dev.off()
 metafor::funnel(H5_model)
 
 # contour-enhanced funnel plot
+jpeg("fig/H5_funnel.jpeg", height = 6, width = 6, units = "in", res = 300)
 metafor::funnel(H5_model, refline=0, level=c(95, 99), 
                 shade=c("white", "grey"))
+dev.off()
 
 ## H6 The Effects of Victim’s Identity on Punishment ----
 H6_data <- MA_dat %>%
@@ -600,9 +606,10 @@ P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
 metafor::funnel(H6_model)
 
 # contour-enhanced funnel plot
+jpeg("fig/H6_funnel.jpeg", height = 6, width = 6, units = "in", res = 300)
 metafor::funnel(H6_model, refline=0, level=c(95, 99), 
                 shade=c("white", "grey"))
-
+dev.off()
 
 
 # Single moderator analyses ################
