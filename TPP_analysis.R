@@ -1,4 +1,4 @@
-required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "puniform", "metapower")
+required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "puniform", "metapower", "rempsyc")
 
 # Check and install missing packages
 install_and_Load <- function(packages) {
@@ -614,6 +614,7 @@ dev.off()
 
 # Single moderator analyses ################
 ## H1 The Effects of Violator’s Identity on Punishment moderator analyses ----
+H1_moderator_table <- tibble()
 ### The culture ----
 H1_country_dat <- H1_data %>% 
   filter(!is.na(Country))
@@ -644,6 +645,12 @@ forest(H1_country_model, slab = paste(H1_country_dat$Intext.Citation, "S", H1_co
        colout = H1_country_col)
 dev.off()
 
+# saving statistics
+H1_moderator_table <- left_join(
+  coef_test(H1_country_model, vcov = "CR2"),
+  conf_int(H1_country_model, vcov = "CR2")
+)
+
 ### The cost ----
 H1_cost_dat <- H1_data %>% 
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
@@ -654,6 +661,15 @@ H1_cost_model <- rma.mv(yi, V_H1_cost,
                            random = ~ 1 | No. / Study / effectID, data = H1_cost_dat, method = "REML")
 summary(H1_cost_model)
 coef_test(H1_cost_model, vcov = "CR2")
+
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            slice_tail( # cost ratio has intercept
+                              left_join(
+                                coef_test(H1_cost_model, vcov = "CR2"),
+                                conf_int(H1_cost_model, vcov = "CR2")
+                              )
+                            ))
 
 ### Lab or online ----
 H1_lab_dat <- H1_data %>% 
@@ -674,6 +690,13 @@ forest(H1_lab_model, slab = paste(H1_lab_dat$Intext.Citation, "S", H1_lab_dat$St
        colout = H1_lab_col)
 dev.off()
 
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            left_join(
+                                coef_test(H1_lab_model, vcov = "CR2"),
+                                conf_int(H1_lab_model, vcov = "CR2")
+                                ))
+
 ### Group Manipulation ----
 H1_group_dat <- H1_data %>% 
   filter(!is.na(Group.Manipulation))
@@ -685,6 +708,13 @@ summary(H1_group_model)
 Wald_test(H1_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_group_model, vcov = "CR2")
 conf_int(H1_group_model, vcov = "CR2")
+
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            left_join(
+                              coef_test(H1_group_model, vcov = "CR2"),
+                              conf_int(H1_group_model, vcov = "CR2")
+                            ))
 
 ### Game Type ----
 H1_game_dat <- H1_data %>% 
@@ -698,6 +728,13 @@ Wald_test(H1_game_model, constraints = constrain_equal(1:4), vcov = "CR2")
 coef_test(H1_game_model, vcov = "CR2")
 conf_int(H1_game_model, vcov = "CR2")
 
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            left_join(
+                              coef_test(H1_game_model, vcov = "CR2"),
+                              conf_int(H1_game_model, vcov = "CR2")
+                            ))
+
 ### Sex Ratio ----
 H1_sex_dat <- H1_data %>% 
   mutate(male.ratio = Male / (Male + Female))
@@ -708,6 +745,15 @@ H1_sex_model <- rma.mv(yi, V_H1_sex,
 summary(H1_sex_model)
 coef_test(H1_sex_model, vcov = "CR2")
 conf_int(H1_sex_model, vcov = "CR2")
+
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            slice_tail( # sex ratio has intercept
+                              left_join(
+                                coef_test(H1_sex_model, vcov = "CR2"),
+                                conf_int(H1_sex_model, vcov = "CR2")
+                              )
+                            ))
 
 ### Age ----
 H1_age_dat <- H1_data %>%
@@ -721,6 +767,15 @@ summary(H1_age_model)
 coef_test(H1_age_model, vcov = "CR2")
 conf_int(H1_age_model, vcov = "CR2")
 
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            slice_tail( # age has intercept
+                              left_join(
+                                coef_test(H1_age_model, vcov = "CR2"),
+                                conf_int(H1_age_model, vcov = "CR2")
+                              )
+                            ))
+
 ### Relative endowment ----
 H1_endow_dat <- H1_data %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
@@ -733,6 +788,15 @@ summary(H1_endow_model)
 coef_test(H1_endow_model, vcov = "CR2")
 conf_int(H1_endow_model, vcov = "CR2")
 
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            slice_tail( # Relative endowment has intercept
+                              left_join(
+                                coef_test(H1_endow_model, vcov = "CR2"),
+                                conf_int(H1_endow_model, vcov = "CR2")
+                              )
+                            ))
+
 ### Real Interaction ----
 H1_interact_dat <- H1_data %>% 
   filter(!is.na(Real.or.Deception))
@@ -743,7 +807,14 @@ H1_interact_model <- rma.mv(yi, V_H1_interact,
 summary(H1_interact_model)
 Wald_test(H1_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_interact_model, vcov = "CR2")
-conf_int(H1_endow_model, vcov = "CR2")
+conf_int(H1_interact_model, vcov = "CR2")
+
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            left_join(
+                              coef_test(H1_interact_model, vcov = "CR2"),
+                              conf_int(H1_interact_model, vcov = "CR2")
+                            ))
 
 ### Student Sample ----
 H1_stu_dat <- H1_data %>% 
@@ -757,9 +828,35 @@ Wald_test(H1_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H1_stu_model, vcov = "CR2")
 conf_int(H1_stu_model, vcov = "CR2")
 
+# saving statistics
+H1_moderator_table <- rbind(H1_moderator_table,
+                            left_join(
+                              coef_test(H1_stu_model, vcov = "CR2"),
+                              conf_int(H1_stu_model, vcov = "CR2")
+                            ))
 
+### Write Table ----
+# Save table in folder tab
+if (!dir.exists("tab")) {
+  dir.create("tab")
+}
+H1_moderator_table <- H1_moderator_table %>% 
+  select(-df) %>% 
+  rename(
+    Moderator = "Coef",
+    g = "beta",
+    t = "tstat",
+    df = "df_Satt",
+    p = "p_Satt",
+    CI_lower = "CI_L",
+    CI_upper = "CI_U"
+  ) 
+H1_moderator_table %>% 
+  nice_table() %>% 
+  flextable::save_as_docx(., path = "tab/H1_moderator.docx")
 
 ## H2 (Deterrence perspective): ----
+H2_moderator_table <- tibble()
 ### The culture ----
 H2_country_dat <- H2_data %>% 
   filter(!is.na(Country))
@@ -771,6 +868,12 @@ summary(H2_country_model)
 Wald_test(H2_country_model, constraints = constrain_equal(1:5), vcov = "CR2")
 coef_test(H2_country_model, vcov = "CR2")
 conf_int(H2_country_model, vcov = "CR2")
+
+# saving statistics
+H2_moderator_table <- left_join(
+  coef_test(H2_country_model, vcov = "CR2"),
+  conf_int(H2_country_model, vcov = "CR2")
+)
 
 ### The cost ----
 # Not appliable, all data is 3
@@ -803,6 +906,13 @@ jpeg("fig/H2_lab_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H2_lab_model, slab = paste(H2_lab_dat$Intext.Citation, "S", H2_lab_dat$Study, sep = " "),
        colout = H2_lab_col)
 dev.off()
+# saving statistics
+
+H2_moderator_table <- rbind(H2_moderator_table,
+                            left_join(
+                              coef_test(H2_lab_model, vcov = "CR2"),
+                              conf_int(H2_lab_model, vcov = "CR2")
+                            ))
 
 ### Group Manipulation ----
 H2_group_dat <- H2_data %>% 
@@ -816,6 +926,13 @@ Wald_test(H2_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_group_model, vcov = "CR2")
 conf_int(H2_group_model, vcov = "CR2")
 
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            left_join(
+                              coef_test(H2_group_model, vcov = "CR2"),
+                              conf_int(H2_group_model, vcov = "CR2")
+                            ))
+
 ### Game Type ----
 H2_game_dat <- H2_data %>% 
   filter(!is.na(Game.Type))
@@ -827,6 +944,13 @@ summary(H2_game_model)
 Wald_test(H2_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_game_model, vcov = "CR2")
 
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            left_join(
+                              coef_test(H2_game_model, vcov = "CR2"),
+                              conf_int(H2_game_model, vcov = "CR2")
+                            ))
+
 ### Sex Ratio ----
 H2_sex_dat <- H2_data %>% 
   mutate(male.ratio = Male / (Male + Female))
@@ -836,6 +960,15 @@ H2_sex_model <- rma.mv(yi, V_H2_sex,
                        random = ~ 1 | No. / Study / effectID, data = H2_sex_dat, method = "REML")
 summary(H2_sex_model)
 coef_test(H2_sex_model, vcov = "CR2")
+
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            slice_tail( # sex ratio has intercept
+                              left_join(
+                                coef_test(H2_sex_model, vcov = "CR2"),
+                                conf_int(H2_sex_model, vcov = "CR2")
+                              )
+                            ))
 
 ### Age ----
 H2_age_dat <- H2_data %>% 
@@ -849,6 +982,15 @@ summary(H2_age_model)
 coef_test(H2_age_model, vcov = "CR2")
 conf_int(H2_age_model, vcov = "CR2")
 
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            slice_tail( # age has intercept
+                              left_join(
+                                coef_test(H2_age_model, vcov = "CR2"),
+                                conf_int(H2_age_model, vcov = "CR2")
+                              )
+                            ))
+
 ### relative endowment ----
 H2_endow_dat <- H2_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
@@ -860,6 +1002,15 @@ H2_endow_model <- rma.mv(yi, V_H2_endow,
 summary(H2_endow_model)
 coef_test(H2_endow_model, vcov = "CR2")
 
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            slice_tail( # Relative endowment has intercept
+                              left_join(
+                                coef_test(H2_endow_model, vcov = "CR2"),
+                                conf_int(H2_endow_model, vcov = "CR2")
+                              )
+                            ))
+
 ### Real Interaction ----
 H2_interact_dat <- H2_data %>% 
   filter(!is.na(Real.or.Deception))
@@ -870,6 +1021,13 @@ H2_interact_model <- rma.mv(yi, V_H2_interact,
 summary(H2_interact_model)
 Wald_test(H2_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_interact_model, vcov = "CR2")
+
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            left_join(
+                              coef_test(H2_interact_model, vcov = "CR2"),
+                              conf_int(H2_interact_model, vcov = "CR2")
+                            ))
 
 ### Student Sample ----
 H2_stu_dat <- H2_data %>% 
@@ -883,9 +1041,50 @@ Wald_test(H2_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_stu_model, vcov = "CR2")
 conf_int(H2_stu_model, vcov = "CR2")
 
+# saving statistics
+H2_moderator_table <- rbind(H2_moderator_table,
+                            left_join(
+                              coef_test(H2_stu_model, vcov = "CR2"),
+                              conf_int(H2_stu_model, vcov = "CR2")
+                            ))
+
+### Write Table ----
+H2_moderator_table <- H2_moderator_table %>% 
+  select(-df) %>% 
+  rename(
+    Moderator = "Coef",
+    g = "beta",
+    t = "tstat",
+    df = "df_Satt",
+    p = "p_Satt",
+    CI_lower = "CI_L",
+    CI_upper = "CI_U"
+  ) 
+H2_moderator_table %>% 
+  nice_table() %>% 
+  flextable::save_as_docx(., path = "tab/H2_moderator.docx")
+
+# Combine H1 with H2
+# add prefix before joining:
+H1_H2_moderator_table <- full_join(
+  H1_moderator_table %>% rename_with(.,
+                                     ~ paste0("H1.", .x),
+                                     -Moderator)
+  ,
+  H2_moderator_table %>% rename_with(.,
+                                    ~ paste0("H2.", .x),
+                                    -Moderator)
+  ,
+  by = "Moderator")
+
+# Make nice_table
+H1_H2_moderator_table %>% 
+nice_table(., separate.header = TRUE) %>% 
+  flextable::save_as_docx(., path = "tab/H1&2_moderator.docx")
 
 
 ## H5 The Effects of Violator’s Identity on Punishment When Fair moderator analyses ----
+H5_moderator_table <- tibble()
 ### The culture ----
 H5_country_dat <- H5_data %>% 
   filter(!is.na(Country)) 
@@ -915,6 +1114,12 @@ forest(H5_country_model, slab = paste(H5_country_dat$Intext.Citation, "S", H5_co
        colout = H5_country_col)
 dev.off()
 
+# saving statistics
+H5_moderator_table <- left_join(
+  coef_test(H5_country_model, vcov = "CR2"),
+  conf_int(H5_country_model, vcov = "CR2")
+)
+
 ### The cost ----
 H5_cost_dat <- H5_data %>% 
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
@@ -927,6 +1132,15 @@ summary(H5_cost_model)
 coef_test(H5_cost_model, vcov = "CR2")
 conf_int(H5_cost_model, vcov = "CR2")
 
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            slice_tail( # cost ratio has intercept
+                              left_join(
+                                coef_test(H5_cost_model, vcov = "CR2"),
+                                conf_int(H5_cost_model, vcov = "CR2")
+                              )
+                            ))
+
 ### Lab or online ----
 H5_lab_dat <- H5_data %>% 
   filter(!is.na(Lab.or.Online))
@@ -938,6 +1152,13 @@ summary(H5_lab_model)
 Wald_test(H5_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_lab_model, vcov = "CR2")
 conf_int(H5_lab_model, vcov = "CR2")
+
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            left_join(
+                              coef_test(H5_lab_model, vcov = "CR2"),
+                              conf_int(H5_lab_model, vcov = "CR2")
+                            ))
 
 ### Group Manipulation ----
 H5_group_dat <- H5_data %>% 
@@ -958,6 +1179,13 @@ forest(H5_group_model, slab = paste(H5_group_dat$Intext.Citation, "S", H5_group_
        colout = H5_group_col)
 dev.off()
 
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            left_join(
+                              coef_test(H5_group_model, vcov = "CR2"),
+                              conf_int(H5_group_model, vcov = "CR2")
+                            ))
+
 ### Game Type ----
 H5_game_dat <- H5_data %>% 
   filter(!is.na(Game.Type))
@@ -968,6 +1196,13 @@ H5_game_model <- rma.mv(yi, V_H5_game,
 summary(H5_game_model)
 Wald_test(H5_game_model, constraints = constrain_equal(1:3), vcov = "CR2")
 
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            left_join(
+                              coef_test(H5_game_model, vcov = "CR2"),
+                              conf_int(H5_game_model, vcov = "CR2")
+                            ))
+
 ### Sex Ratio ----
 H5_sex_dat <- H5_data %>% 
   mutate(male.ratio = Male / (Male + Female))
@@ -977,6 +1212,15 @@ H5_sex_model <- rma.mv(yi, V_H5_sex,
                        random = ~ 1 | No. / Study / effectID, data = H5_sex_dat, method = "REML")
 summary(H5_sex_model)
 coef_test(H5_sex_model, vcov = "CR2")
+
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            slice_tail( # sex ratio has intercept
+                              left_join(
+                                coef_test(H5_sex_model, vcov = "CR2"),
+                                conf_int(H5_sex_model, vcov = "CR2")
+                              )
+                            ))
 
 ### Age ----
 H5_age_dat <- H5_data %>%
@@ -990,6 +1234,15 @@ summary(H5_age_model)
 coef_test(H5_age_model, vcov = "CR2")
 conf_int(H5_age_model, vcov = "CR2")
 
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            slice_tail( # age has intercept
+                              left_join(
+                                coef_test(H5_age_model, vcov = "CR2"),
+                                conf_int(H5_age_model, vcov = "CR2")
+                              )
+                            ))
+
 ### relative endowment ----
 H5_endow_dat <- H5_data %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
@@ -1001,6 +1254,15 @@ H5_endow_model <- rma.mv(yi, V_H5_endow,
 summary(H5_endow_model)
 coef_test(H5_endow_model, vcov = "CR2")
 
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            slice_tail( # Relative endowment has intercept
+                              left_join(
+                                coef_test(H5_endow_model, vcov = "CR2"),
+                                conf_int(H5_endow_model, vcov = "CR2")
+                              )
+                            ))
+
 ### Real Interaction ----
 H5_interact_dat <- H5_data %>% 
   filter(!is.na(Real.or.Deception))
@@ -1011,6 +1273,13 @@ H5_interact_model <- rma.mv(yi, V_H5_interact,
 summary(H5_interact_model)
 Wald_test(H5_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_interact_model, vcov = "CR2")
+
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            left_join(
+                              coef_test(H5_interact_model, vcov = "CR2"),
+                              conf_int(H5_interact_model, vcov = "CR2")
+                            ))
 
 ### Student Sample ----
 H5_stu_dat <- H5_data %>% 
@@ -1024,9 +1293,34 @@ Wald_test(H5_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_stu_model, vcov = "CR2")
 conf_int(H5_stu_model, vcov = "CR2")
 
+# saving statistics
+H5_moderator_table <- rbind(H5_moderator_table,
+                            left_join(
+                              coef_test(H5_stu_model, vcov = "CR2"),
+                              conf_int(H5_stu_model, vcov = "CR2")
+                            ))
+
+### Write Table ----
+# Save table in folder tab
+H5_moderator_table <- H5_moderator_table %>% 
+  select(-df) %>% 
+  rename(
+    Moderator = "Coef",
+    g = "beta",
+    t = "tstat",
+    df = "df_Satt",
+    p = "p_Satt",
+    CI_lower = "CI_L",
+    CI_upper = "CI_U"
+  ) 
+H5_moderator_table %>% 
+  nice_table() %>% 
+  flextable::save_as_docx(., path = "tab/H5_moderator.docx")
+
 
 
 ## H6 The Effects of Victim’s Identity on Punishment When Fair moderator analyses ----
+H6_moderator_table <- tibble()
 ### The culture ----
 H6_country_dat <- H6_data %>% 
   filter(!is.na(Country)) 
@@ -1038,6 +1332,12 @@ summary(H6_country_model)
 # Wald_test(H6_country_model, constraints = constrain_equal(1:5), vcov = "CR2", test = "chi-sq") # V is singular
 coef_test(H6_country_model, vcov = "CR2")
 conf_int(H6_country_model, vcov = "CR2")
+
+# saving statistics
+H6_moderator_table <- left_join(
+  coef_test(H6_country_model, vcov = "CR2"),
+  conf_int(H6_country_model, vcov = "CR2")
+)
 
 ### The cost ----
 H6_cost_dat <- H6_data %>% 
@@ -1051,6 +1351,15 @@ summary(H6_cost_model)
 coef_test(H6_cost_model, vcov = "CR2")
 conf_int(H6_cost_model, vcov = "CR2")
 
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            slice_tail( # cost ratio has intercept
+                              left_join(
+                                coef_test(H6_cost_model, vcov = "CR2"),
+                                conf_int(H6_cost_model, vcov = "CR2")
+                              )
+                            ))
+
 ### Lab or online ----
 H6_lab_dat <- H6_data %>% 
   filter(!is.na(Lab.or.Online))
@@ -1062,6 +1371,13 @@ summary(H6_lab_model)
 Wald_test(H6_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_lab_model, vcov = "CR2")
 conf_int(H6_lab_model, vcov = "CR2")
+
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            left_join(
+                              coef_test(H6_lab_model, vcov = "CR2"),
+                              conf_int(H6_lab_model, vcov = "CR2")
+                            ))
 
 ### Group Manipulation ----
 # Not appliable, all data is Natural group
@@ -1084,6 +1400,13 @@ summary(H6_game_model)
 Wald_test(H6_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_game_model, vcov = "CR2")
 
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            left_join(
+                              coef_test(H6_game_model, vcov = "CR2"),
+                              conf_int(H6_game_model, vcov = "CR2")
+                            ))
+
 ### Sex Ratio ----
 H6_sex_dat <- H6_data %>% 
   mutate(male.ratio = Male / (Male + Female))
@@ -1093,6 +1416,15 @@ H6_sex_model <- rma.mv(yi, V_H6_sex,
                        random = ~ 1 | No. / Study / effectID, data = H6_sex_dat, method = "REML")
 summary(H6_sex_model)
 coef_test(H6_sex_model, vcov = "CR2")
+
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            slice_tail( # sex ratio has intercept
+                              left_join(
+                                coef_test(H6_sex_model, vcov = "CR2"),
+                                conf_int(H6_sex_model, vcov = "CR2")
+                              )
+                            ))
 
 ### Age ----
 H6_age_dat <- H6_data %>% 
@@ -1106,6 +1438,15 @@ summary(H6_age_model)
 coef_test(H6_age_model, vcov = "CR2")
 conf_int(H6_age_model, vcov = "CR2")
 
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            slice_tail( # age has intercept
+                              left_join(
+                                coef_test(H6_age_model, vcov = "CR2"),
+                                conf_int(H6_age_model, vcov = "CR2")
+                              )
+                            ))
+
 ### relative endowment ----
 H6_endow_dat <- H6_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
@@ -1116,6 +1457,15 @@ H6_endow_model <- rma.mv(yi, V_H6_endow,
                          random = ~ 1 | No. / Study / effectID, data = H6_endow_dat, method = "REML")
 summary(H6_endow_model)
 coef_test(H6_endow_model, vcov = "CR2")
+
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            slice_tail( # Relative endowment has intercept
+                              left_join(
+                                coef_test(H6_endow_model, vcov = "CR2"),
+                                conf_int(H6_endow_model, vcov = "CR2")
+                              )
+                            ))
 
 ### Real Interaction ----
 H6_interact_dat <- H6_data %>% 
@@ -1128,6 +1478,13 @@ summary(H6_interact_model)
 Wald_test(H6_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_interact_model, vcov = "CR2")
 
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            left_join(
+                              coef_test(H6_interact_model, vcov = "CR2"),
+                              conf_int(H6_interact_model, vcov = "CR2")
+                            ))
+
 ### Student Sample ----
 H6_stu_dat <- H6_data %>% 
   filter(!is.na(Student.Sample))
@@ -1139,3 +1496,44 @@ summary(H6_stu_model)
 Wald_test(H6_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_stu_model, vcov = "CR2")
 conf_int(H6_stu_model, vcov = "CR2")
+
+# saving statistics
+H6_moderator_table <- rbind(H6_moderator_table,
+                            left_join(
+                              coef_test(H6_stu_model, vcov = "CR2"),
+                              conf_int(H6_stu_model, vcov = "CR2")
+                            ))
+
+### Write Table ----
+H6_moderator_table <- H6_moderator_table %>% 
+  select(-df) %>% 
+  rename(
+    Moderator = "Coef",
+    g = "beta",
+    t = "tstat",
+    df = "df_Satt",
+    p = "p_Satt",
+    CI_lower = "CI_L",
+    CI_upper = "CI_U"
+  ) 
+H6_moderator_table %>% 
+  nice_table() %>% 
+  flextable::save_as_docx(., path = "tab/H6_moderator.docx")
+
+# Combine H5 with H6
+# add prefix before joining:
+H5_H6_moderator_table <- full_join(
+  H5_moderator_table %>% rename_with(.,
+                                     ~ paste0("H5.", .x),
+                                     -Moderator)
+  ,
+  H6_moderator_table %>% rename_with(.,
+                                     ~ paste0("H6.", .x),
+                                     -Moderator)
+  ,
+  by = "Moderator")
+
+# Make nice_table
+H5_H6_moderator_table %>% 
+  nice_table(., separate.header = TRUE) %>% 
+  flextable::save_as_docx(., path = "tab/H5&6_moderator.docx")
