@@ -105,7 +105,7 @@ H1_Between_Data <- MA_dat %>%
 
 H1_data <- rbind(H1_data, H1_Between_Data)
 
-V_H1 <- vcalc(H1_data$vi, cluster=H1_data$Sample.ID, rho = 0.5)
+V_H1 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_data)
 H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
 summary(H1_model)
 
@@ -233,7 +233,7 @@ H2_Between_Data <- MA_dat %>%
 
 H2_data <- rbind(H2_data, H2_Between_Data)
 
-V_H2 <- vcalc(H2_data$vi, cluster=H2_data$Sample.ID, rho = 0.5)
+V_H2 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_data)
 H2_model <- rma.mv(yi, V_H2, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML")
 summary(H2_model)
 
@@ -297,7 +297,7 @@ dev.off()
 H3_data <- H1_data %>%
   filter(Recipient.Player.B.Affliation != "Neutral")
 
-V_H3 <- vcalc(H3_data$vi, cluster=H3_data$Sample.ID, rho = 0.5)
+V_H3 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H3_data)
 
 H3_model2 <-H3_data  %>%
   rma.mv(yi, V_H3,
@@ -315,7 +315,7 @@ conf_int(H3_model2, vcov = "CR2")
 
 #### Robustness check 2: Using the H2_data ----
 H3_model3 <- H2_data %>%
-  rma.mv(yi, V_H2,
+  rma.mv(yi, vi, # V cannot convergence
          mods = ~ Person.A.affiliation - 1,
          random = ~ 1 | No. / Study / effectID,
          data = .,
@@ -329,7 +329,7 @@ Wald_test(H3_model3, constrain_equal(1:3), vcov = "CR2")
 H3_data2 <- H2_data %>%
   filter(Person.A.affiliation != "Neutral")
 
-V_H3_2 <- vcalc(H3_data2$vi, cluster=H3_data2$Sample.ID, rho = 0.5)
+V_H3_2 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H3_data2)
 
 H3_model4 <-H3_data2  %>%
   rma.mv(yi, V_H3_2,
@@ -457,7 +457,7 @@ H5_Between_Data <- MA_dat %>%
 
 H5_data <- rbind(H5_data, H5_Between_Data)
 
-V_H5 <- vcalc(H5_data$vi, cluster=H5_data$Sample.ID, rho = 0.5)
+V_H5 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_data)
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
 summary(H5_model)
 
@@ -577,7 +577,7 @@ H6_Between_Data <- MA_dat %>%
 
 H6_data <- rbind(H6_data, H6_Between_Data)
 
-V_H6 <- vcalc(H6_data$vi, cluster=H6_data$Sample.ID, rho = 0.5)
+V_H6 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_data)
 H6_model <- rma.mv(yi, V_H6,
                    random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
 summary(H6_model)
@@ -618,7 +618,7 @@ H1_moderator_table <- tibble()
 ### The culture ----
 H1_country_dat <- H1_data %>% 
   filter(!is.na(Country))
-V_H1_country <- vcalc(H1_country_dat$vi, cluster=H1_country_dat$Sample.ID, rho = 0.5)
+V_H1_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_country_dat)
 H1_country_model <- rma.mv(yi, V_H1_country,
                            mods = ~ Country - 1,
                            random = ~ 1 | No. / Study / effectID, data = H1_country_dat, method = "REML")
@@ -655,7 +655,7 @@ H1_moderator_table <- left_join(
 H1_cost_dat <- H1_data %>% 
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
   filter(!is.na(Punishment.Cost.Ratio))
-V_H1_cost <- vcalc(H1_cost_dat$vi, cluster=H1_cost_dat$Sample.ID, rho = 0.5)
+V_H1_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_cost_dat)
 H1_cost_model <- rma.mv(yi, V_H1_cost,
                            mods = ~ Punishment.Cost.Ratio,
                            random = ~ 1 | No. / Study / effectID, data = H1_cost_dat, method = "REML")
@@ -674,7 +674,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 ### Lab or online ----
 H1_lab_dat <- H1_data %>% 
   filter(!is.na(Lab.or.Online))
-V_H1_lab <- vcalc(H1_lab_dat$vi, cluster=H1_lab_dat$Sample.ID, rho = 0.5)
+V_H1_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_lab_dat)
 H1_lab_model <- rma.mv(yi, V_H1_lab,
                         mods = ~ Lab.or.Online - 1,
                         random = ~ 1 | No. / Study / effectID, data = H1_lab_dat, method = "REML")
@@ -700,7 +700,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 ### Group Manipulation ----
 H1_group_dat <- H1_data %>% 
   filter(!is.na(Group.Manipulation))
-V_H1_group <- vcalc(H1_group_dat$vi, cluster=H1_group_dat$Sample.ID, rho = 0.5)
+V_H1_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_group_dat)
 H1_group_model <- rma.mv(yi, V_H1_group,
                        mods = ~ Group.Manipulation - 1,
                        random = ~ 1 | No. / Study / effectID, data = H1_group_dat, method = "REML")
@@ -719,7 +719,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 ### Game Type ----
 H1_game_dat <- H1_data %>% 
   filter(!is.na(Game.Type))
-V_H1_game <- vcalc(H1_game_dat$vi, cluster=H1_game_dat$Sample.ID, rho = 0.5)
+V_H1_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_game_dat)
 H1_game_model <- rma.mv(yi, V_H1_game,
                          mods = ~ Game.Type - 1,
                          random = ~ 1 | No. / Study / effectID, data = H1_game_dat, method = "REML")
@@ -738,7 +738,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 ### Sex Ratio ----
 H1_sex_dat <- H1_data %>% 
   mutate(male.ratio = Male / (Male + Female))
-V_H1_sex <- vcalc(H1_sex_dat$vi, cluster=H1_sex_dat$Sample.ID, rho = 0.5)
+V_H1_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_sex_dat)
 H1_sex_model <- rma.mv(yi, V_H1_sex,
                         mods = ~ male.ratio,
                         random = ~ 1 | No. / Study / effectID, data = H1_sex_dat, method = "REML")
@@ -759,7 +759,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 H1_age_dat <- H1_data %>%
   mutate(Age..mean. = as.numeric(Age..mean.)) %>% 
   filter(!is.na(Age..mean.))
-V_H1_age <- vcalc(H1_age_dat$vi, cluster=H1_age_dat$Sample.ID, rho = 0.5)
+V_H1_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_age_dat)
 H1_age_model <- rma.mv(yi, V_H1_age,
                          mods = ~ Age..mean.,
                          random = ~ 1 | No. / Study / effectID, data = H1_age_dat, method = "REML")
@@ -780,7 +780,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 H1_endow_dat <- H1_data %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
   filter(!is.na(Relative.Endowments))
-V_H1_endow <- vcalc(H1_endow_dat$vi, cluster=H1_endow_dat$Sample.ID, rho = 0.5)
+V_H1_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_endow_dat)
 H1_endow_model <- rma.mv(yi, V_H1_endow,
                        mods = ~ Relative.Endowments,
                        random = ~ 1 | No. / Study / effectID, data = H1_endow_dat, method = "REML")
@@ -800,7 +800,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 ### Real Interaction ----
 H1_interact_dat <- H1_data %>% 
   filter(!is.na(Real.or.Deception))
-V_H1_interact <- vcalc(H1_interact_dat$vi, cluster=H1_interact_dat$Sample.ID, rho = 0.5)
+V_H1_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_interact_dat)
 H1_interact_model <- rma.mv(yi, V_H1_interact,
                         mods = ~ Real.or.Deception - 1,
                         random = ~ 1 | No. / Study / effectID, data = H1_interact_dat, method = "REML")
@@ -819,7 +819,7 @@ H1_moderator_table <- rbind(H1_moderator_table,
 ### Student Sample ----
 H1_stu_dat <- H1_data %>% 
   filter(!is.na(Student.Sample))
-V_H1_stu <- vcalc(H1_stu_dat$vi, cluster=H1_stu_dat$Sample.ID, rho = 0.5)
+V_H1_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_stu_dat)
 H1_stu_model <- rma.mv(yi, V_H1_stu,
                        mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H1_stu_dat, method = "REML")
@@ -860,7 +860,7 @@ H2_moderator_table <- tibble()
 ### The culture ----
 H2_country_dat <- H2_data %>% 
   filter(!is.na(Country))
-V_H2_country <- vcalc(H2_country_dat$vi, cluster=H2_country_dat$Sample.ID, rho = 0.5)
+V_H2_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_country_dat)
 H2_country_model <- rma.mv(yi, V_H2_country,
                            mods = ~ Country - 1,
                            random = ~ 1 | No. / Study / effectID, data = H2_country_dat, method = "REML")
@@ -891,7 +891,7 @@ H2_moderator_table <- left_join(
 ### Lab or online ----
 H2_lab_dat <- H2_data %>% 
   filter(!is.na(Lab.or.Online))
-V_H2_lab <- vcalc(H2_lab_dat$vi, cluster=H2_lab_dat$Sample.ID, rho = 0.5)
+V_H2_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_lab_dat)
 H2_lab_model <- rma.mv(yi, V_H2_lab,
                        mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H2_lab_dat, method = "REML")
@@ -917,7 +917,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 ### Group Manipulation ----
 H2_group_dat <- H2_data %>% 
   filter(!is.na(Group.Manipulation))
-V_H2_group <- vcalc(H2_group_dat$vi, cluster=H2_group_dat$Sample.ID, rho = 0.5)
+V_H2_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_group_dat)
 H2_group_model <- rma.mv(yi, V_H2_group,
                          mods = ~ Group.Manipulation - 1,
                          random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML")
@@ -936,7 +936,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 ### Game Type ----
 H2_game_dat <- H2_data %>% 
   filter(!is.na(Game.Type))
-V_H2_game <- vcalc(H2_game_dat$vi, cluster=H2_game_dat$Sample.ID, rho = 0.5)
+V_H2_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_game_dat)
 H2_game_model <- rma.mv(yi, V_H2_game,
                         mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H2_game_dat, method = "REML")
@@ -954,7 +954,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 ### Sex Ratio ----
 H2_sex_dat <- H2_data %>% 
   mutate(male.ratio = Male / (Male + Female))
-V_H2_sex <- vcalc(H2_sex_dat$vi, cluster=H2_sex_dat$Sample.ID, rho = 0.5)
+V_H2_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_sex_dat)
 H2_sex_model <- rma.mv(yi, V_H2_sex,
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H2_sex_dat, method = "REML")
@@ -974,7 +974,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 H2_age_dat <- H2_data %>% 
   filter(!is.na(Age..mean.)) %>%
   mutate(Age..mean. = as.numeric(Age..mean.))
-V_H2_age <- vcalc(H2_age_dat$vi, cluster=H2_age_dat$Sample.ID, rho = 0.5)
+V_H2_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_age_dat)
 H2_age_model <- rma.mv(yi, V_H2_age,
                        mods = ~ Age..mean.,
                        random = ~ 1 | No. / Study / effectID, data = H2_age_dat, method = "REML")
@@ -995,7 +995,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 H2_endow_dat <- H2_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments))
-V_H2_endow <- vcalc(H2_endow_dat$vi, cluster=H2_endow_dat$Sample.ID, rho = 0.5)
+V_H2_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_endow_dat)
 H2_endow_model <- rma.mv(yi, V_H2_endow,
                          mods = ~ Relative.Endowments,
                          random = ~ 1 | No. / Study / effectID, data = H2_endow_dat, method = "REML")
@@ -1014,7 +1014,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 ### Real Interaction ----
 H2_interact_dat <- H2_data %>% 
   filter(!is.na(Real.or.Deception))
-V_H2_interact <- vcalc(H2_interact_dat$vi, cluster=H2_interact_dat$Sample.ID, rho = 0.5)
+V_H2_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_interact_dat)
 H2_interact_model <- rma.mv(yi, V_H2_interact,
                             mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H2_interact_dat, method = "REML")
@@ -1032,7 +1032,7 @@ H2_moderator_table <- rbind(H2_moderator_table,
 ### Student Sample ----
 H2_stu_dat <- H2_data %>% 
   filter(!is.na(Student.Sample))
-V_H2_stu <- vcalc(H2_stu_dat$vi, cluster=H2_stu_dat$Sample.ID, rho = 0.5)
+V_H2_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_stu_dat)
 H2_stu_model <- rma.mv(yi, V_H2_stu,
                        mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H2_stu_dat, method = "REML")
@@ -1088,7 +1088,7 @@ H5_moderator_table <- tibble()
 ### The culture ----
 H5_country_dat <- H5_data %>% 
   filter(!is.na(Country)) 
-V_H5_country <- vcalc(H5_country_dat$vi, cluster=H5_country_dat$Sample.ID, rho = 0.5)
+V_H5_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_country_dat)
 H5_country_model <- rma.mv(yi, V_H5_country, 
                            mods = ~ Country - 1,
                            random = ~ 1 | No./ Study / effectID, data = H5_country_dat, method = "REML")
@@ -1124,7 +1124,7 @@ H5_moderator_table <- left_join(
 H5_cost_dat <- H5_data %>% 
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
   filter(!is.na(Punishment.Cost.Ratio))
-V_H5_cost <- vcalc(H5_cost_dat$vi, cluster=H5_cost_dat$Sample.ID, rho = 0.5)
+V_H5_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_cost_dat)
 H5_cost_model <- rma.mv(yi, V_H5_cost,
                         mods = ~ Punishment.Cost.Ratio,
                         random = ~ 1 | No. / Study / effectID, data = H5_cost_dat, method = "REML")
@@ -1144,7 +1144,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 ### Lab or online ----
 H5_lab_dat <- H5_data %>% 
   filter(!is.na(Lab.or.Online))
-V_H5_lab <- vcalc(H5_lab_dat$vi, cluster=H5_lab_dat$Sample.ID, rho = 0.5)
+V_H5_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_lab_dat)
 H5_lab_model <- rma.mv(yi, V_H5_lab,
                        mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML")
@@ -1163,7 +1163,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 ### Group Manipulation ----
 H5_group_dat <- H5_data %>% 
   filter(!is.na(Group.Manipulation))
-V_H5_group <- vcalc(H5_group_dat$vi, cluster=H5_group_dat$Sample.ID, rho = 0.5)
+V_H5_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_group_dat)
 H5_group_model <- rma.mv(yi, V_H5_group,
                          mods = ~ Group.Manipulation - 1,
                          random = ~ 1 | No. / Study / effectID, data = H5_group_dat, method = "REML")
@@ -1189,7 +1189,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 ### Game Type ----
 H5_game_dat <- H5_data %>% 
   filter(!is.na(Game.Type))
-V_H5_game <- vcalc(H5_game_dat$vi, cluster=H5_game_dat$Sample.ID, rho = 0.5)
+V_H5_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_game_dat)
 H5_game_model <- rma.mv(yi, V_H5_game,
                         mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H5_game_dat, method = "REML")
@@ -1206,7 +1206,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 ### Sex Ratio ----
 H5_sex_dat <- H5_data %>% 
   mutate(male.ratio = Male / (Male + Female))
-V_H5_sex <- vcalc(H5_sex_dat$vi, cluster=H5_sex_dat$Sample.ID, rho = 0.5)
+V_H5_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_sex_dat)
 H5_sex_model <- rma.mv(yi, V_H5_sex,
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H5_sex_dat, method = "REML")
@@ -1226,7 +1226,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 H5_age_dat <- H5_data %>%
   mutate(Age..mean. = as.numeric(Age..mean.)) %>% 
   filter(!is.na(Age..mean.))
-V_H5_age <- vcalc(H5_age_dat$vi, cluster=H5_age_dat$Sample.ID, rho = 0.5)
+V_H5_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_age_dat)
 H5_age_model <- rma.mv(yi, V_H5_age,
                        mods = ~ Age..mean.,
                        random = ~ 1 | No. / Study / effectID, data = H5_age_dat, method = "REML")
@@ -1247,7 +1247,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 H5_endow_dat <- H5_data %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
   filter(!is.na(Relative.Endowments))
-V_H5_endow <- vcalc(H5_endow_dat$vi, cluster=H5_endow_dat$Sample.ID, rho = 0.5)
+V_H5_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_endow_dat)
 H5_endow_model <- rma.mv(yi, V_H5_endow,
                          mods = ~ Relative.Endowments,
                          random = ~ 1 | No. / Study / effectID, data = H5_endow_dat, method = "REML")
@@ -1266,7 +1266,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 ### Real Interaction ----
 H5_interact_dat <- H5_data %>% 
   filter(!is.na(Real.or.Deception))
-V_H5_interact <- vcalc(H5_interact_dat$vi, cluster=H5_interact_dat$Sample.ID, rho = 0.5)
+V_H5_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_interact_dat)
 H5_interact_model <- rma.mv(yi, V_H5_interact,
                             mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H5_interact_dat, method = "REML")
@@ -1284,7 +1284,7 @@ H5_moderator_table <- rbind(H5_moderator_table,
 ### Student Sample ----
 H5_stu_dat <- H5_data %>% 
   filter(!is.na(Student.Sample))
-V_H5_stu <- vcalc(H5_stu_dat$vi, cluster=H5_stu_dat$Sample.ID, rho = 0.5)
+V_H5_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_stu_dat)
 H5_stu_model <- rma.mv(yi, V_H5_stu,
                        mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML")
@@ -1324,8 +1324,8 @@ H6_moderator_table <- tibble()
 ### The culture ----
 H6_country_dat <- H6_data %>% 
   filter(!is.na(Country)) 
-V_H6_country <- vcalc(H6_country_dat$vi, cluster=H6_country_dat$Sample.ID, rho = 0.5)
-H6_country_model <- rma.mv(yi, V_H6_country,
+V_H6_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_country_dat)
+H6_country_model <- rma.mv(yi, vi, # V cannot convergence
                            mods = ~ Country - 1,
                            random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML")
 summary(H6_country_model)
@@ -1343,7 +1343,7 @@ H6_moderator_table <- left_join(
 H6_cost_dat <- H6_data %>% 
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
   filter(!is.na(Punishment.Cost.Ratio))
-V_H6_cost <- vcalc(H6_cost_dat$vi, cluster=H6_cost_dat$Sample.ID, rho = 0.5)
+V_H6_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_cost_dat)
 H6_cost_model <- rma.mv(yi, V_H6_cost,
                         mods = ~ Punishment.Cost.Ratio,
                         random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML")
@@ -1363,7 +1363,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 ### Lab or online ----
 H6_lab_dat <- H6_data %>% 
   filter(!is.na(Lab.or.Online))
-V_H6_lab <- vcalc(H6_lab_dat$vi, cluster=H6_lab_dat$Sample.ID, rho = 0.5)
+V_H6_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_lab_dat)
 H6_lab_model <- rma.mv(yi, V_H6_lab,
                        mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML")
@@ -1392,8 +1392,8 @@ H6_moderator_table <- rbind(H6_moderator_table,
 ### Game Type ----
 H6_game_dat <- H6_data %>% 
   filter(!is.na(Game.Type))
-V_H6_game <- vcalc(H6_game_dat$vi, cluster=H6_game_dat$Sample.ID, rho = 0.5)
-H6_game_model <- rma.mv(yi, V_H6_game,
+V_H6_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_game_dat)
+H6_game_model <- rma.mv(yi, vi, # V cannot convergence
                         mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H6_game_dat, method = "REML")
 summary(H6_game_model)
@@ -1410,8 +1410,8 @@ H6_moderator_table <- rbind(H6_moderator_table,
 ### Sex Ratio ----
 H6_sex_dat <- H6_data %>% 
   mutate(male.ratio = Male / (Male + Female))
-V_H6_sex <- vcalc(H6_sex_dat$vi, cluster=H6_sex_dat$Sample.ID, rho = 0.5)
-H6_sex_model <- rma.mv(yi, V_H6_sex,
+V_H6_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_sex_dat)
+H6_sex_model <- rma.mv(yi, vi, # V cannot convergence
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H6_sex_dat, method = "REML")
 summary(H6_sex_model)
@@ -1430,7 +1430,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 H6_age_dat <- H6_data %>% 
   filter(!is.na(Age..mean.)) %>%
   mutate(Age..mean. = as.numeric(Age..mean.))
-V_H6_age <- vcalc(H6_age_dat$vi, cluster=H6_age_dat$Sample.ID, rho = 0.5)
+V_H6_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_age_dat)
 H6_age_model <- rma.mv(yi, V_H6_age,
                        mods = ~ Age..mean.,
                        random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML")
@@ -1451,7 +1451,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 H6_endow_dat <- H6_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments))
-V_H6_endow <- vcalc(H6_endow_dat$vi, cluster=H6_endow_dat$Sample.ID, rho = 0.5)
+V_H6_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_endow_dat)
 H6_endow_model <- rma.mv(yi, V_H6_endow,
                          mods = ~ Relative.Endowments,
                          random = ~ 1 | No. / Study / effectID, data = H6_endow_dat, method = "REML")
@@ -1470,8 +1470,8 @@ H6_moderator_table <- rbind(H6_moderator_table,
 ### Real Interaction ----
 H6_interact_dat <- H6_data %>% 
   filter(!is.na(Real.or.Deception))
-V_H6_interact <- vcalc(H6_interact_dat$vi, cluster=H6_interact_dat$Sample.ID, rho = 0.5)
-H6_interact_model <- rma.mv(yi, V_H6_interact,
+V_H6_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_interact_dat)
+H6_interact_model <- rma.mv(yi, vi, # V cannot convergence
                             mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H6_interact_dat, method = "REML")
 summary(H6_interact_model)
@@ -1488,7 +1488,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 ### Student Sample ----
 H6_stu_dat <- H6_data %>% 
   filter(!is.na(Student.Sample))
-V_H6_stu <- vcalc(H6_stu_dat$vi, cluster=H6_stu_dat$Sample.ID, rho = 0.5)
+V_H6_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_stu_dat)
 H6_stu_model <- rma.mv(yi, V_H6_stu,
                        mods = ~ Student.Sample - 1,
                        random = ~ 1 | No. / Study / effectID, data = H6_stu_dat, method = "REML")
