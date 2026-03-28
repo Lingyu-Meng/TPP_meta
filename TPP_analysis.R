@@ -107,14 +107,10 @@ H1_data <- rbind(H1_data, H1_Between_Data)
 
 V_H1 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_data)
 H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
-summary(H1_model)
+robust(H1_model, cluster = No., clubSandwich=TRUE)
 
 # checking likelihood profile plots
 profile(H1_model)
-
-# obtaining robust variance estimates
-coef_test(H1_model, vcov = "CR2")
-conf_int(H1_model, vcov = "CR2")
 
 # calculating the overall amount of heterogeneity
 sum(H1_model$sigma2)
@@ -235,14 +231,10 @@ H2_data <- rbind(H2_data, H2_Between_Data)
 
 V_H2 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_data)
 H2_model <- rma.mv(yi, V_H2, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML")
-summary(H2_model)
+robust(H2_model, cluster = No., clubSandwich=TRUE)
 
 # checking likelihood profile plots
 profile(H2_model)
-
-# obtaining robust variance estimates
-coef_test(H2_model, vcov = "CR2")
-conf_int(H2_model, vcov = "CR2")
 
 # calculating the overall amount of heterogeneity
 sum(H2_model$sigma2)
@@ -278,12 +270,9 @@ H3_model <- H1_data %>%
   data = .,
   method = "REML",
 )
-summary(H3_model)
+robust(H3_model, cluster = No., clubSandwich=TRUE)
 
 Wald_test(H3_model, constrain_equal(1:3), vcov = "CR2")
-# obtaining robust variance estimates
-coef_test(H3_model, vcov = "CR2")
-conf_int(H3_model, vcov = "CR2")
 
 # asign color for ingroup, outgroup, and neutral
 H3_col <- ifelse(H1_data$Recipient.Player.B.Affliation == "Ingroup", "blue",
@@ -306,12 +295,9 @@ H3_model2 <-H3_data  %>%
          data = .,
          method = "REML",
 )
-summary(H3_model2)
+robust(H3_model2, cluster = No., clubSandwich=TRUE)
 
 Wald_test(H3_model2, constraints = constrain_equal(1:2), vcov = "CR2")
-# obtaining robust variance estimates
-coef_test(H3_model2, vcov = "CR2") # only case that interaction is significant
-conf_int(H3_model2, vcov = "CR2")
 
 #### Robustness check 2: Using the H2_data ----
 H3_model3 <- H2_data %>%
@@ -321,7 +307,7 @@ H3_model3 <- H2_data %>%
          data = .,
          method = "REML",
 )
-summary(H3_model3)
+robust(H3_model3, cluster = No., clubSandwich=TRUE)
 
 Wald_test(H3_model3, constrain_equal(1:3), vcov = "CR2")
 
@@ -338,12 +324,9 @@ H3_model4 <-H3_data2  %>%
          data = .,
          method = "REML",
   )
-summary(H3_model4)
+robust(H3_model4, cluster = No., clubSandwich=TRUE)
 
 Wald_test(H3_model4, constrain_equal(1:2), vcov = "CR2")
-# obtaining robust variance estimates
-coef_test(H3_model4, vcov = "CR2")
-conf_int(H3_model4, vcov = "CR2")
 
 ### The regression method ----
 H3_data_r <- MA_dat %>%
@@ -459,11 +442,7 @@ H5_data <- rbind(H5_data, H5_Between_Data)
 
 V_H5 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_data)
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
-summary(H5_model)
-
-# obtaining robust variance estimates
-coef_test(H5_model, vcov = "CR2")
-conf_int(H5_model, vcov = "CR2")
+robust(H5_model, cluster = No., clubSandwich=TRUE)
 
 # calculating the overall amount of heterogeneity
 sum(H5_model$sigma2)
@@ -580,7 +559,7 @@ H6_data <- rbind(H6_data, H6_Between_Data)
 V_H6 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_data)
 H6_model <- rma.mv(yi, V_H6,
                    random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
-summary(H6_model)
+robust(H6_model, cluster = No., clubSandwich=TRUE)
 
 # forest plot
 H6_f <- forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
@@ -588,10 +567,6 @@ H6_f <- forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Stud
 jpeg("fig/H6_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
 dev.off()
-
-# obtaining robust variance estimates
-coef_test(H6_model, vcov = "CR2")
-conf_int(H6_model, vcov = "CR2")
 
 # calculating the overall amount of heterogeneity
 sum(H6_model$sigma2)
