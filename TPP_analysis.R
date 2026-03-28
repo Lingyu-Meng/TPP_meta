@@ -709,7 +709,7 @@ summary(H1_sex_model)
 coef_test(H1_sex_model, vcov = "CR2")
 conf_int(H1_sex_model, vcov = "CR2")
 
-### Age
+### Age ----
 H1_age_dat <- H1_data %>%
   mutate(Age..mean. = as.numeric(Age..mean.)) %>% 
   filter(!is.na(Age..mean.))
@@ -721,7 +721,7 @@ summary(H1_age_model)
 coef_test(H1_age_model, vcov = "CR2")
 conf_int(H1_age_model, vcov = "CR2")
 
-### Relative endowment
+### Relative endowment ----
 H1_endow_dat <- H1_data %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
   filter(!is.na(Relative.Endowments))
@@ -733,7 +733,7 @@ summary(H1_endow_model)
 coef_test(H1_endow_model, vcov = "CR2")
 conf_int(H1_endow_model, vcov = "CR2")
 
-### Real Interaction
+### Real Interaction ----
 H1_interact_dat <- H1_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H1_interact <- vcalc(H1_interact_dat$vi, cluster=H1_interact_dat$Sample.ID, rho = 0.5)
@@ -837,7 +837,7 @@ H2_sex_model <- rma.mv(yi, V_H2_sex,
 summary(H2_sex_model)
 coef_test(H2_sex_model, vcov = "CR2")
 
-### Age
+### Age ----
 H2_age_dat <- H2_data %>% 
   filter(!is.na(Age..mean.)) %>%
   mutate(Age..mean. = as.numeric(Age..mean.))
@@ -849,7 +849,7 @@ summary(H2_age_model)
 coef_test(H2_age_model, vcov = "CR2")
 conf_int(H2_age_model, vcov = "CR2")
 
-### relative endowment
+### relative endowment ----
 H2_endow_dat <- H2_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments))
@@ -860,7 +860,7 @@ H2_endow_model <- rma.mv(yi, V_H2_endow,
 summary(H2_endow_model)
 coef_test(H2_endow_model, vcov = "CR2")
 
-### Real Interaction
+### Real Interaction ----
 H2_interact_dat <- H2_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H2_interact <- vcalc(H2_interact_dat$vi, cluster=H2_interact_dat$Sample.ID, rho = 0.5)
@@ -978,7 +978,7 @@ H5_sex_model <- rma.mv(yi, V_H5_sex,
 summary(H5_sex_model)
 coef_test(H5_sex_model, vcov = "CR2")
 
-### Age
+### Age ----
 H5_age_dat <- H5_data %>%
   mutate(Age..mean. = as.numeric(Age..mean.)) %>% 
   filter(!is.na(Age..mean.))
@@ -990,7 +990,7 @@ summary(H5_age_model)
 coef_test(H5_age_model, vcov = "CR2")
 conf_int(H5_age_model, vcov = "CR2")
 
-### relative endowment
+### relative endowment ----
 H5_endow_dat <- H5_data %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments)) %>% 
   filter(!is.na(Relative.Endowments))
@@ -1001,7 +1001,7 @@ H5_endow_model <- rma.mv(yi, V_H5_endow,
 summary(H5_endow_model)
 coef_test(H5_endow_model, vcov = "CR2")
 
-### Real Interaction
+### Real Interaction ----
 H5_interact_dat <- H5_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H5_interact <- vcalc(H5_interact_dat$vi, cluster=H5_interact_dat$Sample.ID, rho = 0.5)
@@ -1094,7 +1094,7 @@ H6_sex_model <- rma.mv(yi, V_H6_sex,
 summary(H6_sex_model)
 coef_test(H6_sex_model, vcov = "CR2")
 
-### Age
+### Age ----
 H6_age_dat <- H6_data %>% 
   filter(!is.na(Age..mean.)) %>%
   mutate(Age..mean. = as.numeric(Age..mean.))
@@ -1106,7 +1106,7 @@ summary(H6_age_model)
 coef_test(H6_age_model, vcov = "CR2")
 conf_int(H6_age_model, vcov = "CR2")
 
-### relative endowment
+### relative endowment ----
 H6_endow_dat <- H6_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments))
@@ -1117,7 +1117,7 @@ H6_endow_model <- rma.mv(yi, V_H6_endow,
 summary(H6_endow_model)
 coef_test(H6_endow_model, vcov = "CR2")
 
-### Real Interaction
+### Real Interaction ----
 H6_interact_dat <- H6_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H6_interact <- vcalc(H6_interact_dat$vi, cluster=H6_interact_dat$Sample.ID, rho = 0.5)
