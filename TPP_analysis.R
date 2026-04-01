@@ -1,4 +1,4 @@
-required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "puniform", "metapower", "rempsyc")
+required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "cowplot", "metapower", "rempsyc")
 
 # Check and install missing packages
 install_and_Load <- function(packages) {
@@ -355,6 +355,88 @@ H3_model_r <- H3_data_r %>%
          method = "REML",
 )
 robust(H3_model_r, cluster = No., clubSandwich=TRUE)
+
+#### Estimated Average Effects ----
+H3_data_d <- MA_dat %>%
+  filter(
+    `Fairness/Cooperativeness A Binary` == 0, # unfair condition
+    !is.na(`P_Average Invested Amount_Standardized`),
+    !is.na(`P_SD invested amount _Standardized`),
+    !is.na(`Total Trials`)
+  ) %>%
+  mutate(
+    `Total Trials` = as.numeric(`Total Trials`),
+    `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Neutral", "Outgroup")),
+    `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Neutral", "Outgroup")),
+    P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  )
+
+V_H3_d  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_d)
+H3_model_d <- H3_data_d %>%
+  rma.mv(yi = `P_Average Invested Amount_Standardized`, V = V_H3_d,
+         mods = ~ `Person A` * `Person B`,
+         random = ~ 1 | No. / Study / effectID,  data = .,
+         method = "REML",
+  )
+robust(H3_model_d, cluster = No., clubSandwich=TRUE)
+
+results_mat_name <- expand.grid(`Person A` = c("Ingroup", "Neutral", "Outgroup"), `Person B` = c("Ingroup", "Neutral", "Outgroup"))
+results_mat <- model.matrix(~ `Person A` * `Person B`, results_mat_name)[,-1]
+results_dat <- predict(H3_model_d, newmods = results_mat) %>% 
+  cbind(results_mat_name)
+
+heat_all <- results_dat %>% 
+  ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
+  geom_tile() +
+  geom_text(aes(label = round(pred,3))) +
+  scale_fill_gradient(low = "white", high = "red",
+                      limits = c(0, 0.4)) +
+  theme_cowplot() +
+  labs(fill = "Punishment", x = "Focal player’s group affiliation",
+       y = "Partner player’s group affiliation")
+ggsave("fig/Summary_unfair_heatmap.jpeg", heat_all, height = 6, width = 7)
+
+H4_data_d <- MA_dat %>% # not appropriate, but let's say it is H4 temporary
+  filter(
+    `Fairness/Cooperativeness A Binary` == 1, # fair condition
+    !is.na(`P_Average Invested Amount_Standardized`),
+    !is.na(`P_SD invested amount _Standardized`),
+    !is.na(`Total Trials`)
+  ) %>%
+  mutate(
+    `Total Trials` = as.numeric(`Total Trials`),
+    `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Neutral", "Outgroup")),
+    `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Neutral", "Outgroup")),
+    P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
+  )
+
+V_H4_d  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H4_data_d)
+H4_model_d <- H4_data_d %>%
+  rma(yi = `P_Average Invested Amount_Standardized`, sei = P_SV, # V close to singular
+         mods = ~ `Person A` * `Person B`,
+         random = ~ 1 | No. / Study / effectID,  data = .,
+         method = "REML",
+  )
+summary(H4_model_d)
+results_mat2 <- results_mat[-c(5,8),-c(5,7)]
+results_dat <- predict(H4_model_d, newmods = results_mat2) %>% 
+  cbind(results_mat_name[-c(5,8),]) %>% 
+  right_join(results_mat_name)
+
+heat_all_2 <- results_dat %>% 
+  ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
+  geom_tile() +
+  geom_text(aes(label = round(pred,3))) +
+  scale_fill_gradient(low = "white", high = "red",
+                      limits = c(0, 0.4)) +
+  theme_cowplot() +
+  labs(fill = "Punishment", x = "Focal player’s group affiliation",
+       y = "Partner player’s group affiliation")
+ggsave("fig/Summary_fair_heatmap.jpeg", heat_all_2, height = 6, width = 7)
 
 # Fair Condition Analysis ################
 ## H5 The Effects of Violator’s Identity on Punishment ----
