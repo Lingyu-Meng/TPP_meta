@@ -432,11 +432,11 @@ H4_model_d <- H4_data_d %>%
   )
 summary(H4_model_d)
 results_mat2 <- results_mat[-c(5,8),-c(5,7)]
-results_dat <- predict(H4_model_d, newmods = results_mat2) %>% 
+results_dat2 <- predict(H4_model_d, newmods = results_mat2) %>% 
   cbind(results_mat_name[-c(5,8),]) %>% 
   right_join(results_mat_name)
 
-heat_all_2 <- results_dat %>% 
+heat_all_2 <- results_dat2 %>% 
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
   geom_text(aes(label = round(pred,3))) +
