@@ -20,6 +20,7 @@ MA_dat$`Fairness/Cooperativeness A Binary` <- as.numeric(MA_dat$`Fairness/Cooper
 ## H1 The Effects of Violator’s Identity on Punishment ----
 # fair_condition <- c("Fair", "Cooperate", "Neutral", "Generous")
 # unfair_condition <- c("Unfair", "Defect", "Selfish", "Cheat")
+### Data Preparation ----
 H1_data <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
@@ -106,6 +107,8 @@ H1_Between_Data <- MA_dat %>%
 H1_data <- rbind(H1_data, H1_Between_Data)
 
 V_H1 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_data)
+
+### Model Fitting ----
 H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
 robust(H1_model, cluster = No., clubSandwich=TRUE)
 
@@ -143,6 +146,7 @@ metafor::funnel(H1_model, refline=0, level=c(95, 99),
 dev.off()
 
 ## H2 (Deterrence perspective): ----
+### Data Preparation ----
 H2_data <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
@@ -230,6 +234,8 @@ H2_Between_Data <- MA_dat %>%
 H2_data <- rbind(H2_data, H2_Between_Data)
 
 V_H2 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_data)
+
+### Model Fitting ----
 H2_model <- rma.mv(yi, V_H2, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML")
 robust(H2_model, cluster = No., clubSandwich=TRUE)
 
@@ -329,6 +335,7 @@ robust(H3_model4, cluster = No., clubSandwich=TRUE)
 Wald_test(H3_model4, constrain_equal(1:2), vcov = "CR2")
 
 ### The regression method ----
+#### Data Preparation ----
 H3_data_r <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
@@ -348,6 +355,8 @@ H3_data_r <- MA_dat %>%
   )
 
 V_H3  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_r)
+
+#### Model Fitting ----
 H3_model_r <- H3_data_r %>%
   rma.mv(yi = `P_Average Invested Amount_Standardized`, V = V_H3, # V close to singular
          mods = ~ `Person A` * `Person B`,
@@ -440,6 +449,7 @@ ggsave("fig/Summary_fair_heatmap.jpeg", heat_all_2, height = 6, width = 7)
 
 # Fair Condition Analysis ################
 ## H5 The Effects of Violator’s Identity on Punishment ----
+### Data Preparation ----
 H5_data <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
@@ -525,6 +535,8 @@ H5_Between_Data <- MA_dat %>%
 H5_data <- rbind(H5_data, H5_Between_Data)
 
 V_H5 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_data)
+
+### Model Fitting ----
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
 robust(H5_model, cluster = No., clubSandwich=TRUE)
 
@@ -555,6 +567,7 @@ metafor::funnel(H5_model, refline=0, level=c(95, 99),
 dev.off()
 
 ## H6 The Effects of Victim’s Identity on Punishment ----
+### Data Preparation ----
 H6_data <- MA_dat %>%
   filter(
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
@@ -641,6 +654,8 @@ H6_Between_Data <- MA_dat %>%
 H6_data <- rbind(H6_data, H6_Between_Data)
 
 V_H6 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_data)
+
+### Model Fitting ----
 H6_model <- rma.mv(yi, V_H6,
                    random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
 robust(H6_model, cluster = No., clubSandwich=TRUE)
