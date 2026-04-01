@@ -343,16 +343,18 @@ H3_data_r <- MA_dat %>%
     `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Outgroup")),
     `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Outgroup")),
     P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_")
   )
 
+V_H3  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_r)
 H3_model_r <- H3_data_r %>%
-  rma(yi = `P_Average Invested Amount_Standardized`, sei = P_SV, # V close to singular
-  mods = ~ `Person A` * `Person B`,
-  random = ~ 1 | No.,
-  data = .,
-  method = "REML",
+  rma.mv(yi = `P_Average Invested Amount_Standardized`, V = V_H3, # V close to singular
+         mods = ~ `Person A` * `Person B`,
+         random = ~ 1 | No. / Study / effectID,  data = .,
+         method = "REML",
 )
-summary(H3_model_r)
+robust(H3_model_r, cluster = No., clubSandwich=TRUE)
 
 # Fair Condition Analysis ################
 ## H5 The Effects of Violator’s Identity on Punishment ----
