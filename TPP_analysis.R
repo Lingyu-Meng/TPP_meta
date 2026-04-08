@@ -1440,7 +1440,8 @@ H6_lab_dat <- H6_data %>%
 V_H6_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_lab_dat)
 H6_lab_model <- rma.mv(yi, V_H6_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML")
+                       random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML",
+                       control=list(rel.tol=1e-9))
 summary(H6_lab_model)
 Wald_test(H6_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_lab_model, vcov = "CR2")
