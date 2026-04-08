@@ -281,8 +281,8 @@ robust(H3_model, cluster = No., clubSandwich=TRUE)
 Wald_test(H3_model, constrain_equal(1:3), vcov = "CR2")
 
 # asign color for ingroup, outgroup, and neutral
-H3_col <- ifelse(H1_data$Recipient.Player.B.Affliation == "Ingroup", "blue",
-                 ifelse(H1_data$Recipient.Player.B.Affliation == "Outgroup", "red", "gray"))
+H3_col <- ifelse(H1_data$Recipient.Player.B.Affliation == "Ingroup", "#004488",
+                 ifelse(H1_data$Recipient.Player.B.Affliation == "Outgroup", "#BB5566", "gray"))
 jpeg("fig/H3_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H3_model, slab = paste(H1_data$Intext.Citation, "S", H1_data$Study, sep = " "),
        colout = H3_col)
@@ -400,7 +400,7 @@ heat_all <- results_dat %>%
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
   geom_text(aes(label = round(pred,3))) +
-  scale_fill_gradient(low = "white", high = "red",
+  scale_fill_gradient(low = "white", high = "#BB5566",
                       limits = c(0, 0.4)) +
   theme_cowplot() +
   labs(fill = "Punishment", x = "Focal player’s group affiliation",
@@ -440,7 +440,7 @@ heat_all_2 <- results_dat2 %>%
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
   geom_text(aes(label = round(pred,3))) +
-  scale_fill_gradient(low = "white", high = "red",
+  scale_fill_gradient(low = "white", high = "#BB5566",
                       limits = c(0, 0.4)) +
   theme_cowplot() +
   labs(fill = "Punishment", x = "Focal player’s group affiliation",
@@ -705,13 +705,13 @@ conf_int(H1_country_model, vcov = "CR2")
 # saving forest plot to a file
 H1_country_col <- case_match(
   H1_country_dat$Country,
-  "China"  ~ "red",
-  "Turkey" ~ "green",
-  "US"     ~ "blue",
-  "UK/US"  ~ "cyan",
-  "Argentina" ~ "purple",
-  "Switzerland" ~ "yellow",
-  "Papua New Guinea" ~ "orange"
+  "China"  ~ "#CC6677",
+  "Turkey" ~ "#DDCC77",
+  "US"     ~ "#999933",
+  "UK/US"  ~ "#117733",
+  "Argentina" ~ "#44AA99",
+  "Switzerland" ~ "#88CCEE",
+  "Papua New Guinea" ~ "#332288"
 )
 
 jpeg("fig/H1_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
@@ -758,7 +758,7 @@ coef_test(H1_lab_model, vcov = "CR2")
 conf_int(H1_lab_model, vcov = "CR2")
 
 # saving forest plot to a file
-H1_lab_col <- ifelse(H1_lab_dat$Lab.or.Online == "Online", "blue", "red")
+H1_lab_col <- ifelse(H1_lab_dat$Lab.or.Online == "Online", "#004488", "#BB5566")
 jpeg("fig/H1_lab_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H1_lab_model, slab = paste(H1_lab_dat$Intext.Citation, "S", H1_lab_dat$Study, sep = " "),
        colout = H1_lab_col)
@@ -975,7 +975,7 @@ coef_test(H2_lab_model, vcov = "CR2")
 conf_int(H2_lab_model, vcov = "CR2")
 
 # saving forest plot to a file
-H2_lab_col <- ifelse(H2_lab_dat$Lab.or.Online == "Online", "blue", "red")
+H2_lab_col <- ifelse(H2_lab_dat$Lab.or.Online == "Online", "#004488", "#BB5566")
 jpeg("fig/H2_lab_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H2_lab_model, slab = paste(H2_lab_dat$Intext.Citation, "S", H2_lab_dat$Study, sep = " "),
        colout = H2_lab_col)
@@ -1174,14 +1174,14 @@ conf_int(H5_country_model, vcov = "CR2")
 # saving forest plot to a file
 H5_country_col <- case_match(
     H5_country_dat$Country,
-    "China"  ~ "red",
-    "Turkey" ~ "green",
-    "US"     ~ "blue",
-    "UK/US"  ~ "cyan",
-    "Argentina" ~ "purple",
-    "Switzerland" ~ "yellow",
-    "Papua New Guinea" ~ "orange",
-    "Italy" ~ "pink"
+    "China"  ~ "#CC6677",
+    "Turkey" ~ "#DDCC77",
+    "US"     ~ "#999933",
+    "UK/US"  ~ "#117733",
+    "Argentina" ~ "#44AA99",
+    "Switzerland" ~ "#88CCEE",
+    "Papua New Guinea" ~ "#332288",
+    "Italy" ~ "#882255"
   )
 jpeg("fig/H5_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H5_country_model, slab = paste(H5_country_dat$Intext.Citation, "S", H5_country_dat$Study, sep = " "),
@@ -1247,7 +1247,7 @@ coef_test(H5_group_model, vcov = "CR2")
 conf_int(H5_group_model, vcov = "CR2")
 
 # saving forest plot to a file
-H5_group_col <- ifelse(H5_group_dat$Group.Manipulation == "Natural", "blue", "red")
+H5_group_col <- ifelse(H5_group_dat$Group.Manipulation == "Natural", "#004488", "#BB5566")
 jpeg("fig/H5_group_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H5_group_model, slab = paste(H5_group_dat$Intext.Citation, "S", H5_group_dat$Study, sep = " "),
        colout = H5_group_col)
