@@ -939,9 +939,24 @@ H2_country_model <- rma.mv(yi, V_H2_country,
                            mods = ~ Country - 1,
                            random = ~ 1 | No. / Study / effectID, data = H2_country_dat, method = "REML")
 summary(H2_country_model)
-Wald_test(H2_country_model, constraints = constrain_equal(1:5), vcov = "CR2")
+Wald_test(H2_country_model, constraints = constrain_equal(1:5), vcov = "CR2", test = "EDT") # HTZ returns NA
 coef_test(H2_country_model, vcov = "CR2")
 conf_int(H2_country_model, vcov = "CR2")
+
+# saving forest plot to a file
+H2_country_col <- case_match(
+  H2_country_dat$Country,
+  "China"  ~ "#CC6677",
+  "Turkey" ~ "#DDCC77",
+  "Argentina" ~ "#44AA99",
+  "Switzerland" ~ "#88CCEE",
+  "Papua New Guinea" ~ "#332288"
+)
+
+jpeg("fig/H2_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+forest(H2_country_model, slab = paste(H2_country_dat$Intext.Citation, "S", H2_country_dat$Study, sep = " "),
+       colout = H2_country_col)
+dev.off()
 
 # saving statistics
 H2_moderator_table <- left_join(
