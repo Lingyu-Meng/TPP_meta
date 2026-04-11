@@ -403,8 +403,8 @@ heat_all <- results_dat %>%
   scale_fill_gradient(low = "white", high = "#BB5566",
                       limits = c(0, 0.4)) +
   theme_cowplot() +
-  labs(fill = "Punishment", x = "Focal player’s group affiliation",
-       y = "Partner player’s group affiliation")
+  labs(fill = "Punishment", x = "Focal Player Group Membership",
+       y = "Partner Player Group Membership")
 ggsave("fig/Summary_unfair_heatmap.jpeg", heat_all, height = 6, width = 7)
 
 H4_data_d <- MA_dat %>% # not appropriate, but let's say it is H4 temporary
@@ -443,9 +443,12 @@ heat_all_2 <- results_dat2 %>%
   scale_fill_gradient(low = "white", high = "#BB5566",
                       limits = c(0, 0.4)) +
   theme_cowplot() +
-  labs(fill = "Punishment", x = "Focal player’s group affiliation",
-       y = "Partner player’s group affiliation")
+  labs(fill = "Punishment", x = "Focal Player Group Membership",
+       y = "Partner Player Group Membership")
 ggsave("fig/Summary_fair_heatmap.jpeg", heat_all_2, height = 6, width = 7)
+
+heat_all_all <- plot_grid(heat_all, heat_all_2, labels = c("a", "b"))
+ggsave("fig/Summary_all_heatmap.jpeg", heat_all_all, height = 6, width = 14)
 
 # Fair Condition Analysis ################
 ## H5 The Effects of Violator’s Identity on Punishment ----
