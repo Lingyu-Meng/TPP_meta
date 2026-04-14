@@ -351,14 +351,16 @@ H3_data_r <- MA_dat %>%
     `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Outgroup")),
     P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
     effect_n = row_number(),
-    effectID = paste(No., Study, effect_n, sep = "_")
+    effectID = paste(No., Study, effect_n, sep = "_"),
+    P_log = car::logit(`P_Average Invested Amount_Standardized`),
+    SV_log = `P_SD invested amount`^2 / (`P_Average Invested Amount`^2 * `Total Trials` * (1-`P_Average Invested Amount_Standardized`)^2)
   )
 
-V_H3  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_r)
+V_H3  <- vcalc(SV_log, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_r)
 
 #### Model Fitting ----
 H3_model_r <- H3_data_r %>%
-  rma.mv(yi = `P_Average Invested Amount_Standardized`, V = V_H3, # V close to singular
+  rma.mv(yi = P_log, V = V_H3, # V close to singular
          mods = ~ `Person A` * `Person B`,
          random = ~ 1 | No. / Study / effectID,  data = .,
          method = "REML",
@@ -379,12 +381,14 @@ H3_data_d <- MA_dat %>%
     `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Neutral", "Outgroup")),
     P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
     effect_n = row_number(),
-    effectID = paste(No., Study, effect_n, sep = "_")
+    effectID = paste(No., Study, effect_n, sep = "_"),
+    P_log = car::logit(`P_Average Invested Amount_Standardized`),
+    SV_log = `P_SD invested amount`^2 / (`P_Average Invested Amount`^2 * `Total Trials` * (1-`P_Average Invested Amount_Standardized`)^2)
   )
 
-V_H3_d  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_d)
+V_H3_d  <- vcalc(SV_log, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_d)
 H3_model_d <- H3_data_d %>%
-  rma.mv(yi = `P_Average Invested Amount_Standardized`, V = V_H3_d,
+  rma.mv(yi = P_log, V = V_H3_d,
          mods = ~ `Person A` * `Person B`,
          random = ~ 1 | No. / Study / effectID,  data = .,
          method = "REML",
@@ -394,14 +398,15 @@ robust(H3_model_d, cluster = No., clubSandwich=TRUE)
 results_mat_name <- expand.grid(`Person A` = c("Ingroup", "Neutral", "Outgroup"), `Person B` = c("Ingroup", "Neutral", "Outgroup"))
 results_mat <- model.matrix(~ `Person A` * `Person B`, results_mat_name)[,-1]
 results_dat <- predict(H3_model_d, newmods = results_mat) %>% 
-  cbind(results_mat_name)
+  cbind(results_mat_name) %>% 
+  mutate(pred = boot::inv.logit(pred))
 
 heat_all <- results_dat %>% 
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
-  geom_text(aes(label = round(pred,3))) +
+  geom_text(aes(label = paste0(round(pred * 100,1), "%"))) +
   scale_fill_gradient(low = "white", high = "#BB5566",
-                      limits = c(0, 0.4)) +
+                      limits = c(0, 0.5)) +
   theme_cowplot() +
   labs(fill = "Punishment", x = "Focal Player Group Membership",
        y = "Partner Player Group Membership")
@@ -420,12 +425,15 @@ H4_data_d <- MA_dat %>% # not appropriate, but let's say it is H4 temporary
     `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Neutral", "Outgroup")),
     P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
     effect_n = row_number(),
-    effectID = paste(No., Study, effect_n, sep = "_")
+    effectID = paste(No., Study, effect_n, sep = "_"),
+    P_log = car::logit(`P_Average Invested Amount_Standardized`),
+    SV_log = `P_SD invested amount`^2 / (`P_Average Invested Amount`^2 * `Total Trials` * (1-`P_Average Invested Amount_Standardized`)^2),
+    SV_log = ifelse(is.na(SV_log), 1/`Total Trials`, SV_log)
   )
 
-V_H4_d  <- vcalc(P_SV, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H4_data_d)
+V_H4_d  <- vcalc(SV_log, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H4_data_d)
 H4_model_d <- H4_data_d %>%
-  rma(yi = `P_Average Invested Amount_Standardized`, sei = P_SV, # V close to singular
+  rma.mv(yi = P_log, V = V_H4_d, # V close to singular
          mods = ~ `Person A` * `Person B`,
          random = ~ 1 | No. / Study / effectID,  data = .,
          method = "REML",
@@ -434,14 +442,19 @@ summary(H4_model_d)
 results_mat2 <- results_mat[-c(5,8),-c(5,7)]
 results_dat2 <- predict(H4_model_d, newmods = results_mat2) %>% 
   cbind(results_mat_name[-c(5,8),]) %>% 
-  right_join(results_mat_name)
+  right_join(results_mat_name) %>% 
+  mutate(pred = boot::inv.logit(pred),
+         pred = (pred - 0.025) / (1 - 2 * 0.025) # Note that due to 0 in the data, car::logit() remapped data, so we need invert it as well
+         )
 
 heat_all_2 <- results_dat2 %>% 
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
-  geom_text(aes(label = round(pred,3))) +
+  geom_text(aes(label = ifelse(is.na(pred),"NA",
+                               paste0(round(pred * 100,1), "%"))
+                )) +
   scale_fill_gradient(low = "white", high = "#BB5566",
-                      limits = c(0, 0.4)) +
+                      limits = c(0, 0.5)) +
   theme_cowplot() +
   labs(fill = "Punishment", x = "Focal Player Group Membership",
        y = "Partner Player Group Membership")
