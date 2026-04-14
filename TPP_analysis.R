@@ -61,7 +61,7 @@ H1_data <- MA_dat %>%
 # deal with between data (assign temporary sample ID)
 H1_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...38` == "Between",
+    `Between or Within?...36` == "Between",
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -188,7 +188,7 @@ H2_data <- MA_dat %>%
 # deal with between data (assign temporary sample ID)
 H2_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...40` == "Between",
+    `Between or Within?...38` == "Between",
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -439,9 +439,9 @@ H4_model_d <- H4_data_d %>%
          method = "REML",
   )
 summary(H4_model_d)
-results_mat2 <- results_mat[-c(5,8),-c(5,7)]
+results_mat2 <- results_mat[-8,-7]
 results_dat2 <- predict(H4_model_d, newmods = results_mat2) %>% 
-  cbind(results_mat_name[-c(5,8),]) %>% 
+  cbind(results_mat_name[-8,]) %>% 
   right_join(results_mat_name) %>% 
   mutate(pred = boot::inv.logit(pred),
          pred = (pred - 0.025) / (1 - 2 * 0.025) # Note that due to 0 in the data, car::logit() remapped data, so we need invert it as well
@@ -505,7 +505,7 @@ H5_data <- MA_dat %>%
 
 H5_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...38` == "Between",
+    `Between or Within?...36` == "Between",
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -624,7 +624,7 @@ H6_data <- MA_dat %>%
 
 H6_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...40` == "Between",
+    `Between or Within?...38` == "Between",
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -982,16 +982,16 @@ H2_moderator_table <- left_join(
 
 ### The cost ----
 # Not appliable, all data is 3
-# H2_cost_dat <- H2_data %>% 
-#   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
-#   filter(!is.na(Punishment.Cost.Ratio))
-# V_H2_cost <- vcalc(H2_cost_dat$vi, cluster=H2_cost_dat$Sample.ID, rho = 0.5)
-# H2_cost_model <- rma.mv(yi, V_H2_cost,
-#                         mods = ~ Punishment.Cost.Ratio,
-#                         random = ~ 1 | No. / Study / effectID, data = H2_cost_dat, method = "REML")
-# summary(H2_cost_model)
-# coef_test(H2_cost_model, vcov = "CR2")
-# conf_int(H2_cost_model, vcov = "CR2")
+H2_cost_dat <- H2_data %>%
+  mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>%
+  filter(!is.na(Punishment.Cost.Ratio))
+V_H2_cost <- vcalc(H2_cost_dat$vi, cluster=H2_cost_dat$Sample.ID, rho = 0.5)
+H2_cost_model <- rma.mv(yi, V_H2_cost,
+                        mods = ~ Punishment.Cost.Ratio,
+                        random = ~ 1 | No. / Study / effectID, data = H2_cost_dat, method = "REML")
+summary(H2_cost_model)
+coef_test(H2_cost_model, vcov = "CR2")
+conf_int(H2_cost_model, vcov = "CR2")
 
 ### Lab or online ----
 H2_lab_dat <- H2_data %>% 
@@ -1230,7 +1230,7 @@ H5_cost_dat <- H5_data %>%
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
   filter(!is.na(Punishment.Cost.Ratio))
 V_H5_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_cost_dat)
-H5_cost_model <- rma.mv(yi, V_H5_cost,
+H5_cost_model <- rma.mv(yi, vi,
                         mods = ~ Punishment.Cost.Ratio,
                         random = ~ 1 | No. / Study / effectID, data = H5_cost_dat, method = "REML")
 summary(H5_cost_model)
@@ -1740,3 +1740,4 @@ H6_sensitivity_short <- H6_sensitivity %>%
 cbind(H1_sensitivity_short, H2_sensitivity_short, H5_sensitivity_short, H6_sensitivity_short) %>% 
   nice_table(., separate.header = TRUE) %>% 
   flextable::save_as_docx(., path = "tab/sensitivity.docx")
+
