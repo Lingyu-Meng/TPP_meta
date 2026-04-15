@@ -74,10 +74,14 @@ H1_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Person A affiliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Recipient/Player B Affliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>% 
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Person A affiliation`,
@@ -201,10 +205,14 @@ H2_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Recipient/Player B Affliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Person A affiliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>% 
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Recipient/Player B Affliation`,
@@ -518,10 +526,14 @@ H5_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Person A affiliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Recipient/Player B Affliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>% 
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Person A affiliation`,
@@ -637,10 +649,14 @@ H6_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Recipient/Player B Affliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Person A affiliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>%
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Recipient/Player B Affliation`,
@@ -707,7 +723,8 @@ dev.off()
 H1_moderator_table <- tibble()
 ### The culture ----
 H1_country_dat <- H1_data %>% 
-  filter(!is.na(Country))
+  filter(!is.na(Country)) %>% 
+  filter(Country != "UK/US") # only one, and that paper reported UK & US separately in other study
 V_H1_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H1_country_dat)
 H1_country_model <- rma.mv(yi, V_H1_country,
                            mods = ~ Country - 1,
@@ -723,8 +740,8 @@ H1_country_col <- case_match(
   H1_country_dat$Country,
   "China"  ~ "#CC6677",
   "Turkey" ~ "#DDCC77",
-  "US"     ~ "#999933",
-  "UK/US"  ~ "#117733",
+  "United States"     ~ "#999933",
+  "United Kingdom"  ~ "#117733",
   "Argentina" ~ "#44AA99",
   "Switzerland" ~ "#88CCEE",
   "Papua New Guinea" ~ "#332288"
@@ -769,12 +786,17 @@ H1_lab_model <- rma.mv(yi, V_H1_lab,
                         mods = ~ Lab.or.Online - 1,
                         random = ~ 1 | No. / Study / effectID, data = H1_lab_dat, method = "REML")
 summary(H1_lab_model)
-Wald_test(H1_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
+Wald_test(H1_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
 coef_test(H1_lab_model, vcov = "CR2")
 conf_int(H1_lab_model, vcov = "CR2")
 
 # saving forest plot to a file
-H1_lab_col <- ifelse(H1_lab_dat$Lab.or.Online == "Online", "#004488", "#BB5566")
+H1_lab_col <- case_match(
+  H1_lab_dat$Lab.or.Online,
+  "Online" ~ "#004488",
+  "Lab"    ~ "#BB5566",
+  "Field"  ~ "#DDAA33"
+)
 jpeg("fig/H1_lab_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H1_lab_model, slab = paste(H1_lab_dat$Intext.Citation, "S", H1_lab_dat$Study, sep = " "),
        colout = H1_lab_col)
@@ -955,7 +977,7 @@ H2_country_model <- rma.mv(yi, V_H2_country,
                            mods = ~ Country - 1,
                            random = ~ 1 | No. / Study / effectID, data = H2_country_dat, method = "REML")
 summary(H2_country_model)
-Wald_test(H2_country_model, constraints = constrain_equal(1:5), vcov = "CR2", test = "EDT") # HTZ returns NA
+Wald_test(H2_country_model, constraints = constrain_equal(1:6), vcov = "CR2", test = "EDT") # HTZ returns NA
 coef_test(H2_country_model, vcov = "CR2")
 conf_int(H2_country_model, vcov = "CR2")
 
@@ -966,7 +988,8 @@ H2_country_col <- case_match(
   "Turkey" ~ "#DDCC77",
   "Argentina" ~ "#44AA99",
   "Switzerland" ~ "#88CCEE",
-  "Papua New Guinea" ~ "#332288"
+  "Papua New Guinea" ~ "#332288",
+  "United States"     ~ "#999933"
 )
 
 jpeg("fig/H2_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
@@ -1001,12 +1024,17 @@ H2_lab_model <- rma.mv(yi, V_H2_lab,
                        mods = ~ Lab.or.Online - 1,
                        random = ~ 1 | No. / Study / effectID, data = H2_lab_dat, method = "REML")
 summary(H2_lab_model)
-Wald_test(H2_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
+Wald_test(H2_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
 coef_test(H2_lab_model, vcov = "CR2")
 conf_int(H2_lab_model, vcov = "CR2")
 
 # saving forest plot to a file
-H2_lab_col <- ifelse(H2_lab_dat$Lab.or.Online == "Online", "#004488", "#BB5566")
+H2_lab_col <- case_match(
+  H2_lab_dat$Lab.or.Online,
+  "Online" ~ "#004488",
+  "Lab"    ~ "#BB5566",
+  "Field"  ~ "#DDAA33"
+)
 jpeg("fig/H2_lab_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H2_lab_model, slab = paste(H2_lab_dat$Intext.Citation, "S", H2_lab_dat$Study, sep = " "),
        colout = H2_lab_col)
@@ -1025,7 +1053,8 @@ H2_group_dat <- H2_data %>%
 V_H2_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_group_dat)
 H2_group_model <- rma.mv(yi, V_H2_group,
                          mods = ~ Group.Manipulation - 1,
-                         random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML")
+                         random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML",
+                         control=list(rel.tol=1e-9))
 summary(H2_group_model)
 Wald_test(H2_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_group_model, vcov = "CR2")
@@ -1207,8 +1236,8 @@ H5_country_col <- case_match(
     H5_country_dat$Country,
     "China"  ~ "#CC6677",
     "Turkey" ~ "#DDCC77",
-    "US"     ~ "#999933",
-    "UK/US"  ~ "#117733",
+    "United States"     ~ "#999933",
+    "United Kingdom"  ~ "#117733",
     "Argentina" ~ "#44AA99",
     "Switzerland" ~ "#88CCEE",
     "Papua New Guinea" ~ "#332288",
@@ -1252,9 +1281,10 @@ H5_lab_dat <- H5_data %>%
 V_H5_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_lab_dat)
 H5_lab_model <- rma.mv(yi, V_H5_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML")
+                       random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML",
+                       control=list(rel.tol=1e-9))
 summary(H5_lab_model)
-Wald_test(H5_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
+Wald_test(H5_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
 coef_test(H5_lab_model, vcov = "CR2")
 conf_int(H5_lab_model, vcov = "CR2")
 
@@ -1392,7 +1422,8 @@ H5_stu_dat <- H5_data %>%
 V_H5_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_stu_dat)
 H5_stu_model <- rma.mv(yi, V_H5_stu,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML")
+                       random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML",
+                       control=list(rel.tol=1e-9))
 summary(H5_stu_model)
 Wald_test(H5_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_stu_model, vcov = "CR2")
@@ -1432,7 +1463,8 @@ H6_country_dat <- H6_data %>%
 V_H6_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_country_dat)
 H6_country_model <- rma.mv(yi, vi, # V cannot convergence
                            mods = ~ Country - 1,
-                           random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML")
+                           random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML",
+                           control=list(rel.tol=1e-9))
 summary(H6_country_model)
 # Wald_test(H6_country_model, constraints = constrain_equal(1:5), vcov = "CR2", test = "chi-sq") # V is singular
 coef_test(H6_country_model, vcov = "CR2")
@@ -1451,7 +1483,8 @@ H6_cost_dat <- H6_data %>%
 V_H6_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_cost_dat)
 H6_cost_model <- rma.mv(yi, V_H6_cost,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML")
+                        random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML",
+                        control=list(rel.tol=1e-9))
 summary(H6_cost_model)
 coef_test(H6_cost_model, vcov = "CR2")
 conf_int(H6_cost_model, vcov = "CR2")
@@ -1539,7 +1572,8 @@ H6_age_dat <- H6_data %>%
 V_H6_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_age_dat)
 H6_age_model <- rma.mv(yi, V_H6_age,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML")
+                       random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML",
+                       control=list(rel.tol=1e-9))
 summary(H6_age_model)
 coef_test(H6_age_model, vcov = "CR2")
 conf_int(H6_age_model, vcov = "CR2")
