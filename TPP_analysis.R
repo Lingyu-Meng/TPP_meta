@@ -404,7 +404,7 @@ results_dat <- predict(H3_model_d, newmods = results_mat) %>%
 heat_all <- results_dat %>% 
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
-  geom_text(aes(label = paste0(round(pred * 100,1), "%"))) +
+  geom_text(aes(label = paste0(format(round(pred * 100,2), nsmall = 2), "%"))) +
   scale_fill_gradient(low = "white", high = "#BB5566",
                       limits = c(0, 0.5)) +
   theme_cowplot() +
@@ -451,7 +451,7 @@ heat_all_2 <- results_dat2 %>%
   ggplot(aes(x = `Person A`, y = `Person B`, fill = pred)) +
   geom_tile() +
   geom_text(aes(label = ifelse(is.na(pred),"NA",
-                               paste0(round(pred * 100,1), "%"))
+                               paste0(format(round(pred * 100,2), nsmall = 2), "%"))
                 )) +
   scale_fill_gradient(low = "white", high = "#BB5566",
                       limits = c(0, 0.5)) +
