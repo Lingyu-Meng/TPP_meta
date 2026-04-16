@@ -1,3 +1,4 @@
+# if rma.mv failed to converge, add control=list(rel.tol=1e-9) in the function
 required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "cowplot", "metapower", "rempsyc")
 
 # Check and install missing packages
@@ -1053,8 +1054,7 @@ H2_group_dat <- H2_data %>%
 V_H2_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_group_dat)
 H2_group_model <- rma.mv(yi, V_H2_group,
                          mods = ~ Group.Manipulation - 1,
-                         random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML",
-                         control=list(rel.tol=1e-9))
+                         random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML")
 summary(H2_group_model)
 Wald_test(H2_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_group_model, vcov = "CR2")
@@ -1259,7 +1259,7 @@ H5_cost_dat <- H5_data %>%
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
   filter(!is.na(Punishment.Cost.Ratio))
 V_H5_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_cost_dat)
-H5_cost_model <- rma.mv(yi, vi,
+H5_cost_model <- rma.mv(yi, V_H5_cost,
                         mods = ~ Punishment.Cost.Ratio,
                         random = ~ 1 | No. / Study / effectID, data = H5_cost_dat, method = "REML")
 summary(H5_cost_model)
@@ -1281,8 +1281,7 @@ H5_lab_dat <- H5_data %>%
 V_H5_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_lab_dat)
 H5_lab_model <- rma.mv(yi, V_H5_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML",
-                       control=list(rel.tol=1e-9))
+                       random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML")
 summary(H5_lab_model)
 Wald_test(H5_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
 coef_test(H5_lab_model, vcov = "CR2")
@@ -1422,8 +1421,7 @@ H5_stu_dat <- H5_data %>%
 V_H5_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_stu_dat)
 H5_stu_model <- rma.mv(yi, V_H5_stu,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML",
-                       control=list(rel.tol=1e-9))
+                       random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML")
 summary(H5_stu_model)
 Wald_test(H5_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_stu_model, vcov = "CR2")
@@ -1461,12 +1459,11 @@ H6_moderator_table <- tibble()
 H6_country_dat <- H6_data %>% 
   filter(!is.na(Country)) 
 V_H6_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_country_dat)
-H6_country_model <- rma.mv(yi, vi, # V cannot convergence
+H6_country_model <- rma.mv(yi, V_H6_country,
                            mods = ~ Country - 1,
-                           random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML",
-                           control=list(rel.tol=1e-9))
+                           random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML")
 summary(H6_country_model)
-# Wald_test(H6_country_model, constraints = constrain_equal(1:5), vcov = "CR2", test = "chi-sq") # V is singular
+# Wald_test(H6_country_model, constraints = constrain_equal(1:6), vcov = "CR2") # V is singular
 coef_test(H6_country_model, vcov = "CR2")
 conf_int(H6_country_model, vcov = "CR2")
 
@@ -1483,8 +1480,7 @@ H6_cost_dat <- H6_data %>%
 V_H6_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_cost_dat)
 H6_cost_model <- rma.mv(yi, V_H6_cost,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML",
-                        control=list(rel.tol=1e-9))
+                        random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML")
 summary(H6_cost_model)
 coef_test(H6_cost_model, vcov = "CR2")
 conf_int(H6_cost_model, vcov = "CR2")
@@ -1504,8 +1500,7 @@ H6_lab_dat <- H6_data %>%
 V_H6_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_lab_dat)
 H6_lab_model <- rma.mv(yi, V_H6_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML",
-                       control=list(rel.tol=1e-9))
+                       random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML")
 summary(H6_lab_model)
 Wald_test(H6_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_lab_model, vcov = "CR2")
@@ -1572,8 +1567,7 @@ H6_age_dat <- H6_data %>%
 V_H6_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_age_dat)
 H6_age_model <- rma.mv(yi, V_H6_age,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML",
-                       control=list(rel.tol=1e-9))
+                       random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML")
 summary(H6_age_model)
 coef_test(H6_age_model, vcov = "CR2")
 conf_int(H6_age_model, vcov = "CR2")
@@ -1611,7 +1605,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 H6_interact_dat <- H6_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H6_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_interact_dat)
-H6_interact_model <- rma.mv(yi, vi, # V cannot convergence
+H6_interact_model <- rma.mv(yi, V_H6_interact,
                             mods = ~ Real.or.Deception - 1,
                             random = ~ 1 | No. / Study / effectID, data = H6_interact_dat, method = "REML")
 summary(H6_interact_model)
