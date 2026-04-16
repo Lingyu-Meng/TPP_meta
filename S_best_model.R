@@ -62,7 +62,7 @@ H1_data <- MA_dat %>%
 # deal with between data (assign temporary sample ID)
 H1_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...38` == "Between",
+    `Between or Within?...36` == "Between",
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -75,10 +75,14 @@ H1_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Person A affiliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Recipient/Player B Affliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>% 
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Person A affiliation`,
@@ -198,7 +202,7 @@ H2_data <- MA_dat %>%
 # deal with between data (assign temporary sample ID)
 H2_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...40` == "Between",
+    `Between or Within?...38` == "Between",
     `Fairness/Cooperativeness A Binary` == 0, # unfair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -211,10 +215,14 @@ H2_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Recipient/Player B Affliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Person A affiliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>% 
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Recipient/Player B Affliation`,
@@ -334,7 +342,7 @@ H5_data <- MA_dat %>%
 
 H5_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...38` == "Between",
+    `Between or Within?...36` == "Between",
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Person A affiliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -347,10 +355,14 @@ H5_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Person A affiliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Recipient/Player B Affliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>% 
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Person A affiliation`,
@@ -468,7 +480,7 @@ H6_data <- MA_dat %>%
 
 H6_Between_Data <- MA_dat %>% 
   filter(
-    `Between or Within?...40` == "Between",
+    `Between or Within?...38` == "Between",
     `Fairness/Cooperativeness A Binary` == 1, # fair condition
     `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup")
   ) %>%
@@ -481,10 +493,14 @@ H6_Between_Data <- MA_dat %>%
   filter(!is.na(`P_Average Invested Amount`)) %>% # Exclude mean is NA
   group_by(No., Study,`Recipient/Player B Affliation`) %>% 
   mutate(
-    ID_n = row_number(),
-    `Sample ID` = paste(No., Study, ID_n, sep = "_")
+    `Sample ID` = paste(No., Study, `Person A affiliation`, sep = "_")
   ) %>% 
-  select(-ID_n) %>% 
+  ungroup() %>%
+  group_by(`Sample ID`) %>% 
+  mutate(`Age (mean)` = as.numeric(`Age (mean)`),
+         `Age (mean)` = weighted.mean(`Age (mean)`, w = `N by condition`),
+         Female = mean(Female),
+         Male = mean(Male)) %>% # have to put the same value for effect sizes calculation
   ungroup() %>% 
   pivot_wider(
     names_from = `Recipient/Player B Affliation`,
