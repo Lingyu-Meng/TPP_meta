@@ -1527,7 +1527,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 H6_game_dat <- H6_data %>% 
   filter(!is.na(Game.Type))
 V_H6_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_game_dat)
-H6_game_model <- rma.mv(yi, vi, # V cannot convergence
+H6_game_model <- rma.mv(yi, V_H6_game, 
                         mods = ~ Game.Type - 1,
                         random = ~ 1 | No. / Study / effectID, data = H6_game_dat, method = "REML")
 summary(H6_game_model)
@@ -1545,7 +1545,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 H6_sex_dat <- H6_data %>% 
   mutate(male.ratio = Male / (Male + Female))
 V_H6_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_sex_dat)
-H6_sex_model <- rma.mv(yi, vi, # V cannot convergence
+H6_sex_model <- rma.mv(yi, V_H6_sex,
                        mods = ~ male.ratio,
                        random = ~ 1 | No. / Study / effectID, data = H6_sex_dat, method = "REML")
 summary(H6_sex_model)
