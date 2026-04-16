@@ -747,9 +747,9 @@ H1_country_col <- case_match(
   "Papua New Guinea" ~ "#332288"
 )
 
-jpeg("fig/H1_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H1_country_Forest.jpeg", height = 12, width = 10, units = "in", res = 300)
 forest(H1_country_model, slab = paste(H1_country_dat$Intext.Citation, "S", H1_country_dat$Study, sep = " "),
-       colout = H1_country_col)
+       colout = H1_country_col, ilab = Country, ilab.lab = "Country", ilab.xpos = -3.5, xlim = c(-10, 6.5), alim = c(-2, 4))
 dev.off()
 
 # saving statistics
@@ -992,9 +992,9 @@ H2_country_col <- case_match(
   "United States"     ~ "#999933"
 )
 
-jpeg("fig/H2_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H2_country_Forest.jpeg", height = 12, width = 10, units = "in", res = 300)
 forest(H2_country_model, slab = paste(H2_country_dat$Intext.Citation, "S", H2_country_dat$Study, sep = " "),
-       colout = H2_country_col)
+       colout = H2_country_col, ilab = Country, ilab.lab = "Country", ilab.xpos = -3.5, xlim = c(-8, 3), alim = c(-2, 1))
 dev.off()
 
 # saving statistics
@@ -1243,9 +1243,9 @@ H5_country_col <- case_match(
     "Papua New Guinea" ~ "#332288",
     "Italy" ~ "#882255"
   )
-jpeg("fig/H5_country_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+jpeg("fig/H5_country_Forest.jpeg", height = 12, width = 10, units = "in", res = 300)
 forest(H5_country_model, slab = paste(H5_country_dat$Intext.Citation, "S", H5_country_dat$Study, sep = " "),
-       colout = H5_country_col)
+       colout = H5_country_col, ilab = Country, ilab.lab = "Country", ilab.xpos = -3.8, xlim = c(-9, 4), alim = c(-2.5, 2))
 dev.off()
 
 # saving statistics
