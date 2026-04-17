@@ -1545,9 +1545,7 @@ H6_moderator_table %>%
 
 # Sensitivity analysis for the value of correlation of effect sizes obtained on the same group of participants ########################
 H1_sensitivity <- tibble()
-H2_sensitivity <- tibble()
 H5_sensitivity <- tibble()
-H6_sensitivity <- tibble()
 # H1_data <- H1_data %>% 
 #   mutate(StudyID = paste0(No.,"_",Study))
 for (r in 1:10) {
@@ -1564,18 +1562,6 @@ for (r in 1:10) {
                             conf_int(H1_model_s, vcov = "CR2")
                           )
   )
-  ## H2
-  V_H2_s <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = R, data = H2_data)
-  H2_model_s <- rma.mv(yi, V_H2_s, random = ~ 1 | effectID, data = H2_data, method = "REML",
-                       control=list(rel.tol=1e-9))
-  
-  # saving statistics
-  H2_sensitivity <- rbind(H2_sensitivity,
-                          left_join(
-                            coef_test(H2_model_s, vcov = "CR2"),
-                            conf_int(H2_model_s, vcov = "CR2")
-                          )
-  )
   ## H5
   V_H5_s <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = R, data = H5_data)
   H5_model_s <- rma.mv(yi, V_H5_s, random = ~ 1 | No. / effectID, data = H5_data, method = "REML",
@@ -1588,25 +1574,11 @@ for (r in 1:10) {
                             conf_int(H5_model_s, vcov = "CR2")
                           )
   )
-  ## H6
-  V_H6_s <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = R, data = H6_data)
-  H6_model_s <- rma.mv(yi, V_H6_s, random = ~ 1 | effectID, data = H6_data, method = "REML",
-                       control=list(rel.tol=1e-9))
-  
-  # saving statistics
-  H6_sensitivity <- rbind(H6_sensitivity,
-                          left_join(
-                            coef_test(H6_model_s, vcov = "CR2"),
-                            conf_int(H6_model_s, vcov = "CR2")
-                          )
-  )
 }
 
 ## write table ----
 H1_sensitivity[,1] <- seq(from = 0.1, to = 1, by = 0.1)
-H2_sensitivity[,1] <- seq(from = 0.1, to = 1, by = 0.1)
 H5_sensitivity[,1] <- seq(from = 0.1, to = 1, by = 0.1)
-H6_sensitivity[,1] <- seq(from = 0.1, to = 1, by = 0.1)
 
 H1_sensitivity_short <- H1_sensitivity %>% 
   select(Coef, beta, p_Satt) %>% 
@@ -1615,26 +1587,16 @@ H1_sensitivity_short <- H1_sensitivity %>%
     H1.g = "beta",
     H1.p = "p_Satt"
   )
-H2_sensitivity_short <- H2_sensitivity %>% 
-  select(beta, p_Satt) %>% 
-  rename(
-    H2.g = "beta",
-    H2.p = "p_Satt"
-  )
+
 H5_sensitivity_short <- H5_sensitivity %>% 
   select(beta, p_Satt) %>% 
   rename(
     H5.g = "beta",
     H5.p = "p_Satt"
   )
-H6_sensitivity_short <- H6_sensitivity %>% 
-  select(beta, p_Satt) %>% 
-  rename(
-    H6.g = "beta",
-    H6.p = "p_Satt"
-  )
 
-cbind(H1_sensitivity_short, H2_sensitivity_short, H5_sensitivity_short, H6_sensitivity_short) %>% 
+
+cbind(H1_sensitivity_short, H5_sensitivity_short) %>% 
   nice_table(., separate.header = TRUE) %>% 
   flextable::save_as_docx(., path = "tab/sensitivity.docx")
 
