@@ -955,6 +955,11 @@ H2_moderator_table <- tibble()
 H2_country_dat <- H2_data %>% 
   filter(!is.na(Country))
 V_H2_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_country_dat)
+H2_country_model_omnibus <- rma(yi, vi,
+                                mods = ~ Country,
+                                random = ~ 1 | effectID, data = H2_country_dat, method = "REML", test = "knha")
+summary(H2_country_model_omnibus)
+
 H2_country_model <- rma(yi, vi,
                            mods = ~ Country - 1,
                            random = ~ 1 | effectID, data = H2_country_dat, method = "REML", test = "knha")
@@ -1385,6 +1390,11 @@ H6_moderator_table <- tibble()
 H6_country_dat <- H6_data %>% 
   filter(!is.na(Country)) 
 V_H6_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_country_dat)
+H6_country_model_omnibus <- rma.mv(yi, vi,
+                                   mods = ~ Country - 1,
+                                   random = ~ 1 | effectID, data = H6_country_dat, method = "REML", test = "knha")
+summary(H6_country_model_omnibus)
+
 H6_country_model <- rma.mv(yi, vi,
                            mods = ~ Country - 1,
                            random = ~ 1 | effectID, data = H6_country_dat, method = "REML", test = "knha")
