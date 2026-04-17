@@ -267,7 +267,7 @@ metafor::funnel(H2_model, refline=0, level=c(95, 99),
                 shade=c("white", "grey"))
 dev.off()
 
-## H3 Interaction Effect between Violator’s Identity and Victim Salience ----
+## H3 & H4 Interaction Effect between Violator’s Identity and Victim Salience ----
 ### The moderator method ----
 H3_model <- H1_data %>%
   rma.mv(yi, V_H1,
@@ -358,14 +358,44 @@ H3_data_r <- MA_dat %>%
 
 V_H3  <- vcalc(SV_log, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H3_data_r)
 
+H4_data_r <- MA_dat %>%
+  filter(
+    `Fairness/Cooperativeness A Binary` == 1, # fair condition
+    `Person A affiliation` %in% c("Ingroup", "Outgroup"),
+    `Recipient/Player B Affliation` %in% c("Ingroup", "Outgroup"),
+    !is.na(`P_Average Invested Amount_Standardized`),
+    !is.na(`P_SD invested amount _Standardized`),
+    !is.na(`Total Trials`)
+  ) %>%
+  mutate(
+    `Total Trials` = as.numeric(`Total Trials`),
+    `Person A` = factor(`Person A affiliation`, levels = c("Ingroup", "Outgroup")),
+    `Person B` = factor(`Recipient/Player B Affliation`, levels = c("Ingroup", "Outgroup")),
+    P_SV = as.numeric(`P_SD invested amount _Standardized`)^2 * `Total Trials` / ( `Total Trials` - 1), # Sampling variance of punishment amount
+    effect_n = row_number(),
+    effectID = paste(No., Study, effect_n, sep = "_"),
+    P_log = car::logit(`P_Average Invested Amount_Standardized`),
+    SV_log = `P_SD invested amount`^2 / (`P_Average Invested Amount`^2 * `Total Trials` * (1-`P_Average Invested Amount_Standardized`)^2)
+  )
+
+V_H4  <- vcalc(SV_log, cluster = `Sample ID`, obs = effectID, rho = 0.5, data = H4_data_r)
+
 #### Model Fitting ----
-H3_model_r <- H3_data_r %>%
-  rma.mv(yi = P_log, V = V_H3, # V close to singular
+H3_model_r <- H3_data_r %>% # unfair
+  rma.mv(yi = P_log, V = V_H3,
          mods = ~ `Person A` * `Person B`,
          random = ~ 1 | No. / Study / effectID,  data = .,
          method = "REML",
 )
 robust(H3_model_r, cluster = No., clubSandwich=TRUE)
+
+H4_model_r <- H4_data_r %>% # fair
+  rma.mv(yi = P_log, V = V_H4,
+         mods = ~ `Person A` * `Person B`,
+         random = ~ 1 | No. / Study / effectID,  data = .,
+         method = "REML",
+  )
+robust(H4_model_r, cluster = No., clubSandwich=TRUE)
 
 #### Estimated Average Effects ----
 H3_data_d <- MA_dat %>%
