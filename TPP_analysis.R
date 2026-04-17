@@ -245,20 +245,11 @@ H2_data <- rbind(H2_data, H2_Between_Data)
 V_H2 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_data)
 
 ### Model Fitting ----
-H2_model <- rma.mv(yi, V_H2, random = ~ 1 | effectID, data = H2_data, method = "REML")
+H2_model <- rma(yi, vi, random = ~ 1 | effectID, data = H2_data, method = "REML", test = "knha")
 summary(H2_model) # don't use CR2 as sigma is 0 
 
 # checking likelihood profile plots
 profile(H2_model)
-
-# calculating the overall amount of heterogeneity
-sum(H2_model$sigma2)
-
-# obtaining I2 value
-W <- diag(1/H2_data$vi)
-X <- model.matrix(H2_model)
-P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
-100 * sum(H2_model$sigma2) / (sum(H2_model$sigma2) + (H2_model$k-H2_model$p)/sum(diag(P))) # overall I2
 
 # forest plot
 H2_f <- forest(H2_model, slab = paste(H2_data$Intext.Citation, "S", H2_data$Study, sep = " "))
@@ -689,8 +680,7 @@ H6_data <- rbind(H6_data, H6_Between_Data)
 V_H6 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_data)
 
 ### Model Fitting ----
-H6_model <- rma.mv(yi, V_H6,
-                   random = ~ 1 | effectID, data = H6_data, method = "REML")
+H6_model <- rma(yi, vi, random = ~ 1 | effectID, data = H6_data, method = "REML", test = "knha")
 summary(H6_model) # don't use CR2 as sigma is 0 
 
 # forest plot
@@ -699,15 +689,6 @@ H6_f <- forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Stud
 jpeg("fig/H6_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
 forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
 dev.off()
-
-# calculating the overall amount of heterogeneity
-sum(H6_model$sigma2)
-
-# obtaining I2 value
-W <- diag(1/H6_data$vi)
-X <- model.matrix(H6_model)
-P <- W - W %*% X %*% solve(t(X) %*% W %*% X) %*% t(X) %*% W
-100 * sum(H6_model$sigma2) / (sum(H6_model$sigma2) + (H6_model$k-H6_model$p)/sum(diag(P))) # overall I2
 
 # funnel plot
 metafor::funnel(H6_model)
@@ -974,12 +955,10 @@ H2_moderator_table <- tibble()
 H2_country_dat <- H2_data %>% 
   filter(!is.na(Country))
 V_H2_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_country_dat)
-H2_country_model <- rma.mv(yi, V_H2_country,
+H2_country_model <- rma(yi, vi,
                            mods = ~ Country - 1,
-                           random = ~ 1 | effectID, data = H2_country_dat, method = "REML")
+                           random = ~ 1 | effectID, data = H2_country_dat, method = "REML", test = "knha")
 summary(H2_country_model)
-coef_test(H2_country_model, vcov = "CR2")
-conf_int(H2_country_model, vcov = "CR2")
 
 # saving forest plot to a file
 H2_country_col <- case_match(
@@ -998,35 +977,33 @@ forest(H2_country_model, slab = paste(H2_country_dat$Intext.Citation, "S", H2_co
 dev.off()
 
 # saving statistics
-H2_moderator_table <- left_join(
-  coef_test(H2_country_model, vcov = "CR2"),
-  conf_int(H2_country_model, vcov = "CR2")
-)
+H2_moderator_table <- as.data.frame(coef(summary(H2_country_model)))
 
 ### The cost ----
-# Not appliable, all data is 3
 H2_cost_dat <- H2_data %>%
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>%
   filter(!is.na(Punishment.Cost.Ratio))
 V_H2_cost <- vcalc(H2_cost_dat$vi, cluster=H2_cost_dat$Sample.ID, rho = 0.5)
-H2_cost_model <- rma.mv(yi, V_H2_cost,
+H2_cost_model <- rma(yi, vi,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | effectID, data = H2_cost_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H2_cost_dat, method = "REML", test = "knha")
 summary(H2_cost_model)
-coef_test(H2_cost_model, vcov = "CR2")
-conf_int(H2_cost_model, vcov = "CR2")
+
+H2_moderator_table <- rbind(H2_moderator_table, 
+                            slice_tail( # sex ratio has intercept
+                              as.data.frame(coef(summary(H2_cost_model))))
+                            )
 
 ### Lab or online ----
 H2_lab_dat <- H2_data %>% 
   filter(!is.na(Lab.or.Online))
 V_H2_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_lab_dat)
-H2_lab_model <- rma.mv(yi, V_H2_lab,
+H2_lab_model <- rma(yi, vi,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | effectID, data = H2_lab_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_lab_dat, method = "REML", test = "knha")
 summary(H2_lab_model)
-Wald_test(H2_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
-coef_test(H2_lab_model, vcov = "CR2")
-conf_int(H2_lab_model, vcov = "CR2")
+anova(H2_lab_model,
+      X = rbind(c(0, 1, -1)))
 
 # saving forest plot to a file
 H2_lab_col <- case_match(
@@ -1042,156 +1019,124 @@ dev.off()
 # saving statistics
 
 H2_moderator_table <- rbind(H2_moderator_table,
-                            left_join(
-                              coef_test(H2_lab_model, vcov = "CR2"),
-                              conf_int(H2_lab_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H2_lab_model))))
 
 ### Group Manipulation ----
 H2_group_dat <- H2_data %>% 
   filter(!is.na(Group.Manipulation))
 V_H2_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_group_dat)
-H2_group_model <- rma.mv(yi, V_H2_group,
+H2_group_model <- rma(yi, vi,
                          mods = ~ Group.Manipulation - 1,
-                         random = ~ 1 | effectID, data = H2_group_dat, method = "REML")
+                         random = ~ 1 | effectID, data = H2_group_dat, method = "REML", test = "knha")
 summary(H2_group_model)
-Wald_test(H2_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H2_group_model, vcov = "CR2")
-conf_int(H2_group_model, vcov = "CR2")
+anova(H2_group_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
-                            left_join(
-                              coef_test(H2_group_model, vcov = "CR2"),
-                              conf_int(H2_group_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H2_group_model))))
 
 ### Game Type ----
 H2_game_dat <- H2_data %>% 
   filter(!is.na(Game.Type))
 V_H2_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_game_dat)
-H2_game_model <- rma.mv(yi, V_H2_game,
+H2_game_model <- rma(yi, vi,
                         mods = ~ Game.Type - 1,
-                        random = ~ 1 | effectID, data = H2_game_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H2_game_dat, method = "REML", test = "knha")
 summary(H2_game_model)
-Wald_test(H2_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H2_game_model, vcov = "CR2")
+anova(H2_game_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
-                            left_join(
-                              coef_test(H2_game_model, vcov = "CR2"),
-                              conf_int(H2_game_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H2_game_model))))
 
 ### Sex Ratio ----
 H2_sex_dat <- H2_data %>% 
   mutate(male.ratio = Male / (Male + Female))
 V_H2_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_sex_dat)
-H2_sex_model <- rma.mv(yi, V_H2_sex,
+H2_sex_model <- rma(yi, vi,
                        mods = ~ male.ratio,
-                       random = ~ 1 | effectID, data = H2_sex_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_sex_dat, method = "REML", test = "knha")
 summary(H2_sex_model)
-coef_test(H2_sex_model, vcov = "CR2")
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
                             slice_tail( # sex ratio has intercept
-                              left_join(
-                                coef_test(H2_sex_model, vcov = "CR2"),
-                                conf_int(H2_sex_model, vcov = "CR2")
-                              )
-                            ))
+                              as.data.frame(coef(summary(H2_sex_model))))
+                            )
 
 ### Age ----
 H2_age_dat <- H2_data %>% 
   filter(!is.na(Age..mean.)) %>%
   mutate(Age..mean. = as.numeric(Age..mean.))
 V_H2_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_age_dat)
-H2_age_model <- rma.mv(yi, V_H2_age,
+H2_age_model <- rma(yi, vi,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | effectID, data = H2_age_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_age_dat, method = "REML", test = "knha")
 summary(H2_age_model)
-coef_test(H2_age_model, vcov = "CR2")
-conf_int(H2_age_model, vcov = "CR2")
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
                             slice_tail( # age has intercept
-                              left_join(
-                                coef_test(H2_age_model, vcov = "CR2"),
-                                conf_int(H2_age_model, vcov = "CR2")
-                              )
-                            ))
+                              as.data.frame(coef(summary(H2_age_model))))
+                            )
 
 ### relative endowment ----
 H2_endow_dat <- H2_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments))
 V_H2_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_endow_dat)
-H2_endow_model <- rma.mv(yi, V_H2_endow,
+H2_endow_model <- rma(yi, vi,
                          mods = ~ Relative.Endowments,
-                         random = ~ 1 | effectID, data = H2_endow_dat, method = "REML")
+                         random = ~ 1 | effectID, data = H2_endow_dat, method = "REML", test = "knha")
 summary(H2_endow_model)
-coef_test(H2_endow_model, vcov = "CR2")
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
                             slice_tail( # Relative endowment has intercept
-                              left_join(
-                                coef_test(H2_endow_model, vcov = "CR2"),
-                                conf_int(H2_endow_model, vcov = "CR2")
-                              )
-                            ))
+                              as.data.frame(coef(summary(H2_endow_model))))
+                            )
 
 ### Real Interaction ----
 H2_interact_dat <- H2_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H2_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_interact_dat)
-H2_interact_model <- rma.mv(yi, V_H2_interact,
+H2_interact_model <- rma(yi, vi,
                             mods = ~ Real.or.Deception - 1,
-                            random = ~ 1 | effectID, data = H2_interact_dat, method = "REML")
+                            random = ~ 1 | effectID, data = H2_interact_dat, method = "REML", test = "knha")
 summary(H2_interact_model)
-Wald_test(H2_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H2_interact_model, vcov = "CR2")
+anova(H2_interact_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
-                            left_join(
-                              coef_test(H2_interact_model, vcov = "CR2"),
-                              conf_int(H2_interact_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H2_interact_model))))
 
 ### Student Sample ----
 H2_stu_dat <- H2_data %>% 
   filter(!is.na(Student.Sample))
 V_H2_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_stu_dat)
-H2_stu_model <- rma.mv(yi, V_H2_stu,
+H2_stu_model <- rma(yi, vi,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | effectID, data = H2_stu_dat, method = "REML")
-summary(H2_stu_model)
-Wald_test(H2_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H2_stu_model, vcov = "CR2")
-conf_int(H2_stu_model, vcov = "CR2")
+                       random = ~ 1 | effectID, data = H2_stu_dat, method = "REML", test = "knha")
+summary(H2_stu_model) # NOTICE：this moderator is completely correlated with Real Interaction
+anova(H2_stu_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H2_moderator_table <- rbind(H2_moderator_table,
-                            left_join(
-                              coef_test(H2_stu_model, vcov = "CR2"),
-                              conf_int(H2_stu_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H2_stu_model))))
 
 ### Write Table ----
 H2_moderator_table <- H2_moderator_table %>% 
-  select(-df) %>% 
+  rownames_to_column("Moderator") %>% 
   rename(
-    Moderator = "Coef",
-    g = "beta",
-    t = "tstat",
-    df = "df_Satt",
-    p = "p_Satt",
-    CI_lower = "CI_L",
-    CI_upper = "CI_U"
+    g = "estimate",
+    t = "tval",
+    p = "pval",
+    CI_lower = "ci.lb",
+    CI_upper = "ci.ub"
   ) 
 H2_moderator_table %>% 
   nice_table() %>% 
@@ -1440,59 +1385,44 @@ H6_moderator_table <- tibble()
 H6_country_dat <- H6_data %>% 
   filter(!is.na(Country)) 
 V_H6_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_country_dat)
-H6_country_model <- rma.mv(yi, V_H6_country,
+H6_country_model <- rma.mv(yi, vi,
                            mods = ~ Country - 1,
-                           random = ~ 1 | effectID, data = H6_country_dat, method = "REML")
+                           random = ~ 1 | effectID, data = H6_country_dat, method = "REML", test = "knha")
 summary(H6_country_model)
-# Wald_test(H6_country_model, constraints = constrain_equal(1:6), vcov = "CR2") # V is singular
-coef_test(H6_country_model, vcov = "CR2")
-conf_int(H6_country_model, vcov = "CR2")
 
 # saving statistics
-H6_moderator_table <- left_join(
-  coef_test(H6_country_model, vcov = "CR2"),
-  conf_int(H6_country_model, vcov = "CR2")
-)
+H6_moderator_table <- as.data.frame(coef(summary(H6_country_model)))
 
 ### The cost ----
 H6_cost_dat <- H6_data %>% 
   mutate(Punishment.Cost.Ratio = as.numeric(Punishment.Cost.Ratio)) %>% 
   filter(!is.na(Punishment.Cost.Ratio))
 V_H6_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_cost_dat)
-H6_cost_model <- rma.mv(yi, V_H6_cost,
+H6_cost_model <- rma(yi, vi,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | effectID, data = H6_cost_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H6_cost_dat, method = "REML", test = "knha")
 summary(H6_cost_model)
-coef_test(H6_cost_model, vcov = "CR2")
-conf_int(H6_cost_model, vcov = "CR2")
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
                             slice_tail( # cost ratio has intercept
-                              left_join(
-                                coef_test(H6_cost_model, vcov = "CR2"),
-                                conf_int(H6_cost_model, vcov = "CR2")
-                              )
+                              as.data.frame(coef(summary(H6_cost_model)))
                             ))
 
 ### Lab or online ----
 H6_lab_dat <- H6_data %>% 
   filter(!is.na(Lab.or.Online))
 V_H6_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_lab_dat)
-H6_lab_model <- rma.mv(yi, V_H6_lab,
+H6_lab_model <- rma(yi, vi,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | effectID, data = H6_lab_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_lab_dat, method = "REML", test = "knha")
 summary(H6_lab_model)
-Wald_test(H6_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H6_lab_model, vcov = "CR2")
-conf_int(H6_lab_model, vcov = "CR2")
+anova(H6_lab_model,
+      X = rbind(c(0, 1, -1)))
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
-                            left_join(
-                              coef_test(H6_lab_model, vcov = "CR2"),
-                              conf_int(H6_lab_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H6_lab_model))))
 
 ### Group Manipulation ----
 # Not appliable, all data is Natural group
@@ -1508,131 +1438,106 @@ H6_moderator_table <- rbind(H6_moderator_table,
 H6_game_dat <- H6_data %>% 
   filter(!is.na(Game.Type))
 V_H6_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_game_dat)
-H6_game_model <- rma.mv(yi, V_H6_game, 
+H6_game_model <- rma(yi, vi, 
                         mods = ~ Game.Type - 1,
-                        random = ~ 1 | effectID, data = H6_game_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H6_game_dat, method = "REML", test = "knha")
 summary(H6_game_model)
-Wald_test(H6_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H6_game_model, vcov = "CR2")
+anova(H6_game_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
-                            left_join(
-                              coef_test(H6_game_model, vcov = "CR2"),
-                              conf_int(H6_game_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H6_game_model))))
 
 ### Sex Ratio ----
 H6_sex_dat <- H6_data %>% 
   mutate(male.ratio = Male / (Male + Female))
 V_H6_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_sex_dat)
-H6_sex_model <- rma.mv(yi, V_H6_sex,
+H6_sex_model <- rma(yi, vi,
                        mods = ~ male.ratio,
-                       random = ~ 1 | effectID, data = H6_sex_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_sex_dat, method = "REML", test = "knha")
 summary(H6_sex_model)
-coef_test(H6_sex_model, vcov = "CR2")
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
                             slice_tail( # sex ratio has intercept
-                              left_join(
-                                coef_test(H6_sex_model, vcov = "CR2"),
-                                conf_int(H6_sex_model, vcov = "CR2")
-                              )
-                            ))
+                              as.data.frame(coef(summary(H6_sex_model))))
+                            )
 
 ### Age ----
 H6_age_dat <- H6_data %>% 
   filter(!is.na(Age..mean.)) %>%
   mutate(Age..mean. = as.numeric(Age..mean.))
 V_H6_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_age_dat)
-H6_age_model <- rma.mv(yi, V_H6_age,
+H6_age_model <- rma(yi, vi,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | effectID, data = H6_age_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_age_dat, method = "REML", test = "knha")
 summary(H6_age_model)
-coef_test(H6_age_model, vcov = "CR2")
-conf_int(H6_age_model, vcov = "CR2")
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
                             slice_tail( # age has intercept
-                              left_join(
-                                coef_test(H6_age_model, vcov = "CR2"),
-                                conf_int(H6_age_model, vcov = "CR2")
-                              )
-                            ))
+                              as.data.frame(coef(summary(H6_age_model))))
+                            )
 
 ### relative endowment ----
 H6_endow_dat <- H6_data %>% 
   filter(!is.na(Relative.Endowments)) %>%
   mutate(Relative.Endowments = as.numeric(Relative.Endowments))
 V_H6_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_endow_dat)
-H6_endow_model <- rma.mv(yi, V_H6_endow,
+H6_endow_model <- rma(yi, vi,
                          mods = ~ Relative.Endowments,
-                         random = ~ 1 | effectID, data = H6_endow_dat, method = "REML")
+                         random = ~ 1 | effectID, data = H6_endow_dat, method = "REML", test = "knha")
 summary(H6_endow_model)
-coef_test(H6_endow_model, vcov = "CR2")
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
                             slice_tail( # Relative endowment has intercept
-                              left_join(
-                                coef_test(H6_endow_model, vcov = "CR2"),
-                                conf_int(H6_endow_model, vcov = "CR2")
-                              )
-                            ))
+                              as.data.frame(coef(summary(H6_endow_model))))
+                            )
 
 ### Real Interaction ----
 H6_interact_dat <- H6_data %>% 
   filter(!is.na(Real.or.Deception))
 V_H6_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_interact_dat)
-H6_interact_model <- rma.mv(yi, V_H6_interact,
+H6_interact_model <- rma(yi, vi,
                             mods = ~ Real.or.Deception - 1,
-                            random = ~ 1 | effectID, data = H6_interact_dat, method = "REML")
+                            random = ~ 1 | effectID, data = H6_interact_dat, method = "REML", test = "knha")
 summary(H6_interact_model)
-Wald_test(H6_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H6_interact_model, vcov = "CR2")
+anova(H6_interact_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
-                            left_join(
-                              coef_test(H6_interact_model, vcov = "CR2"),
-                              conf_int(H6_interact_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H6_interact_model))))
 
 ### Student Sample ----
 H6_stu_dat <- H6_data %>% 
   filter(!is.na(Student.Sample))
 V_H6_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_stu_dat)
-H6_stu_model <- rma.mv(yi, V_H6_stu,
+H6_stu_model <- rma(yi, vi,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | effectID, data = H6_stu_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_stu_dat, method = "REML", test = "knha")
 summary(H6_stu_model)
-Wald_test(H6_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
-coef_test(H6_stu_model, vcov = "CR2")
-conf_int(H6_stu_model, vcov = "CR2")
+anova(H6_stu_model,
+      X = rbind(c(1, -1)))
 
 # saving statistics
 H6_moderator_table <- rbind(H6_moderator_table,
-                            left_join(
-                              coef_test(H6_stu_model, vcov = "CR2"),
-                              conf_int(H6_stu_model, vcov = "CR2")
-                            ))
+                            as.data.frame(coef(summary(H6_stu_model))))
 
 ### Write Table ----
 H6_moderator_table <- H6_moderator_table %>% 
-  select(-df) %>% 
+  rownames_to_column("Moderator") %>% 
   rename(
-    Moderator = "Coef",
-    g = "beta",
-    t = "tstat",
-    df = "df_Satt",
-    p = "p_Satt",
-    CI_lower = "CI_L",
-    CI_upper = "CI_U"
+    g = "estimate",
+    t = "tval",
+    p = "pval",
+    CI_lower = "ci.lb",
+    CI_upper = "ci.ub"
   ) 
 H6_moderator_table %>% 
-  mutate(across(where(is.numeric), ~ round(., 4))) %>% 
+  # mutate(across(where(is.numeric), ~ round(., 4))) %>% 
   nice_table() %>% 
   flextable::save_as_docx(., path = "tab/H6_moderator.docx")
 
