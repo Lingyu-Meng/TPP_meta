@@ -245,8 +245,8 @@ H2_data <- rbind(H2_data, H2_Between_Data)
 V_H2 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_data)
 
 ### Model Fitting ----
-H2_model <- rma.mv(yi, V_H2, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML")
-robust(H2_model, cluster = No., clubSandwich=TRUE)
+H2_model <- rma.mv(yi, V_H2, random = ~ 1 | effectID, data = H2_data, method = "REML")
+summary(H2_model) # don't use CR2 as sigma is 0 
 
 # checking likelihood profile plots
 profile(H2_model)
@@ -566,7 +566,7 @@ H5_data <- rbind(H5_data, H5_Between_Data)
 V_H5 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_data)
 
 ### Model Fitting ----
-H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML")
+H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / effectID, data = H5_data, method = "REML")
 robust(H5_model, cluster = No., clubSandwich=TRUE)
 
 # calculating the overall amount of heterogeneity
@@ -690,8 +690,8 @@ V_H6 <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_data
 
 ### Model Fitting ----
 H6_model <- rma.mv(yi, V_H6,
-                   random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML")
-robust(H6_model, cluster = No., clubSandwich=TRUE)
+                   random = ~ 1 | effectID, data = H6_data, method = "REML")
+summary(H6_model) # don't use CR2 as sigma is 0 
 
 # forest plot
 H6_f <- forest(H6_model, slab = paste(H6_data$Intext.Citation, "S", H6_data$Study, sep = " "))
@@ -976,9 +976,8 @@ H2_country_dat <- H2_data %>%
 V_H2_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_country_dat)
 H2_country_model <- rma.mv(yi, V_H2_country,
                            mods = ~ Country - 1,
-                           random = ~ 1 | No. / Study / effectID, data = H2_country_dat, method = "REML")
+                           random = ~ 1 | effectID, data = H2_country_dat, method = "REML")
 summary(H2_country_model)
-Wald_test(H2_country_model, constraints = constrain_equal(1:6), vcov = "CR2", test = "EDT") # HTZ returns NA
 coef_test(H2_country_model, vcov = "CR2")
 conf_int(H2_country_model, vcov = "CR2")
 
@@ -1012,7 +1011,7 @@ H2_cost_dat <- H2_data %>%
 V_H2_cost <- vcalc(H2_cost_dat$vi, cluster=H2_cost_dat$Sample.ID, rho = 0.5)
 H2_cost_model <- rma.mv(yi, V_H2_cost,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | No. / Study / effectID, data = H2_cost_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H2_cost_dat, method = "REML")
 summary(H2_cost_model)
 coef_test(H2_cost_model, vcov = "CR2")
 conf_int(H2_cost_model, vcov = "CR2")
@@ -1023,7 +1022,7 @@ H2_lab_dat <- H2_data %>%
 V_H2_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_lab_dat)
 H2_lab_model <- rma.mv(yi, V_H2_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H2_lab_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_lab_dat, method = "REML")
 summary(H2_lab_model)
 Wald_test(H2_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
 coef_test(H2_lab_model, vcov = "CR2")
@@ -1054,7 +1053,7 @@ H2_group_dat <- H2_data %>%
 V_H2_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_group_dat)
 H2_group_model <- rma.mv(yi, V_H2_group,
                          mods = ~ Group.Manipulation - 1,
-                         random = ~ 1 | No. / Study / effectID, data = H2_group_dat, method = "REML")
+                         random = ~ 1 | effectID, data = H2_group_dat, method = "REML")
 summary(H2_group_model)
 Wald_test(H2_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_group_model, vcov = "CR2")
@@ -1073,7 +1072,7 @@ H2_game_dat <- H2_data %>%
 V_H2_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_game_dat)
 H2_game_model <- rma.mv(yi, V_H2_game,
                         mods = ~ Game.Type - 1,
-                        random = ~ 1 | No. / Study / effectID, data = H2_game_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H2_game_dat, method = "REML")
 summary(H2_game_model)
 Wald_test(H2_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_game_model, vcov = "CR2")
@@ -1091,7 +1090,7 @@ H2_sex_dat <- H2_data %>%
 V_H2_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_sex_dat)
 H2_sex_model <- rma.mv(yi, V_H2_sex,
                        mods = ~ male.ratio,
-                       random = ~ 1 | No. / Study / effectID, data = H2_sex_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_sex_dat, method = "REML")
 summary(H2_sex_model)
 coef_test(H2_sex_model, vcov = "CR2")
 
@@ -1111,7 +1110,7 @@ H2_age_dat <- H2_data %>%
 V_H2_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_age_dat)
 H2_age_model <- rma.mv(yi, V_H2_age,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | No. / Study / effectID, data = H2_age_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_age_dat, method = "REML")
 summary(H2_age_model)
 coef_test(H2_age_model, vcov = "CR2")
 conf_int(H2_age_model, vcov = "CR2")
@@ -1132,7 +1131,7 @@ H2_endow_dat <- H2_data %>%
 V_H2_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_endow_dat)
 H2_endow_model <- rma.mv(yi, V_H2_endow,
                          mods = ~ Relative.Endowments,
-                         random = ~ 1 | No. / Study / effectID, data = H2_endow_dat, method = "REML")
+                         random = ~ 1 | effectID, data = H2_endow_dat, method = "REML")
 summary(H2_endow_model)
 coef_test(H2_endow_model, vcov = "CR2")
 
@@ -1151,7 +1150,7 @@ H2_interact_dat <- H2_data %>%
 V_H2_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_interact_dat)
 H2_interact_model <- rma.mv(yi, V_H2_interact,
                             mods = ~ Real.or.Deception - 1,
-                            random = ~ 1 | No. / Study / effectID, data = H2_interact_dat, method = "REML")
+                            random = ~ 1 | effectID, data = H2_interact_dat, method = "REML")
 summary(H2_interact_model)
 Wald_test(H2_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_interact_model, vcov = "CR2")
@@ -1169,7 +1168,7 @@ H2_stu_dat <- H2_data %>%
 V_H2_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H2_stu_dat)
 H2_stu_model <- rma.mv(yi, V_H2_stu,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H2_stu_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H2_stu_dat, method = "REML")
 summary(H2_stu_model)
 Wald_test(H2_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H2_stu_model, vcov = "CR2")
@@ -1198,24 +1197,6 @@ H2_moderator_table %>%
   nice_table() %>% 
   flextable::save_as_docx(., path = "tab/H2_moderator.docx")
 
-# Combine H1 with H2
-# add prefix before joining:
-H1_H2_moderator_table <- full_join(
-  H1_moderator_table %>% rename_with(.,
-                                     ~ paste0("H1.", .x),
-                                     -Moderator)
-  ,
-  H2_moderator_table %>% rename_with(.,
-                                    ~ paste0("H2.", .x),
-                                    -Moderator)
-  ,
-  by = "Moderator")
-
-# Make nice_table
-H1_H2_moderator_table %>% 
-nice_table(., separate.header = TRUE) %>% 
-  flextable::save_as_docx(., path = "tab/H1&2_moderator.docx")
-
 
 ## H5 The Effects of Violator’s Identity on Punishment When Fair moderator analyses ----
 H5_moderator_table <- tibble()
@@ -1225,7 +1206,7 @@ H5_country_dat <- H5_data %>%
 V_H5_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_country_dat)
 H5_country_model <- rma.mv(yi, V_H5_country, 
                            mods = ~ Country - 1,
-                           random = ~ 1 | No./ Study / effectID, data = H5_country_dat, method = "REML")
+                           random = ~ 1 | No. / effectID, data = H5_country_dat, method = "REML")
 summary(H5_country_model)
 Wald_test(H5_country_model, constraints = constrain_equal(1:6), vcov = "CR2", test = "EDT") # HTZ returns NA
 coef_test(H5_country_model, vcov = "CR2")
@@ -1261,7 +1242,7 @@ H5_cost_dat <- H5_data %>%
 V_H5_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_cost_dat)
 H5_cost_model <- rma.mv(yi, V_H5_cost,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | No. / Study / effectID, data = H5_cost_dat, method = "REML")
+                        random = ~ 1 | No. / effectID, data = H5_cost_dat, method = "REML")
 summary(H5_cost_model)
 coef_test(H5_cost_model, vcov = "CR2")
 conf_int(H5_cost_model, vcov = "CR2")
@@ -1281,7 +1262,7 @@ H5_lab_dat <- H5_data %>%
 V_H5_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_lab_dat)
 H5_lab_model <- rma.mv(yi, V_H5_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H5_lab_dat, method = "REML")
+                       random = ~ 1 | No. / effectID, data = H5_lab_dat, method = "REML")
 summary(H5_lab_model)
 Wald_test(H5_lab_model, constraints = constrain_equal(2:3), vcov = "CR2") # we didn't test field, cause it has only 2 effects, 1 paper
 coef_test(H5_lab_model, vcov = "CR2")
@@ -1300,7 +1281,7 @@ H5_group_dat <- H5_data %>%
 V_H5_group <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_group_dat)
 H5_group_model <- rma.mv(yi, V_H5_group,
                          mods = ~ Group.Manipulation - 1,
-                         random = ~ 1 | No. / Study / effectID, data = H5_group_dat, method = "REML")
+                         random = ~ 1 | No. / effectID, data = H5_group_dat, method = "REML")
 summary(H5_group_model)
 Wald_test(H5_group_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_group_model, vcov = "CR2")
@@ -1326,7 +1307,7 @@ H5_game_dat <- H5_data %>%
 V_H5_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_game_dat)
 H5_game_model <- rma.mv(yi, V_H5_game,
                         mods = ~ Game.Type - 1,
-                        random = ~ 1 | No. / Study / effectID, data = H5_game_dat, method = "REML")
+                        random = ~ 1 | No. / effectID, data = H5_game_dat, method = "REML")
 summary(H5_game_model)
 Wald_test(H5_game_model, constraints = constrain_equal(1:3), vcov = "CR2")
 
@@ -1343,7 +1324,7 @@ H5_sex_dat <- H5_data %>%
 V_H5_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_sex_dat)
 H5_sex_model <- rma.mv(yi, V_H5_sex,
                        mods = ~ male.ratio,
-                       random = ~ 1 | No. / Study / effectID, data = H5_sex_dat, method = "REML")
+                       random = ~ 1 | No. / effectID, data = H5_sex_dat, method = "REML")
 summary(H5_sex_model)
 coef_test(H5_sex_model, vcov = "CR2")
 
@@ -1363,7 +1344,7 @@ H5_age_dat <- H5_data %>%
 V_H5_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_age_dat)
 H5_age_model <- rma.mv(yi, V_H5_age,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | No. / Study / effectID, data = H5_age_dat, method = "REML")
+                       random = ~ 1 | No. / effectID, data = H5_age_dat, method = "REML")
 summary(H5_age_model)
 coef_test(H5_age_model, vcov = "CR2")
 conf_int(H5_age_model, vcov = "CR2")
@@ -1384,7 +1365,7 @@ H5_endow_dat <- H5_data %>%
 V_H5_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_endow_dat)
 H5_endow_model <- rma.mv(yi, V_H5_endow,
                          mods = ~ Relative.Endowments,
-                         random = ~ 1 | No. / Study / effectID, data = H5_endow_dat, method = "REML")
+                         random = ~ 1 | No. / effectID, data = H5_endow_dat, method = "REML")
 summary(H5_endow_model)
 coef_test(H5_endow_model, vcov = "CR2")
 
@@ -1403,7 +1384,7 @@ H5_interact_dat <- H5_data %>%
 V_H5_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_interact_dat)
 H5_interact_model <- rma.mv(yi, V_H5_interact,
                             mods = ~ Real.or.Deception - 1,
-                            random = ~ 1 | No. / Study / effectID, data = H5_interact_dat, method = "REML")
+                            random = ~ 1 | No. / effectID, data = H5_interact_dat, method = "REML")
 summary(H5_interact_model)
 Wald_test(H5_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_interact_model, vcov = "CR2")
@@ -1421,7 +1402,7 @@ H5_stu_dat <- H5_data %>%
 V_H5_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H5_stu_dat)
 H5_stu_model <- rma.mv(yi, V_H5_stu,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H5_stu_dat, method = "REML")
+                       random = ~ 1 | No. / effectID, data = H5_stu_dat, method = "REML")
 summary(H5_stu_model)
 Wald_test(H5_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H5_stu_model, vcov = "CR2")
@@ -1461,7 +1442,7 @@ H6_country_dat <- H6_data %>%
 V_H6_country <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_country_dat)
 H6_country_model <- rma.mv(yi, V_H6_country,
                            mods = ~ Country - 1,
-                           random = ~ 1 | No./ Study / effectID, data = H6_country_dat, method = "REML")
+                           random = ~ 1 | effectID, data = H6_country_dat, method = "REML")
 summary(H6_country_model)
 # Wald_test(H6_country_model, constraints = constrain_equal(1:6), vcov = "CR2") # V is singular
 coef_test(H6_country_model, vcov = "CR2")
@@ -1480,7 +1461,7 @@ H6_cost_dat <- H6_data %>%
 V_H6_cost <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_cost_dat)
 H6_cost_model <- rma.mv(yi, V_H6_cost,
                         mods = ~ Punishment.Cost.Ratio,
-                        random = ~ 1 | No. / Study / effectID, data = H6_cost_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H6_cost_dat, method = "REML")
 summary(H6_cost_model)
 coef_test(H6_cost_model, vcov = "CR2")
 conf_int(H6_cost_model, vcov = "CR2")
@@ -1500,7 +1481,7 @@ H6_lab_dat <- H6_data %>%
 V_H6_lab <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_lab_dat)
 H6_lab_model <- rma.mv(yi, V_H6_lab,
                        mods = ~ Lab.or.Online - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H6_lab_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_lab_dat, method = "REML")
 summary(H6_lab_model)
 Wald_test(H6_lab_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_lab_model, vcov = "CR2")
@@ -1520,7 +1501,7 @@ H6_moderator_table <- rbind(H6_moderator_table,
 # V_H6_group <- vcalc(H6_group_dat$vi, cluster=H6_group_dat$Sample.ID, rho = 0.5)
 # H6_group_model <- rma.mv(yi, V_H6_group,
 #                          mods = ~ Group.Manipulation,
-#                          random = ~ 1 | No. / Study / effectID, data = H6_group_dat, method = "REML")
+#                          random = ~ 1 | effectID, data = H6_group_dat, method = "REML")
 # summary(H6_group_model)
 
 ### Game Type ----
@@ -1529,7 +1510,7 @@ H6_game_dat <- H6_data %>%
 V_H6_game <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_game_dat)
 H6_game_model <- rma.mv(yi, V_H6_game, 
                         mods = ~ Game.Type - 1,
-                        random = ~ 1 | No. / Study / effectID, data = H6_game_dat, method = "REML")
+                        random = ~ 1 | effectID, data = H6_game_dat, method = "REML")
 summary(H6_game_model)
 Wald_test(H6_game_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_game_model, vcov = "CR2")
@@ -1547,7 +1528,7 @@ H6_sex_dat <- H6_data %>%
 V_H6_sex <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_sex_dat)
 H6_sex_model <- rma.mv(yi, V_H6_sex,
                        mods = ~ male.ratio,
-                       random = ~ 1 | No. / Study / effectID, data = H6_sex_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_sex_dat, method = "REML")
 summary(H6_sex_model)
 coef_test(H6_sex_model, vcov = "CR2")
 
@@ -1567,7 +1548,7 @@ H6_age_dat <- H6_data %>%
 V_H6_age <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_age_dat)
 H6_age_model <- rma.mv(yi, V_H6_age,
                        mods = ~ Age..mean.,
-                       random = ~ 1 | No. / Study / effectID, data = H6_age_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_age_dat, method = "REML")
 summary(H6_age_model)
 coef_test(H6_age_model, vcov = "CR2")
 conf_int(H6_age_model, vcov = "CR2")
@@ -1588,7 +1569,7 @@ H6_endow_dat <- H6_data %>%
 V_H6_endow <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_endow_dat)
 H6_endow_model <- rma.mv(yi, V_H6_endow,
                          mods = ~ Relative.Endowments,
-                         random = ~ 1 | No. / Study / effectID, data = H6_endow_dat, method = "REML")
+                         random = ~ 1 | effectID, data = H6_endow_dat, method = "REML")
 summary(H6_endow_model)
 coef_test(H6_endow_model, vcov = "CR2")
 
@@ -1607,7 +1588,7 @@ H6_interact_dat <- H6_data %>%
 V_H6_interact <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_interact_dat)
 H6_interact_model <- rma.mv(yi, V_H6_interact,
                             mods = ~ Real.or.Deception - 1,
-                            random = ~ 1 | No. / Study / effectID, data = H6_interact_dat, method = "REML")
+                            random = ~ 1 | effectID, data = H6_interact_dat, method = "REML")
 summary(H6_interact_model)
 Wald_test(H6_interact_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_interact_model, vcov = "CR2")
@@ -1625,7 +1606,7 @@ H6_stu_dat <- H6_data %>%
 V_H6_stu <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = 0.5, data = H6_stu_dat)
 H6_stu_model <- rma.mv(yi, V_H6_stu,
                        mods = ~ Student.Sample - 1,
-                       random = ~ 1 | No. / Study / effectID, data = H6_stu_dat, method = "REML")
+                       random = ~ 1 | effectID, data = H6_stu_dat, method = "REML")
 summary(H6_stu_model)
 Wald_test(H6_stu_model, constraints = constrain_equal(1:2), vcov = "CR2")
 coef_test(H6_stu_model, vcov = "CR2")
@@ -1651,26 +1632,9 @@ H6_moderator_table <- H6_moderator_table %>%
     CI_upper = "CI_U"
   ) 
 H6_moderator_table %>% 
+  mutate(across(where(is.numeric), ~ round(., 4))) %>% 
   nice_table() %>% 
   flextable::save_as_docx(., path = "tab/H6_moderator.docx")
-
-# Combine H5 with H6
-# add prefix before joining:
-H5_H6_moderator_table <- full_join(
-  H5_moderator_table %>% rename_with(.,
-                                     ~ paste0("H5.", .x),
-                                     -Moderator)
-  ,
-  H6_moderator_table %>% rename_with(.,
-                                     ~ paste0("H6.", .x),
-                                     -Moderator)
-  ,
-  by = "Moderator")
-
-# Make nice_table
-H5_H6_moderator_table %>% 
-  nice_table(., separate.header = TRUE) %>% 
-  flextable::save_as_docx(., path = "tab/H5&6_moderator.docx")
 
 
 
@@ -1697,7 +1661,7 @@ for (r in 1:10) {
   )
   ## H2
   V_H2_s <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = R, data = H2_data)
-  H2_model_s <- rma.mv(yi, V_H2_s, random = ~ 1 | No. / Study / effectID, data = H2_data, method = "REML",
+  H2_model_s <- rma.mv(yi, V_H2_s, random = ~ 1 | effectID, data = H2_data, method = "REML",
                        control=list(rel.tol=1e-9))
   
   # saving statistics
@@ -1709,7 +1673,7 @@ for (r in 1:10) {
   )
   ## H5
   V_H5_s <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = R, data = H5_data)
-  H5_model_s <- rma.mv(yi, V_H5_s, random = ~ 1 | No. / Study / effectID, data = H5_data, method = "REML",
+  H5_model_s <- rma.mv(yi, V_H5_s, random = ~ 1 | No. / effectID, data = H5_data, method = "REML",
                        control=list(rel.tol=1e-9))
   
   # saving statistics
@@ -1721,7 +1685,7 @@ for (r in 1:10) {
   )
   ## H6
   V_H6_s <- vcalc(vi, cluster = Sample.ID, obs = effectID, rho = R, data = H6_data)
-  H6_model_s <- rma.mv(yi, V_H6_s, random = ~ 1 | No. / Study / effectID, data = H6_data, method = "REML",
+  H6_model_s <- rma.mv(yi, V_H6_s, random = ~ 1 | effectID, data = H6_data, method = "REML",
                        control=list(rel.tol=1e-9))
   
   # saving statistics
@@ -1769,3 +1733,4 @@ cbind(H1_sensitivity_short, H2_sensitivity_short, H5_sensitivity_short, H6_sensi
   nice_table(., separate.header = TRUE) %>% 
   flextable::save_as_docx(., path = "tab/sensitivity.docx")
 
+save.image(file = 'TPP_meta.rds', compress = "xz")
