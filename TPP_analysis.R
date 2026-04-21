@@ -425,6 +425,14 @@ H3_model_d <- H3_data_d %>%
   )
 robust(H3_model_d, cluster = No., clubSandwich=TRUE)
 
+H3_mean_M <- H3_model_d %>% 
+  model.matrix() %>% 
+  colMeans(.)[-1]
+H3_overall <- predict(H3_model_d, newmods = H3_mean_M) %>% 
+  as.data.frame() %>% 
+  lapply(boot::inv.logit) %>% as.data.frame()
+H3_overall
+
 results_mat_name <- expand.grid(`Person A` = c("Ingroup", "Neutral", "Outgroup"), `Person B` = c("Ingroup", "Neutral", "Outgroup"))
 results_mat <- model.matrix(~ `Person A` * `Person B`, results_mat_name)[,-1]
 results_dat <- predict(H3_model_d, newmods = results_mat) %>% 
@@ -469,6 +477,16 @@ H4_model_d <- H4_data_d %>%
          method = "REML",
   )
 summary(H4_model_d)
+
+H4_mean_M <- H4_model_d %>% 
+  model.matrix() %>% 
+  colMeans(.)[-1]
+H4_overall <- predict(H4_model_d, newmods = H4_mean_M) %>% 
+  as.data.frame() %>% 
+  lapply(boot::inv.logit) %>% as.data.frame() %>% 
+  mutate(across(everything(), ~ (.x - 0.025) / (1 - 2 * 0.025)))
+H4_overall
+
 results_mat2 <- results_mat[-8,-7]
 results_dat2 <- predict(H4_model_d, newmods = results_mat2) %>% 
   cbind(results_mat_name[-8,]) %>% 
@@ -729,6 +747,26 @@ metafor::funnel(H6_model, refline=0, level=c(95, 99),
                 shade=c("white", "grey"))
 dev.off()
 
+
+# H4 ----
+H4_model <- H5_data %>%
+  rma.mv(yi, V_H5,
+         mods = ~ Recipient.Player.B.Affliation - 1,
+         random = ~ 1 | No. / effectID,
+         data = .,
+         method = "REML",
+  )
+robust(H4_model, cluster = No., clubSandwich=TRUE)
+
+Wald_test(H4_model, constrain_equal(1:3), vcov = "CR2")
+
+# asign color for ingroup, outgroup, and neutral
+H4_col <- ifelse(H5_data$Recipient.Player.B.Affliation == "Ingroup", "#004488",
+                 ifelse(H5_data$Recipient.Player.B.Affliation == "Outgroup", "#BB5566", "gray"))
+jpeg("fig/H4_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+forest(H4_model, slab = paste(H5_data$Intext.Citation, "S", H5_data$Study, sep = " "),
+       colout = H4_col)
+dev.off()
 
 # Single moderator analyses ################
 ## H1 The Effects of Violator’s Identity on Punishment moderator analyses ----
