@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title></title>
+<style>
+body {font-size: 10.5pt; font-family: Times New Roman;}
+p {margin: 0px;}
+th, td {height: 19px;}
+table.texreg {margin: 1px auto;border-collapse: collapse;border-spacing: 0px;color: #000000;border-top: 2px solid #000000;}
+table.texreg thead .rule {border-bottom: 1px solid #000000;}
+table.texreg tbody tr.rule td {border-top: 1px solid #000000;}
+table.texreg tbody tr.bottomrule td {border-bottom: 2px solid #000000;}
+table.texreg tfoot td {font-size: 0.8em;}
+table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
+</style>
+</head>
+<body>
+<p><b>Table X. Regression Models.</b></p>
+<table class="texreg">
+<thead>
+<tr>
+<th></th>
+<th>(1) P_log</th>
+<th>(2) P_log</th>
+<th>(3) P_log</th>
+<th>(4) P_log</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rule">
+<td>(Intercept)</td>
+<td>–1.732<sup>&#42;&#42;</sup></td>
+<td>–1.546<sup>&#42;&#42;</sup></td>
+<td>–1.669<sup>&#42;&#42;&#42;</sup></td>
+<td>–1.337<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.665)</td>
+<td>(0.520)</td>
+<td>(0.458)</td>
+<td>(0.370)</td>
+</tr>
+<tr>
+<td>Study_SettingField</td>
+<td>&ensp;0.982</td>
+<td>&ensp;1.459</td>
+<td>&ensp;1.588</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(1.618)</td>
+<td>(1.279)</td>
+<td>(1.197)</td>
+<td></td>
+</tr>
+<tr>
+<td>Study_SettingOnline</td>
+<td>&ensp;0.440</td>
+<td>&ensp;0.774</td>
+<td>&ensp;0.618</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(1.173)</td>
+<td>(0.927)</td>
+<td>(0.832)</td>
+<td></td>
+</tr>
+<tr>
+<td>Group_TypeNatural</td>
+<td>&ensp;0.670</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(1.235)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Game_TypePrisoner’s Dilemma</td>
+<td>–0.917</td>
+<td>–0.603</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(1.170)</td>
+<td>(0.947)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Age</td>
+<td>–0.032</td>
+<td>–0.025</td>
+<td>–0.035</td>
+<td>–0.009</td>
+</tr>
+<tr>
+<td></td>
+<td>(0.157)</td>
+<td>(0.155)</td>
+<td>(0.154)</td>
+<td>(0.153)</td>
+</tr>
+<tr>
+<td>Sex1</td>
+<td>–0.228</td>
+<td>–0.225</td>
+<td>–0.225</td>
+<td>–0.228</td>
+</tr>
+<tr>
+<td></td>
+<td>(0.125)</td>
+<td>(0.125)</td>
+<td>(0.125)</td>
+<td>(0.125)</td>
+</tr>
+<tr>
+<td>Membership_AOutgroup</td>
+<td>&ensp;0.780<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.781<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.781<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.781<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.085)</td>
+<td>(0.085)</td>
+<td>(0.085)</td>
+<td>(0.085)</td>
+</tr>
+<tr>
+<td>Membership_BOutgroup</td>
+<td>–0.436<sup>&#42;&#42;&#42;</sup></td>
+<td>–0.434<sup>&#42;&#42;&#42;</sup></td>
+<td>–0.433<sup>&#42;&#42;&#42;</sup></td>
+<td>–0.433<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.102)</td>
+<td>(0.101)</td>
+<td>(0.101)</td>
+<td>(0.101)</td>
+</tr>
+<tr>
+<td>Membership_AOutgroup:Membership_BOutgroup</td>
+<td>–0.318<sup>&#42;</sup></td>
+<td>–0.320<sup>&#42;</sup></td>
+<td>–0.319<sup>&#42;</sup></td>
+<td>–0.318<sup>&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.153)</td>
+<td>(0.153)</td>
+<td>(0.153)</td>
+<td>(0.153)</td>
+</tr>
+<tr class="rule">
+<td>Marginal <i>R</i><sup>2</sup></td>
+<td>&ensp;0.041</td>
+<td>&ensp;0.040</td>
+<td>&ensp;0.033</td>
+<td>&ensp;0.022</td>
+</tr>
+<tr>
+<td>Conditional <i>R</i><sup>2</sup></td>
+<td>&ensp;0.343</td>
+<td>&ensp;0.330</td>
+<td>&ensp;0.315</td>
+<td>&ensp;0.308</td>
+</tr>
+<tr>
+<td>AIC</td>
+<td>8935.084</td>
+<td>8935.588</td>
+<td>8935.681</td>
+<td>8937.287</td>
+</tr>
+<tr>
+<td>BIC</td>
+<td>9014.444</td>
+<td>9009.280</td>
+<td>9003.703</td>
+<td>8993.973</td>
+</tr>
+<tr>
+<td>Num. obs.</td>
+<td>2140</td>
+<td>2140</td>
+<td>2140</td>
+<td>2140</td>
+</tr>
+<tr>
+<td>Num. groups: Participant:(Study:No.)</td>
+<td>804</td>
+<td>804</td>
+<td>804</td>
+<td>804</td>
+</tr>
+<tr>
+<td>Num. groups: Study:No.</td>
+<td>11</td>
+<td>11</td>
+<td>11</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Num. groups: No.</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Var: Participant:(Study:No.) (Intercept)</td>
+<td>&ensp;1.798</td>
+<td>&ensp;1.798</td>
+<td>&ensp;1.798</td>
+<td>&ensp;1.798</td>
+</tr>
+<tr>
+<td>Var: Study:No. (Intercept)</td>
+<td>&ensp;0.269</td>
+<td>&ensp;0.258</td>
+<td>&ensp;0.257</td>
+<td>&ensp;0.242</td>
+</tr>
+<tr>
+<td>Var: No. (Intercept)</td>
+<td>&ensp;1.089</td>
+<td>&ensp;0.904</td>
+<td>&ensp;0.765</td>
+<td>&ensp;0.794</td>
+</tr>
+<tr class="bottomrule">
+<td>Var: Residual</td>
+<td>&ensp;6.860</td>
+<td>&ensp;6.860</td>
+<td>&ensp;6.861</td>
+<td>&ensp;6.861</td>
+</tr>
+</tbody>
+</table>
+<p><i>Note</i>. Unstandardized regression coefficients are displayed, with standard errors in parentheses.</p><p>* <i>p</i> < .05. ** <i>p</i> < .01. *** <i>p</i> < .001.</p></body>
+</html>

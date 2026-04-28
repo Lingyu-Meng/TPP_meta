@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title></title>
+<style>
+body {font-size: 10.5pt; font-family: Times New Roman;}
+p {margin: 0px;}
+th, td {height: 19px;}
+table.texreg {margin: 1px auto;border-collapse: collapse;border-spacing: 0px;color: #000000;border-top: 2px solid #000000;}
+table.texreg thead .rule {border-bottom: 1px solid #000000;}
+table.texreg tbody tr.rule td {border-top: 1px solid #000000;}
+table.texreg tbody tr.bottomrule td {border-bottom: 2px solid #000000;}
+table.texreg tfoot td {font-size: 0.8em;}
+table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
+</style>
+</head>
+<body>
+<p><b>Table X. Regression Models.</b></p>
+<table class="texreg">
+<thead>
+<tr>
+<th></th>
+<th>(1) P_log</th>
+<th>(2) P_log</th>
+</tr>
+</thead>
+<tbody>
+<tr class="rule">
+<td>(Intercept)</td>
+<td>–2.307<sup>&#42;&#42;&#42;</sup></td>
+<td>–2.329<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.184)</td>
+<td>(0.130)</td>
+</tr>
+<tr>
+<td>Study_SettingField</td>
+<td>–0.518</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.506)</td>
+<td></td>
+</tr>
+<tr>
+<td>Study_SettingOnline</td>
+<td>&ensp;0.291<sup>&#42;</sup></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.148)</td>
+<td></td>
+</tr>
+<tr>
+<td>Group_TypeNatural</td>
+<td>–0.899<sup>&#42;&#42;&#42;</sup></td>
+<td>–1.079<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.197)</td>
+<td>(0.093)</td>
+</tr>
+<tr>
+<td>Game_TypePrisoner’s Dilemma</td>
+<td>–0.787<sup>&#42;&#42;&#42;</sup></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.154)</td>
+<td></td>
+</tr>
+<tr>
+<td>Age</td>
+<td>&ensp;0.053</td>
+<td>–0.013</td>
+</tr>
+<tr>
+<td></td>
+<td>(0.111)</td>
+<td>(0.110)</td>
+</tr>
+<tr>
+<td>Sex1</td>
+<td>–0.077</td>
+<td>–0.147</td>
+</tr>
+<tr>
+<td></td>
+<td>(0.085)</td>
+<td>(0.087)</td>
+</tr>
+<tr>
+<td>Membership_AOutgroup</td>
+<td>&ensp;0.920<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.956<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.084)</td>
+<td>(0.083)</td>
+</tr>
+<tr>
+<td>Membership_BOutgroup</td>
+<td>&ensp;0.474<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.549<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.124)</td>
+<td>(0.118)</td>
+</tr>
+<tr>
+<td>Membership_AOutgroup:Membership_BOutgroup</td>
+<td>–0.932<sup>&#42;&#42;&#42;</sup></td>
+<td>–0.684<sup>&#42;&#42;&#42;</sup></td>
+</tr>
+<tr>
+<td></td>
+<td>(0.200)</td>
+<td>(0.197)</td>
+</tr>
+<tr class="rule">
+<td>Marginal <i>R</i><sup>2</sup></td>
+<td>&ensp;0.136</td>
+<td>&ensp;0.090</td>
+</tr>
+<tr>
+<td>Conditional <i>R</i><sup>2</sup></td>
+<td>&ensp;0.197</td>
+<td>&ensp;0.161</td>
+</tr>
+<tr>
+<td>AIC</td>
+<td>4083.792</td>
+<td>4121.554</td>
+</tr>
+<tr>
+<td>BIC</td>
+<td>4149.667</td>
+<td>4172.227</td>
+</tr>
+<tr>
+<td>Num. obs.</td>
+<td>1173</td>
+<td>1173</td>
+</tr>
+<tr>
+<td>Num. groups: Participant:Study</td>
+<td>365</td>
+<td>365</td>
+</tr>
+<tr>
+<td>Num. groups: Study</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Var: Participant:Study (Intercept)</td>
+<td>&ensp;0.229</td>
+<td>&ensp;0.297</td>
+</tr>
+<tr>
+<td>Var: Study (Intercept)</td>
+<td>&ensp;0.049</td>
+<td>&ensp;0.014</td>
+</tr>
+<tr class="bottomrule">
+<td>Var: Residual</td>
+<td>&ensp;3.625</td>
+<td>&ensp;3.673</td>
+</tr>
+</tbody>
+</table>
+<p><i>Note</i>. Unstandardized regression coefficients are displayed, with standard errors in parentheses.</p><p>* <i>p</i> < .05. ** <i>p</i> < .01. *** <i>p</i> < .001.</p></body>
+</html>
