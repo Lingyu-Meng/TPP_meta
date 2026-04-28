@@ -201,3 +201,14 @@ model_summary(list(
 
 HLM_summary(model_1_unfair)
 HLM_summary(model_1_fair)
+
+lmerTest::as_lmerModLmerTest(model_1_unfair) %>%
+  anova() %>%
+  rownames_to_column("Effects") %>%
+  nice_table(col.format.p = 7) %>% 
+  flextable::save_as_docx(., path = "tab/IPDMA_unfair_anova.docx")
+lmerTest::as_lmerModLmerTest(model_1_fair) %>% 
+  anova() %>%
+  rownames_to_column("Effects") %>%
+  nice_table(col.format.p = 7) %>% 
+  flextable::save_as_docx(., path = "tab/IPDMA_fair_anova.docx")
