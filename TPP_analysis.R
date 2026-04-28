@@ -1,4 +1,3 @@
-# ==============================================================================
 # Title:       R Script for TPP Meta-Analysis
 # Description: This script analyze the meta-data from the project "Altrusitic
 #              and Antisocial Third-Party Punishment in Intergroup Interaction:
@@ -7,7 +6,6 @@
 # Date:        2026-04-24
 # Version:     1.0
 # Notes:       Requires 'Coding Sample - Final Meta Data.csv' in the folder.
-# ==============================================================================
 
 
 # if rma.mv failed to converge, add control=list(rel.tol=1e-9) in the function
@@ -30,7 +28,7 @@ MA_dat <- read_csv("Coding Sample - Final Meta Data.csv", skip = 1)
 MA_dat$`Action_A_Binary` <- as.numeric(MA_dat$`Action_A_Binary`)
 
 # Main Analysis ================================================================
-## The Effect of Focal Player Membership on Altruistic Punishment --------------
+## H1 The Effect of Focal Player Membership on Altruistic Punishment --------------
 ### Data Preparation ----
 H1_data <- MA_dat %>%
   filter(
@@ -161,7 +159,7 @@ metafor::funnel(H1_model, refline=0, level=c(95, 99),
 dev.off()
 
 
-## The Effect of Partner Player Membership on Altruistic Punishment ----
+## H2 The Effect of Partner Player Membership on Altruistic Punishment ----
 ### Data Preparation ----
 H2_data <- MA_dat %>%
   filter(
@@ -524,7 +522,7 @@ ggsave("fig/Summary_fair_heatmap.jpeg", heat_all_2, height = 6, width = 7)
 heat_all_all <- plot_grid(heat_all, heat_all_2, labels = c("a", "b"))
 ggsave("fig/Summary_all_heatmap.jpeg", heat_all_all, height = 6, width = 14)
 
-## The Effect of Focal Player Membership on Antisocial Punishment --------------
+## H5 The Effect of Focal Player Membership on Antisocial Punishment --------------
 ### Data Preparation ----
 H5_data <- MA_dat %>%
   filter(
@@ -1689,6 +1687,131 @@ H5_sensitivity_short <- H5_sensitivity %>%
 cbind(H1_sensitivity_short, H5_sensitivity_short) %>% 
   nice_table(., separate.header = TRUE) %>% 
   flextable::save_as_docx(., path = "tab/sensitivity.docx")
+
+# Publication Bias ########################
+# we use the precision-effect test (PET) and the precision-effect estimate with standard error (PEESE)
+## H1 ----
+PET_H1 <- rma.mv(
+  yi, V_H1,
+  mods = ~ sqrt(vi),
+  random = ~ 1 | No. / Study / effectID,
+  data = H1_data,
+  method = "REML"
+)
+summary(PET_H1)
+coef_test(PET_H1, vcov = "CR2") # intercept is not significant, use PET
+
+PETPEESE_CR2 <- slice_head(conf_int(PET_H1, vcov = "CR2"))
+
+## H2 ----
+PET_H2 <- rma(yi, vi, mods = ~ sqrt(vi), data = H2_data, method = "REML", test = "knha")
+summary(PET_H2) # intercept is significant, use PEESE
+PEESE_H2 <- rma(yi, vi, mods = ~ vi, data = H2_data, method = "REML", test = "knha")
+summary(PEESE_H2)
+
+PETPEESE_one <- slice_head(
+  as.data.frame(coef(summary(PEESE_H2)))
+  )
+
+## H5 ----
+PET_H5 <- rma.mv(
+  yi, V_H5, 
+  mods = ~ sqrt(vi),
+  random = ~ 1 | No. / effectID, 
+  data = H5_data, method = "REML")
+summary(PET_H5)
+coef_test(PET_H5, vcov = "CR2") # intercept is significantly positive, use PEESE
+
+PEESE_H5 <- rma.mv(
+  yi, V_H5,
+  mods = ~ vi,
+  random = ~ 1 | No. / effectID,
+  data = H5_data,
+  method = "REML"
+)
+summary(PEESE_H5)
+coef_test(PEESE_H5, vcov = "CR2")
+
+PETPEESE_CR2 <- rbind(PETPEESE_CR2,
+                      slice_head(conf_int(PEESE_H5, vcov = "CR2"))
+)
+
+## H6 ----
+PET_H6 <- rma(yi, vi, mods = ~ sqrt(vi), data = H6_data, method = "REML", test = "knha")
+summary(PET_H6) # intercept is not significant, use PET
+
+## Write Table ----
+PETPEESE_one <- rbind(PETPEESE_one,
+                      slice_head(as.data.frame(coef(summary(PET_H6))))
+)
+
+PETPEESE_CR2 <- PETPEESE_CR2 %>% 
+  select(beta,CI_L,CI_U) %>% 
+  rename(
+    PETPEESE.g = "beta",
+    PETPEESE.CI_lower = "CI_L",
+    PETPEESE.CI_upper = "CI_U"
+  ) %>% 
+  add_column(
+    Model = c("H1","H5")
+  )
+
+PETPEESE_one <- PETPEESE_one %>% 
+  select(estimate, ci.lb, ci.ub) %>% 
+  rename(
+    PETPEESE.g = "estimate",
+    PETPEESE.CI_lower = "ci.lb",
+    PETPEESE.CI_upper = "ci.ub"
+  ) %>% 
+  add_column(
+    Model = c("H2","H6")
+  )
+PETPEESE_table <- rbind(PETPEESE_CR2,
+                        PETPEESE_one) %>% 
+  relocate(Model)
+
+main_CR2 <- rbind(
+  conf_int(H1_model, vcov = "CR2"),
+  conf_int(H5_model, vcov = "CR2")
+) %>% 
+  select(beta,CI_L,CI_U) %>% 
+  rename(
+    Original.g = "beta",
+    Original.CI_lower = "CI_L",
+    Original.CI_upper = "CI_U"
+  ) %>% 
+  add_column(
+    Model = c("H1","H5")
+  ) 
+
+main_one <- rbind(
+  as.data.frame(coef(summary(H2_model))),
+  as.data.frame(coef(summary(H6_model)))
+) %>% 
+  select(estimate, ci.lb, ci.ub) %>% 
+  rename(
+    Original.g = "estimate",
+    Original.CI_lower = "ci.lb",
+    Original.CI_upper = "ci.ub"
+  ) %>% 
+  add_column(
+    Model = c("H2","H6")
+  )
+
+main_table <- rbind(
+  main_CR2, main_one
+) %>% relocate(Model)
+
+PETPEESE_table <- left_join(PETPEESE_table,
+                            main_table)
+  
+PETPEESE_table %>% 
+  nice_table(separate.header = TRUE,
+             note = c(
+               "For the multilevel models (i.e., H1 and H5), cluster-robust (CR2) standard errors were applied. Models highlighted in the table showed a significant intercept in the PET specification; accordingly, the corresponding PEESE estimates are reported as the bias-adjusted effects."
+             )) %>% flextable::bg(bg = "gray", i = c(2,3)) %>% 
+  flextable::save_as_docx(., path = "tab/publication_bias.docx")
+
 
 save.image(file = 'TPP_meta.rds', compress = "xz")
 
