@@ -212,3 +212,62 @@ lmerTest::as_lmerModLmerTest(model_1_fair) %>%
   rownames_to_column("Effects") %>%
   nice_table(col.format.p = 7) %>% 
   flextable::save_as_docx(., path = "tab/IPDMA_fair_anova.docx")
+
+
+# 60 as fair ----
+## Unfair ----
+IPD_dat_IO %>% 
+  filter(Action_A_Binary_60 == "0") %>% 
+  select(Study_Setting, Group_Type, Game_Type, Real_Interaction, Nationality) %>% 
+  summary()
+# Group_Type = Real_Interaction?; Prisoner's Dilemma may = Switzerland
+
+Full_model_unfair_60 <- lmer(
+  P_log ~ Study_Setting + Group_Type + Game_Type + Real_Interaction +
+    Age + Sex + Nationality + Membership_A * Membership_B +
+    (1 | No. / Study / Participant),
+  data = IPD_dat_IO %>% 
+    filter(Action_A_Binary_60 == "0"),
+  weights = Number_of_Trials
+)
+car::vif(Full_model_unfair_60) # GVIF of Real_Interaction > 20
+summary(Full_model_unfair_60)
+# remove Real_Interaction and Nationality
+model_1_unfair_60 <- lmer(
+  P_log ~ Study_Setting + Group_Type + Game_Type +
+    Age + Sex + Membership_A * Membership_B +
+    (1 | No. / Study / Participant),
+  data = IPD_dat_IO %>% 
+    filter(Action_A_Binary_60 == "0"),
+  weights = Number_of_Trials
+)
+car::vif(model_1_unfair_60)
+summary(model_1_unfair_60)
+HLM_summary(model_1_unfair_60)
+
+## Fair ----
+IPD_dat_IO %>% 
+  filter(Action_A_Binary_60 == "1") %>% 
+  select(Study_Setting, Group_Type, Game_Type, Real_Interaction, Nationality) %>% 
+  summary()
+# Experimental = China; Prisoner's Dilemma may = Switzerland; Papua New Guinea = Field
+# remove No.
+Full_model_fair_60 <- lmer(
+  P_log ~ Study_Setting + Group_Type + Game_Type + Real_Interaction +
+    Age + Sex + Nationality + Membership_A * Membership_B +
+    (1 | Study / Participant),
+  data = IPD_dat_IO %>% 
+    filter(Action_A_Binary_60 == "1"),
+  weights = Number_of_Trials
+)
+car::vif(Full_model_fair_60) # GVIF of Real_Interaction and Nationality > 20
+# remove Real_Interaction and Nationality
+model_1_fair_60 <- lmer(
+  P_log ~ Study_Setting + Group_Type + Game_Type + Age + Sex + Membership_A * Membership_B +
+    (1 | Study / Participant),
+  weights = Number_of_Trials,
+  data = IPD_dat_IO %>% 
+    filter(Action_A_Binary_60 == "1")
+)
+car::vif(model_1_fair_60)
+HLM_summary(model_1_fair_60)
