@@ -273,16 +273,16 @@ car::vif(model_1_fair_60)
 HLM_summary(model_1_fair_60)
 
 # EMMEANS ----
-emmeans(model_1_unfair,
-        specs = ~ Membership_A | Membership_B) %>% 
-  pairs()
+EMM_unfair <- emmeans(model_1_unfair,
+        specs = ~ Membership_A | Membership_B)
+EMM_unfair %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_unfair_EMMEANS.docx")
+EMM_unfair %>% 
+  pairs() %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_unfair_EMMEANS_B.docx")
 emmeans(model_1_unfair,
         specs = ~ Membership_B | Membership_A) %>% 
-  pairs()
-emm_unfair <- emmeans(model_1_unfair,
-                      specs = ~ Membership_A | Membership_B) %>% 
-  as.data.frame()
-slope_unfair <- ggplot(emm_unfair,
+  pairs() %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_unfair_EMMEANS_A.docx")
+  
+slope_unfair <- ggplot(as.data.frame(EMM_unfair),
        aes(x = Membership_A,
            y = emmean,
            group = Membership_B,
@@ -306,16 +306,16 @@ slope_unfair <- ggplot(emm_unfair,
   scale_color_manual(values = c(Ingroup = "#EE6677", Outgroup = "#66CCEE")) +
   theme(legend.position = "none")
 
-emmeans(model_1_fair,
-        specs = ~ Membership_A | Membership_B) %>% 
-  pairs()
+EMM_fair <- emmeans(model_1_fair,
+        specs = ~ Membership_A | Membership_B)
+EMM_fair %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_fair_EMMEANS.docx")
+EMM_fair %>% 
+  pairs() %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_fair_EMMEANS_B.docx")
 emmeans(model_1_fair,
         specs = ~ Membership_B | Membership_A) %>% 
-  pairs()
-emm_fair <- emmeans(model_1_fair,
-                      specs = ~ Membership_A | Membership_B) %>% 
-  as.data.frame()
-slope_fair <- ggplot(emm_fair,
+  pairs() %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_fair_EMMEANS_A.docx")
+  
+slope_fair <- ggplot(EMM_fair %>% as.data.frame(),
                        aes(x = Membership_A,
                            y = emmean,
                            group = Membership_B,
