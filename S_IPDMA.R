@@ -9,7 +9,7 @@
 #              We conducted one-stage IPDMA, by building HLM with cluster at paper,
 #              study, participants level.
 
-required_packages <- c("tidyverse", "readxl", "lme4", "clubSandwich", "cowplot", "bruceR", "brms")
+required_packages <- c("tidyverse", "readxl", "lme4", "clubSandwich", "cowplot", "bruceR", "brms", "ggsignif")
 
 # Check and install missing packages
 install_and_Load <- function(packages) {
@@ -271,3 +271,81 @@ model_1_fair_60 <- lmer(
 )
 car::vif(model_1_fair_60)
 HLM_summary(model_1_fair_60)
+
+# EMMEANS ----
+emmeans(model_1_unfair,
+        specs = ~ Membership_A | Membership_B) %>% 
+  pairs()
+emmeans(model_1_unfair,
+        specs = ~ Membership_B | Membership_A) %>% 
+  pairs()
+emm_unfair <- emmeans(model_1_unfair,
+                      specs = ~ Membership_A | Membership_B) %>% 
+  as.data.frame()
+slope_unfair <- ggplot(emm_unfair,
+       aes(x = Membership_A,
+           y = emmean,
+           group = Membership_B,
+           colour = Membership_B)) +
+  geom_point(size = 3) +
+  geom_line() +
+  geom_signif(comparisons = list(c("Ingroup", "Outgroup")),
+              annotation = c("***"), tip_length = 0) +
+  geom_signif(comparisons = list(c("Ingroup", "Outgroup")),
+              annotation = c("***"), tip_length = 0,
+              y_position = -2.1,
+              vjust = 2.2, colour = "#66CCEE") +
+  annotate(geom = "text", x = 0.95, y = -1.4, label = "***") +
+  annotate(geom = "text", x = 2.05, y = -1.55, label = "***") +
+  labs(
+    title = "Altruistic TPP",
+    x = "Focal Group Membership",
+    y = "Predicted Punishment (log)"
+  ) +
+  theme_cowplot() +
+  scale_color_manual(values = c(Ingroup = "#EE6677", Outgroup = "#66CCEE")) +
+  theme(legend.position = "none")
+
+emmeans(model_1_fair,
+        specs = ~ Membership_A | Membership_B) %>% 
+  pairs()
+emmeans(model_1_fair,
+        specs = ~ Membership_B | Membership_A) %>% 
+  pairs()
+emm_fair <- emmeans(model_1_fair,
+                      specs = ~ Membership_A | Membership_B) %>% 
+  as.data.frame()
+slope_fair <- ggplot(emm_fair,
+                       aes(x = Membership_A,
+                           y = emmean,
+                           group = Membership_B,
+                           colour = Membership_B)) +
+  geom_point(size = 3) +
+  geom_line() +
+  geom_signif(comparisons = list(c("Ingroup", "Outgroup")),
+              # y_position = 6.655,
+              annotation = c("***"), tip_length = 0) +
+  geom_signif(comparisons = list(c("Ingroup", "Outgroup")),
+              annotation = c("NS."), tip_length = 0,
+              y_position = -2.35,
+              vjust = 2.2, colour = "#66CCEE") +
+  annotate(geom = "text", x = 0.95, y = -2.76, label = "***") +
+  annotate(geom = "text", x = 2.05, y = -2.85, label = "***") +
+  labs(
+    title = "Antisocial TPP",
+    x = "Focal Group Membership",
+    y = "Predicted Punishment (log)",
+    colour = 
+    "Partner
+Group
+Membership"
+  ) +
+  theme_cowplot() +
+  scale_color_manual(values = c(Ingroup = "#EE6677", Outgroup = "#66CCEE"))
+
+sample_slope <- plot_grid(
+  slope_unfair, slope_fair,
+  labels = c('a', 'b'),
+  rel_widths = c(1,1.25))
+
+ggsave("fig/S_sample_slopes.jpeg", sample_slope, width = 12.5, height = 5)
