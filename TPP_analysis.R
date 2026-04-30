@@ -123,7 +123,8 @@ V_H1 <- vcalc(vi, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H1_data
 
 ### Model Fitting ----
 H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
-robust(H1_model, cluster = No., clubSandwich=TRUE)
+robust(H1_model, cluster = No., clubSandwich=TRUE) %>% predict()
+robust(H1_model, cluster = No., clubSandwich=TRUE) %>% confint()
 
 # checking likelihood profile plots
 profile(H1_model)
@@ -256,6 +257,8 @@ V_H2 <- vcalc(vi, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H2_data
 ### Model Fitting ----
 H2_model <- rma(yi, vi, random = ~ 1 | effectID, data = H2_data, method = "REML", test = "knha")
 summary(H2_model) # don't use CR2 as sigma is 0 
+H2_model %>% predict()
+H2_model %>% confint()
 
 # checking likelihood profile plots
 profile(H2_model)
@@ -616,7 +619,8 @@ V_H5 <- vcalc(vi, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H5_data
 
 ### Model Fitting ----
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / effectID, data = H5_data, method = "REML")
-robust(H5_model, cluster = No., clubSandwich=TRUE)
+robust(H5_model, cluster = No., clubSandwich=TRUE) %>% predict()
+robust(H5_model, cluster = No., clubSandwich=TRUE) %>% confint()
 
 # calculating the overall amount of heterogeneity
 sum(H5_model$sigma2)
@@ -740,6 +744,7 @@ V_H6 <- vcalc(vi, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H6_data
 ### Model Fitting ----
 H6_model <- rma(yi, vi, random = ~ 1 | effectID, data = H6_data, method = "REML", test = "knha")
 summary(H6_model) # don't use CR2 as sigma is 0 
+H6_model %>% predict()
 
 # forest plot
 H6_f <- forest(H6_model, slab = paste(H6_data$Intext_Citation, "S", H6_data$Study, sep = " "))
