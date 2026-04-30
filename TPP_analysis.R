@@ -905,6 +905,18 @@ Wald_test(H1_game_model, constraints = constrain_equal(1:4), vcov = "CR2")
 coef_test(H1_game_model, vcov = "CR2")
 conf_int(H1_game_model, vcov = "CR2")
 
+# saving forest plot to a file
+H1_gam_col <- case_match(
+  H1_game_dat$Game_Type,
+  "Dictator Game" ~ "#004488",
+  "Common Resource Dilemma"    ~ "#BB5566",
+  "Prisoner's Dilemma"  ~ "#DDAA33"
+)
+jpeg("fig/H1_game_Forest.jpeg", height = 12, width = 8, units = "in", res = 300)
+forest(H1_game_model, slab = paste(H1_game_dat$Intext_Citation, "S", H1_game_dat$Study, sep = " "),
+       colout = H1_gam_col)
+dev.off()
+
 # saving statistics
 H1_moderator_table <- rbind(H1_moderator_table,
                             left_join(
