@@ -275,7 +275,16 @@ HLM_summary(model_1_fair_60)
 # EMMEANS ----
 EMM_unfair <- emmeans(model_1_unfair,
         specs = ~ Membership_A | Membership_B)
-EMM_unfair %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_unfair_EMMEANS.docx")
+EMM_unfair %>% as.data.frame() %>%
+  mutate(
+    across(c(emmean, lower.CL, upper.CL),
+           ~ boot::inv.logit(.x))
+  ) %>%
+  mutate(
+    across(c(emmean, lower.CL, upper.CL),
+           ~ (.x - 0.025) / (1 - 2 * 0.025))
+  ) %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_unfair_EMMEANS.docx")
+
 EMM_unfair %>% 
   pairs() %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_unfair_EMMEANS_B.docx")
 emmeans(model_1_unfair,
@@ -308,7 +317,16 @@ slope_unfair <- ggplot(as.data.frame(EMM_unfair),
 
 EMM_fair <- emmeans(model_1_fair,
         specs = ~ Membership_A | Membership_B)
-EMM_fair %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_fair_EMMEANS.docx")
+EMM_fair %>% as.data.frame() %>%
+  mutate(
+    across(c(emmean, lower.CL, upper.CL),
+           ~ boot::inv.logit(.x))
+  ) %>%
+  mutate(
+    across(c(emmean, lower.CL, upper.CL),
+           ~ (.x - 0.025) / (1 - 2 * 0.025))
+  ) %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_fair_EMMEANS.docx")
+
 EMM_fair %>% 
   pairs() %>% nice_table() %>% flextable::save_as_docx(., path = "tab/IPDMA_fair_EMMEANS_B.docx")
 emmeans(model_1_fair,
