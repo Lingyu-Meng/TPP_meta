@@ -1,10 +1,3 @@
-# Title:       R Script for TPP Meta-Analysis
-# Description: This script analyze the meta-data from the project "Altrusitic
-#              and Antisocial Third-Party Punishment in Intergroup Interaction:
-#              A Systematic Review and Meta-Analysis"
-# Author:      Lingyu MENG
-# Date:        2026-04-24
-# Version:     1.0
 # Notes:       Requires 'Coding Sample - Final Meta Data.csv' in the folder.
 
 
@@ -1828,6 +1821,27 @@ PETPEESE_table %>%
                "For the multilevel models (i.e., H1 and H5), cluster-robust (CR2) standard errors were applied. Models highlighted in the table showed a significant intercept in the PET specification; accordingly, the corresponding PEESE estimates are reported as the bias-adjusted effects."
              )) %>% flextable::bg(bg = "gray", i = c(2,3)) %>% 
   flextable::save_as_docx(., path = "tab/publication_bias.docx")
+
+# H4 and inequality aversion ----
+ineq_data_fair <- MA_dat %>% 
+  filter(
+    `Action_A_Binary` == 1,
+    `Membership_A` %in% c("Ingroup", "Outgroup")
+  )
+plot(ineq_data_fair$Relative_Endowment, ineq_data_fair$Punishment_Mean)
+
+H4_endow_dat <- H4_data_r %>%
+  filter(!is.na(Relative_Endowment))
+V_H4_endow <- vcalc(SV_log, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H4_endow_dat)
+H4_endow_model <- H4_endow_dat %>%
+  rma.mv(yi = P_log, V = V_H4_endow,
+         mods = ~ Relative_Endowment - 1,
+         random = ~ 1 | No. / effectID,
+         data = .,
+         method = "REML",
+  )
+robust(H4_endow_model, cluster = No., clubSandwich=TRUE)
+Wald_test(H4_endow_model, constraints = constrain_equal(1:3), vcov = "CR2")
 
 
 save.image(file = 'TPP_meta.rds', compress = "xz")
