@@ -1,3 +1,11 @@
+Data and Code for:
+
+Sun, R., Meng, L., McCart, J., Saboor, D., Kenny, A., & Imada, H. (2026). *Altruistic and Antisocial Third-party Punishment in Intergroup Interactions: A Systematic Review and Meta-Analysis*.
+
+<https://pure.royalholloway.ac.uk/en/publications/altruistic-and-antisocial-third-party-punishment-in-intergroup-in/>
+
+------------------------------------------------------------------------
+
 # Main Effect
 
 Download Coding Sample - Coding Merged.csv and save it to the same directory as this README file. Notice: current Coding Sample - Coding Merged need to manually add information for some columns.
@@ -30,13 +38,21 @@ Red represents the effect of out-group aggressor on punishment when the victim i
 
 ![Fig.3](fig/H3_Forest.jpeg)
 
-## H5: The Effects of Aggressor’s Identity on Punishment in fair condition
+## H4: The Interaction Effect of Focal player’s Identity and Partner Player’s Identity on Punishment in fair condition
 
-![Fig.4](fig/H5_Forest.jpeg)
+We did not find a significant interaction effect of focal player’s identity and partner player’s identity on punishment in fair condition.
 
-## H6: The Effects of Victim’s Identity on Punishment in fair condition
+The colour is consistent with the previous figure.
 
-![Fig.5](fig/H6_Forest.jpeg)
+![Fig.4](fig/H4_Forest.jpeg)
+
+## H5: The Effects of Focal Player’s Identity on Punishment in fair condition
+
+![Fig.5](fig/H5_Forest.jpeg)
+
+## H6: The Effects of Partner Player’s Identity on Punishment in fair condition
+
+![Fig.6](fig/H6_Forest.jpeg)
 
 # Moderators
 
@@ -46,37 +62,26 @@ We analysed how participants’ nationality, the cost of punishment, the experim
 
 We found that participants tended to punish outgroup aggressors more in the experimental group (red) than in the natural group (blue), in the fair condition (Fig. 6).
 
-![Fig.6](fig/H5_group_Forest.jpeg)
+![Fig.7](fig/H5_group_Forest.jpeg)
 
 ## Experimental Platform
 
 We found that in the unfair condition, participants tended to punish outgroup aggressors more in the in-lab study (red) than in the online study (blue).
 
-![Fig.7](fig/H1_lab_Forest.jpeg)
+![Fig.8](fig/H1_lab_Forest.jpeg)
 
 Similarly, participants tended to punish aggressors more when the victim was an in-group member compared with an out-group member, and this effect was stronger in the in-lab study (red) than in the online study (blue).
 
-![Fig.8](fig/H2_lab_Forest.jpeg)
+![Fig.9](fig/H2_lab_Forest.jpeg)
 
 However, this moderator was not significant in the fair condition.
 
 ## Nationality
 
-We found that in the unfair condition, participants’ nationality was a significant moderator. For both of aggressors affiliations (Fig. 9) and victims affiliations (Fig. 10).
+We found that in the unfair condition, participants’ nationality was a significant moderator. For both of aggressors affiliations (Fig. 10) and victims affiliations (Fig. 11).
 
-```         
-"China"  ~ "red",
-"Turkey" ~ "green",
-"US"     ~ "blue",
-"UK/US"  ~ "cyan",
-"Argentina" ~ "purple",
-"Switzerland" ~ "yellow",
-"Papua New Guinea" ~ "orange",
-"Italy" ~ "pink"
-```
+![Fig.10](fig/H1_country_Forest.jpeg)
 
-![Fig.9](fig/H1_country_Forest.jpeg)
-
-![Fig.10](fig/H5_country_Forest.jpeg)
+![Fig.11](fig/H5_country_Forest.jpeg)
 
 However, this moderator was not significant in the unfair condition.
