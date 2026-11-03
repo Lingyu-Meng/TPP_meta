@@ -66,22 +66,18 @@ We found that participants tended to punish outgroup aggressors more in the expe
 
 ## Experimental Platform
 
-We found that in the unfair condition, participants tended to punish outgroup aggressors more in the in-lab study (red) than in the online study (blue).
+We found that in the unfair condition, participants tended to punish outgroup aggressors more in the in-lab study (red) than in the online study (blue). However, this moderation effect was not significant after the CR2 correction (F(1, 1.2) = 24.5, p = .097).
 
 ![Fig.8](fig/H1_lab_Forest.jpeg)
-
-Similarly, participants tended to punish aggressors more when the victim was an in-group member compared with an out-group member, and this effect was stronger in the in-lab study (red) than in the online study (blue).
-
-![Fig.9](fig/H2_lab_Forest.jpeg)
 
 However, this moderator was not significant in the fair condition.
 
 ## Nationality
 
-We found that in the unfair condition, participants’ nationality was a significant moderator. For both of aggressors affiliations (Fig. 10) and victims affiliations (Fig. 11).
+We found that in the unfair condition, participants’ nationality was a significant moderator. For both of aggressors affiliations (Fig. 9) and victims affiliations (Fig. 10).
 
-![Fig.10](fig/H1_country_Forest.jpeg)
+![Fig.9](fig/H1_country_Forest.jpeg)
 
-![Fig.11](fig/H5_country_Forest.jpeg)
+![Fig.10](fig/H5_country_Forest.jpeg)
 
 However, this moderator was not significant in the unfair condition.
