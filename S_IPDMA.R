@@ -1,10 +1,4 @@
-# Title:       R Script for TPP IPD MA
-# Description: This script analyze the individual participants data meta-data 
-#              from the project "Altrusitic and Antisocial Third-Party Punishment
-#              in Intergroup Interaction: A Systematic Review and Meta-Analysis"
-# Author:      Lingyu MENG
-# Date:        2026-04-27
-# Version:     1.0
+
 # Notes:       Requires 'Individual Data.xlsx' in the folder.
 #              We conducted one-stage IPDMA, by building HLM with cluster at paper,
 #              study, participants level.

@@ -1,0 +1,308 @@
+---
+title: "Supplementary Information"
+format: docx
+editor: visual
+echo: false
+---
+
+```{r, message = FALSE, warning = FALSE}
+required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "cowplot", "metapower", "rempsyc", "flextable")
+
+# Check and install missing packages
+install_and_Load <- function(packages) {
+  for (pkg in packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      install.packages(pkg, dependencies = TRUE)
+    }
+    library(pkg, character.only = TRUE) # Load the required packages
+  }
+}
+
+install_and_Load(required_packages)
+
+load("TPP_meta.rds")
+
+# Source - https://stackoverflow.com/a/57193998
+# Posted by Sarah, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-04-16, License - CC BY-SA 4.0
+
+FitFlextableToPage <- function(ft, pgwidth = 6){
+
+  ft_out <- ft %>% autofit()
+
+  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
+  return(ft_out)
+}
+
+```
+
+{{< pagebreak >}}
+
+# **Search Strategy**
+
+We searched the title, abstract and keywords in all databases except Pubmed because Pubmed did not have the keywords search field. We applied the OR logic to these search fields. Therefore, if any field of a record included our search keywords, it would be retrieved. We used the following search keywords in every field:
+
+(third-party OR TPP OR third party OR altruistic) AND punish\* AND (ingroup OR in-group OR within group OR within-group OR ingroup favoritism OR in-group favoritism OR between group OR inter group OR intergroup OR outgroup OR out-group OR parochial\* OR between-group)
+
+# Demographic Controls
+
+```{r, message = FALSE, warning = FALSE}
+H1_model_de <- rma.mv(yi, V_H1_sex,
+                        mods = ~ male.ratio + Age,
+                        random = ~ 1 | No. / Study / effectID, data = H1_sex_dat %>% 
+                         mutate(male.ratio = male.ratio - 0.5,
+                                Age = scale(as.numeric(Age..mean.))),
+                       method = "REML")
+
+H1_de_table <- left_join(
+  coef_test(H1_model_de, vcov = "CR2"),
+  conf_int(H1_model_de, vcov = "CR2")
+) %>% 
+  select(-df) %>% 
+  rename(
+    Variable = "Coef",
+    `g(b)` = "beta",
+    t = "tstat",
+    df = "df_Satt",
+    p = "p_Satt",
+    CI_lower = "CI_L",
+    CI_upper = "CI_U"
+  ) 
+
+H2_model_de <- rma(yi, vi,
+                        mods = ~ male.ratio + Age, data = H2_sex_dat %>% 
+                         mutate(male.ratio = male.ratio - 0.5,
+                                Age = scale(as.numeric(Age..mean.))),
+                       method = "REML", test = "knha")
+
+H2_de_table <- as.data.frame(coef(summary(H2_model_de))) %>% 
+  rownames_to_column("Variable") %>% 
+  rename(
+    `g(b)` = "estimate",
+    t = "tval",
+    p = "pval",
+    CI_lower = "ci.lb",
+    CI_upper = "ci.ub"
+  ) 
+
+H5_model_de <- rma.mv(yi, V_H5_sex,
+                        mods = ~ male.ratio + Age,
+                        random = ~ 1 | No. / Study / effectID, data = H5_sex_dat %>% 
+                         mutate(male.ratio = male.ratio - 0.5,
+                                Age = scale(as.numeric(Age..mean.))),
+                       method = "REML")
+
+H5_de_table <- left_join(
+  coef_test(H5_model_de, vcov = "CR2"),
+  conf_int(H5_model_de, vcov = "CR2")
+) %>% 
+  select(-df) %>% 
+  rename(
+    Variable = "Coef",
+    `g(b)` = "beta",
+    t = "tstat",
+    df = "df_Satt",
+    p = "p_Satt",
+    CI_lower = "CI_L",
+    CI_upper = "CI_U"
+  ) 
+
+H6_model_de <- rma(yi, vi,
+                        mods = ~ male.ratio + Age, data = H6_sex_dat %>% 
+                         mutate(male.ratio = male.ratio - 0.5,
+                                Age = scale(as.numeric(Age..mean.))),
+                       method = "REML", test = "knha")
+
+H6_de_table <- as.data.frame(coef(summary(H6_model_de))) %>% 
+  rownames_to_column("Variable") %>% 
+  rename(
+    `g(b)` = "estimate",
+    t = "tval",
+    p = "pval",
+    CI_lower = "ci.lb",
+    CI_upper = "ci.ub"
+  ) 
+```
+
+```{r}
+H1_de_table %>% 
+  nice_table(
+    title = c("Table S1", "H1 Main Effect with Demographic Controls"),
+    note = c(
+      "The intercept represents the estimated effect size at the mean age and balanced gender. Age in this model was standardised. CR2 correction was applied for this four-level model."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+
+?
+
+```{r}
+H2_de_table %>% 
+  nice_table(
+    title = c("Table S2", "H2 Main Effect with Demographic Controls"),
+    note = c(
+      "The intercept represents the estimated effect size at the mean age and balanced gender. Age in this model was standardised. We used the Knapp-Hartung method for this one-level model."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+
+?
+
+```{r}
+H5_de_table %>% 
+  nice_table(
+    title = c("Table S3", "H5 Main Effect with Demographic Controls"),
+    note = c(
+      "The intercept represents the estimated effect size at the mean age and balanced gender. Age in this model was standardised. CR2 correction was applied for this three-level model."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+?
+```{r}
+H6_de_table %>% 
+  nice_table(
+    title = c("Table S4", "H6 Main Effect with Demographic Controls"),
+    note = c(
+      "The intercept represents the estimated effect size at the mean age and balanced gender. Age in this model was standardised. We used the Knapp-Hartung method for this one-level model."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+
+```
+
+{{< pagebreak >}}
+
+# Moderation Analysis
+
+```{r}
+H1_moderator_table %>% 
+  nice_table(
+    title = c("Table S5", "Full Results of the Single-Moderator Analysis for H1"),
+           note = c(
+             "All categorical variables were analysed without an intercept; therefore, the coefficients represent the effect sizes for each corresponding condition. All continuous variables were not standardised; therefore, the coefficients represent the change in effect size for a one-unit increase (e.g., one year for age, one unit for the cost ratio, and the difference between all-female and all-male participants for the male ratio)."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage() %>% fontsize(part = "body", size = 9)
+```
+?
+```{r}
+H2_moderator_table %>% 
+  nice_table(
+    title = c("Table S6", "Full Results of the Single-Moderator Analysis for H2"),
+           note = c(
+             "All categorical variables were analysed without an intercept; therefore, the coefficients represent the effect sizes for each corresponding condition. All continuous variables were not standardised; therefore, the coefficients represent the change in effect size for a one-unit increase (e.g., one year for age, one unit for the cost ratio, and the difference between all-female and all-male participants for the male ratio)."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+?
+```{r}
+H5_moderator_table %>% 
+  nice_table(
+    title = c("Table S7", "Full Results of the Single-Moderator Analysis for H5"),
+           note = c(
+             "All categorical variables were analysed without an intercept; therefore, the coefficients represent the effect sizes for each corresponding condition. All continuous variables were not standardised; therefore, the coefficients represent the change in effect size for a one-unit increase (e.g., one year for age, one unit for the cost ratio, and the difference between all-female and all-male participants for the male ratio)."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+?
+```{r}
+H6_moderator_table %>% 
+  nice_table(
+    title = c("Table S8", "Full Results of the Single-Moderator Analysis for H6"),
+           note = c(
+             "All categorical variables were analysed without an intercept; therefore, the coefficients represent the effect sizes for each corresponding condition. All continuous variables were not standardised; therefore, the coefficients represent the change in effect size for a one-unit increase (e.g., one year for age, one unit for the cost ratio, and the difference between all-female and all-male participants for the male ratio)."
+             )
+    ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+
+{{< pagebreak >}}
+
+# Sensitivity Check
+
+```{r}
+cbind(H1_sensitivity_short, H5_sensitivity_short) %>% 
+  nice_table(., separate.header = TRUE,
+             title = c("Table S9", "Sensitivity Analysis of Within-Cluster Correlations Among Effect Sizes")
+             ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+
+{{< pagebreak >}}
+
+# Best-fitting Model
+
+## Model Comparison
+
+```{r}
+H1_model_compare %>% 
+  nice_table(title = c("Table S10", "Model Comparison for H1"),
+             note = c(
+               "BIC = Bayesian information criterion; LL = Log Likelihood; LRT = Likelihood Ratio Test.",
+               "The three-level model includes the paper level, the within-paper level (i.e. effect size level), and the participant level. The two-level model includes the effect size level and the participant level. All reduced models were compared with the full model (i.e. the four-level model). The best-fitting model is highlighted."
+             )
+             ) %>% 
+  flextable::bg(bg = "gray", i = 1) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+?
+```{r}
+H2_model_compare %>% 
+  nice_table(title = c("Table S11", "Model Comparison for H2"),
+             note = c(
+               "BIC = Bayesian information criterion; LL = Log Likelihood; LRT = Likelihood Ratio Test.",
+               "The three-level model includes the paper level, the within-paper level (i.e. effect size level), and the participant level. The two-level model includes the effect size level and the participant level. All reduced models were compared with the full model (i.e. the four-level model). The best-fitting model is highlighted."
+             )
+) %>% 
+  flextable::bg(bg = "gray", i = 3) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+?
+```{r}
+H5_model_compare %>% 
+  nice_table(title = c("Table S12", "Model Comparison for H5"),
+             note = c(
+               "BIC = Bayesian information criterion; LL = Log Likelihood; LRT = Likelihood Ratio Test.",
+               "The three-level model includes the paper level, the within-paper level (i.e. effect size level), and the participant level. The two-level model includes the effect size level and the participant level. All reduced models were compared with the full model (i.e. the four-level model). The best-fitting model is highlighted."
+             )
+) %>% 
+  flextable::bg(bg = "gray", i = 2) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+?
+```{r}
+H6_model_compare %>% 
+  nice_table(title = c("Table S13", "Model Comparison for H6"),
+             note = c(
+               "BIC = Bayesian information criterion; LL = Log Likelihood; LRT = Likelihood Ratio Test.",
+               "The three-level model includes the paper level, the within-paper level (i.e. effect size level), and the participant level. The two-level model includes the effect size level and the participant level. All reduced models were compared with the full model (i.e. the four-level model). The best-fitting model is highlighted."
+             )
+) %>% 
+  flextable::bg(bg = "gray", i = 3) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage()
+```
+
+## Results of Best-fitting Model
+
+```{r}
+Best_table %>% 
+  nice_table(title = c("Table S14", "Summary of Best-Fitting Models for Each Hypothesis")) %>% 
+  # flextable::set_table_properties(layout = "autofit") %>% 
+  mk_par(
+    part = "header", j = "tau2",
+    value = as_paragraph("τ", as_sup("2"))
+  ) %>% 
+    mk_par(
+    part = "header", j = "I2_total",
+    value = as_paragraph("I", as_sup("2"), as_sub("total"))
+  ) %>% 
+    mk_par(
+    part = "header", j = "I2_paper",
+    value = as_paragraph("I", as_sup("2"), as_sub("paper"))
+  ) %>% 
+    mk_par(
+    part = "header", j = "I2_study",
+    value = as_paragraph("I", as_sup("2"), as_sub("study"))
+  ) %>% 
+    mk_par(
+    part = "header", j = "I2_in_stu",
+    value = as_paragraph("I", as_sup("2"), as_sub("with-in study"))
+  ) %>% set_table_properties(layout = "fixed") %>% FitFlextableToPage() %>% fontsize(part = "body", size = 9)
+  
+  # fit_to_width(max_width = 5.5, inc = 0.1, max_iter = 50) %>%
+  # fontsize(part = "header", size = 11) %>%
+  # fontsize(part = "body", size = 10) %>%
+  # fontsize(part = "footer", size = 9)
+```
