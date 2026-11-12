@@ -30,10 +30,10 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 <tbody>
 <tr class="rule">
 <td>(Intercept)</td>
-<td>–1.616<sup>&#42;&#42;&#42;</sup></td>
-<td>–1.616<sup>&#42;&#42;&#42;</sup></td>
-<td>–1.723<sup>&#42;&#42;&#42;</sup></td>
-<td>–1.407<sup>&#42;&#42;&#42;</sup></td>
+<td>–1.616<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–1.616<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–1.723<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–1.407<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
@@ -44,9 +44,9 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 </tr>
 <tr>
 <td>Study_SettingField</td>
-<td>&ensp;1.784<sup>&#42;</sup></td>
+<td>&ensp;1.784<sup class="texreg-stars">&#42;</sup></td>
 <td>&ensp;1.437</td>
-<td>&ensp;1.576<sup>&#42;</sup></td>
+<td>&ensp;1.576<sup class="texreg-stars">&#42;</sup></td>
 <td></td>
 </tr>
 <tr>
@@ -60,7 +60,7 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 <td>Study_SettingOnline</td>
 <td>&ensp;1.123</td>
 <td>&ensp;0.776</td>
-<td>&ensp;0.880<sup>&#42;</sup></td>
+<td>&ensp;0.880<sup class="texreg-stars">&#42;</sup></td>
 <td></td>
 </tr>
 <tr>
@@ -114,10 +114,10 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 </tr>
 <tr>
 <td>Membership_AOutgroup</td>
-<td>&ensp;1.072<sup>&#42;&#42;&#42;</sup></td>
-<td>&ensp;1.072<sup>&#42;&#42;&#42;</sup></td>
-<td>&ensp;1.071<sup>&#42;&#42;&#42;</sup></td>
-<td>&ensp;1.069<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;1.072<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;1.072<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;1.071<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;1.069<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
@@ -142,10 +142,10 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 </tr>
 <tr>
 <td>Membership_AOutgroup:Membership_BOutgroup</td>
-<td>–0.731<sup>&#42;&#42;&#42;</sup></td>
-<td>–0.731<sup>&#42;&#42;&#42;</sup></td>
-<td>–0.727<sup>&#42;&#42;&#42;</sup></td>
-<td>–0.726<sup>&#42;&#42;&#42;</sup></td>
+<td>–0.731<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–0.731<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–0.727<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–0.726<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
@@ -204,7 +204,7 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 <td>2092</td>
 </tr>
 <tr>
-<td>Num. groups: Participant_ID</td>
+<td>Num. groups: Participant_ID:Study_ID</td>
 <td>783</td>
 <td>783</td>
 <td>783</td>
@@ -218,7 +218,7 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 <td>10</td>
 </tr>
 <tr>
-<td>Var: Participant_ID (Intercept)</td>
+<td>Var: Participant_ID:Study_ID (Intercept)</td>
 <td>&ensp;2.042</td>
 <td>&ensp;2.042</td>
 <td>&ensp;2.043</td>

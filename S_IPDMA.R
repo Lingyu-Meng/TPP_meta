@@ -57,18 +57,20 @@ IPD_dat_IO %>%
 Full_model_unfair <- lmer(
   P_log ~ Study_Setting + Group_Type + Game_Type + Real_Interaction +
     Age + Sex + Nationality + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "0"),
   weights = Number_of_Trials
 )
-car::vif(Full_model_unfair) # GVIF of Real_Interaction > 20
+# Got: fixed-effect model matrix is rank deficient so dropping 5 columns / coefficients
+car::vif(Full_model_unfair) # GVIF^(1/(2*Df)) of Real_Interaction ins Inf
 summary(Full_model_unfair)
-# Model with study setting and group type
+# If only remove Real_Interaction, will recive fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
+# Remove Real_Interaction and game type, then the model is fin
 model_1_unfair<- lmer(
   P_log ~ Study_Setting + Group_Type +
     Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "0"),
   weights = Number_of_Trials
@@ -77,10 +79,10 @@ car::vif(model_1_unfair)
 summary(model_1_unfair)
 HLM_summary(model_1_unfair)
 
-# Model with study setting and game type
+# Remove Real_Interaction and group type, then the model is fin too
 model_2_unfair<- lmer(
   P_log ~ Study_Setting + Game_Type + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "0"),
   weights = Number_of_Trials
@@ -88,29 +90,29 @@ model_2_unfair<- lmer(
 car::vif(model_2_unfair)
 summary(model_2_unfair)
 
-# trying remove Game_Type
+# trying remove both group type and Game_Type
 model_3_unfair<- lmer(
   P_log ~ Study_Setting + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "0"),
   weights = Number_of_Trials
 )
 car::vif(model_3_unfair)
 summary(model_3_unfair)
-anova(model_3_unfair, model_2_unfair) # no significant difference
+anova(model_3_unfair, model_2_unfair) # no significant difference, suggest remove Game_Type
 
 # trying remove Study_Setting
 model_4_unfair<- lmer(
   P_log ~ Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "0"),
   weights = Number_of_Trials
 )
 car::vif(model_4_unfair)
 summary(model_4_unfair)
-anova(model_3_unfair, model_4_unfair)
+anova(model_3_unfair, model_4_unfair) # significant difference, suggest keep Study_Setting
 
 model_summary(list(
   model_1_unfair,
@@ -128,16 +130,18 @@ IPD_dat_IO %>%
 Full_model_fair <- lmer(
   P_log ~ Study_Setting + Group_Type + Game_Type + Real_Interaction +
     Age + Sex + Nationality + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "1"),
   weights = Number_of_Trials
 )
-car::vif(Full_model_fair) # GVIF of Real_Interaction and Nationality > 20
+# Got: fixed-effect model matrix is rank deficient so dropping 5 columns / coefficients``
+car::vif(Full_model_fair) # multiple GVIF^(1/(2*Df)) are Inf, including Real_Interaction and Nationality
 # Model with study setting and group type
+# adding other will lead to fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
 model_1_fair <- lmer(
   P_log ~ Study_Setting + Group_Type + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   weights = Number_of_Trials,
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "1")
@@ -148,7 +152,7 @@ summary(model_1_fair)
 # Model with study setting and game type
 model_2_fair <- lmer(
   P_log ~ Study_Setting + Game_Type + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   weights = Number_of_Trials,
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "1")
@@ -159,19 +163,19 @@ summary(model_2_fair)
 # trying remove Study_Setting
 model_3_fair <- lmer(
   P_log ~ Group_Type + Game_Type + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   weights = Number_of_Trials,
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "1")
 )
 car::vif(model_3_fair)
 summary(model_3_fair)
-anova(model_1_fair, model_3_fair)
+anova(model_1_fair, model_3_fair) # no significant difference, suggest remove Study_Setting
 
 # trying remove Game_Type
 model_4_fair <- lmer(
   P_log ~ Group_Type + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   weights = Number_of_Trials,
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_50 == "1")
@@ -182,6 +186,8 @@ anova(model_4_fair, model_3_fair) # significant difference
 
 model_summary(list(
   model_1_fair,
+  model_2_fair,
+  model_3_fair,
   model_4_fair),
   file="tab/IPD_fair.docx")
 
@@ -211,18 +217,19 @@ IPD_dat_IO %>%
 Full_model_unfair_60 <- lmer(
   P_log ~ Study_Setting + Group_Type + Game_Type + Real_Interaction +
     Age + Sex + Nationality + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_60 == "0"),
   weights = Number_of_Trials
 )
-car::vif(Full_model_unfair_60) # GVIF of Real_Interaction > 20
+# Got: fixed-effect model matrix is rank deficient so dropping 5 columns / coefficients
+car::vif(Full_model_unfair_60) # GVIF^(1/(2*Df)) of Real_Interaction and Game_Type are Inf
 summary(Full_model_unfair_60)
-# Model with study setting and group type
+# Remove Real_Interaction and Game_Type, then the model is fin
 model_1_unfair_60 <- lmer(
   P_log ~ Study_Setting + Group_Type +
     Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_60 == "0"),
   weights = Number_of_Trials
@@ -240,16 +247,18 @@ IPD_dat_IO %>%
 Full_model_fair_60 <- lmer(
   P_log ~ Study_Setting + Group_Type + Game_Type + Real_Interaction +
     Age + Sex + Nationality + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_60 == "1"),
   weights = Number_of_Trials
 )
-car::vif(Full_model_fair_60) # GVIF of Real_Interaction and Nationality > 20
+# Got: fixed-effect model matrix is rank deficient so dropping 5 columns / coefficients
+car::vif(Full_model_fair_60) # multiple GVIF^(1/(2*Df)) are Inf, including Real_Interaction and Nationality
 # Model with study setting and group type
+# adding other will lead to fixed-effect model matrix is rank deficient so dropping 1 column / coefficient
 model_1_fair_60 <- lmer(
   P_log ~ Study_Setting + Group_Type + Age + Sex + Membership_A * Membership_B +
-    (1 | Study_ID) + (1 | Participant_ID),
+    (1 | Study_ID / Participant_ID),
   weights = Number_of_Trials,
   data = IPD_dat_IO %>% 
     filter(Action_A_Binary_60 == "1")
@@ -302,10 +311,10 @@ slope_unfair <- ggplot(as.data.frame(EMM_unfair),
               annotation = unfair_labels_by_B[["Ingroup"]], tip_length = 0) +
   geom_signif(comparisons = list(c("Ingroup", "Outgroup")),
               annotation = unfair_labels_by_B[["Outgroup"]], tip_length = 0,
-              y_position = -2.1,
+              y_position = -1.5,
               vjust = 2.2, colour = "#66CCEE") +
-  annotate(geom = "text", x = 0.95, y = -1.4, label = unfair_labels_by_A[["Ingroup"]]) +
-  annotate(geom = "text", x = 2.05, y = -1.55, label = unfair_labels_by_A[["Outgroup"]]) +
+  annotate(geom = "text", x = 0.95, y = -1.15, label = unfair_labels_by_A[["Ingroup"]]) +
+  annotate(geom = "text", x = 2.05, y = -1.0, label = unfair_labels_by_A[["Outgroup"]]) +
   labs(
     title = "Altruistic TPP",
     x = "Focal Group Membership",
@@ -349,10 +358,10 @@ slope_fair <- ggplot(EMM_fair %>% as.data.frame(),
               annotation = fair_labels_by_B[["Ingroup"]], tip_length = 0) +
   geom_signif(comparisons = list(c("Ingroup", "Outgroup")),
               annotation = fair_labels_by_B[["Outgroup"]], tip_length = 0,
-              y_position = -2.35,
+              y_position = -2.36,
               vjust = 2.2, colour = "#66CCEE") +
-  annotate(geom = "text", x = 0.95, y = -2.76, label = fair_labels_by_A[["Ingroup"]]) +
-  annotate(geom = "text", x = 2.05, y = -2.85, label = fair_labels_by_A[["Outgroup"]]) +
+  annotate(geom = "text", x = 0.95, y = -2.74, label = fair_labels_by_A[["Ingroup"]]) +
+  annotate(geom = "text", x = 2.05, y = -2.82, label = fair_labels_by_A[["Outgroup"]]) +
   labs(
     title = "Antisocial TPP",
     x = "Focal Group Membership",

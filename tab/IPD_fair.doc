@@ -23,126 +23,190 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 <th></th>
 <th>(1) P_log</th>
 <th>(2) P_log</th>
+<th>(3) P_log</th>
+<th>(4) P_log</th>
 </tr>
 </thead>
 <tbody>
 <tr class="rule">
 <td>(Intercept)</td>
-<td>–3.208<sup>&#42;&#42;&#42;</sup></td>
-<td>–3.204<sup>&#42;&#42;&#42;</sup></td>
+<td>–3.208<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–3.208<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–3.211<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–3.204<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
 <td>(0.174)</td>
+<td>(0.174)</td>
+<td>(0.179)</td>
 <td>(0.328)</td>
 </tr>
 <tr>
 <td>Study_SettingField</td>
 <td>&ensp;0.108</td>
+<td>–0.338</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
 <td></td>
 <td>(0.495)</td>
+<td>(0.504)</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
 <td>Study_SettingOnline</td>
-<td>&ensp;0.860<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.860<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.413</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
 <td></td>
 <td>(0.242)</td>
+<td>(0.243)</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
 <td>Group_TypeNatural</td>
 <td>–0.447</td>
+<td></td>
+<td>&ensp;0.333</td>
 <td>–0.049</td>
 </tr>
 <tr>
 <td></td>
 <td>(0.235)</td>
+<td></td>
+<td>(0.244)</td>
 <td>(0.391)</td>
 </tr>
 <tr>
 <td>Age</td>
 <td>&ensp;0.095</td>
+<td>&ensp;0.095</td>
+<td>&ensp;0.045</td>
 <td>&ensp;0.077</td>
 </tr>
 <tr>
 <td></td>
 <td>(0.114)</td>
+<td>(0.114)</td>
+<td>(0.109)</td>
 <td>(0.111)</td>
 </tr>
 <tr>
 <td>Sex1</td>
 <td>–0.076</td>
+<td>–0.076</td>
+<td>–0.079</td>
 <td>–0.091</td>
 </tr>
 <tr>
 <td></td>
 <td>(0.090)</td>
 <td>(0.090)</td>
+<td>(0.090)</td>
+<td>(0.090)</td>
 </tr>
 <tr>
 <td>Membership_AOutgroup</td>
-<td>&ensp;0.790<sup>&#42;&#42;&#42;</sup></td>
-<td>&ensp;0.795<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.790<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.790<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.791<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.795<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
+<td>(0.070)</td>
+<td>(0.070)</td>
 <td>(0.070)</td>
 <td>(0.070)</td>
 </tr>
 <tr>
 <td>Membership_BOutgroup</td>
-<td>&ensp;0.377<sup>&#42;&#42;&#42;</sup></td>
-<td>&ensp;0.393<sup>&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.377<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.377<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.383<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>&ensp;0.393<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
+<td>(0.105)</td>
+<td>(0.105)</td>
 <td>(0.105)</td>
 <td>(0.106)</td>
 </tr>
 <tr>
 <td>Membership_AOutgroup:Membership_BOutgroup</td>
-<td>–0.812<sup>&#42;&#42;&#42;</sup></td>
-<td>–0.809<sup>&#42;&#42;&#42;</sup></td>
+<td>–0.812<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–0.812<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–0.838<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
+<td>–0.809<sup class="texreg-stars">&#42;&#42;&#42;</sup></td>
 </tr>
 <tr>
 <td></td>
 <td>(0.180)</td>
 <td>(0.180)</td>
+<td>(0.179)</td>
+<td>(0.180)</td>
+</tr>
+<tr>
+<td>Game_TypePrisoner’s Dilemma</td>
+<td></td>
+<td>–0.447</td>
+<td>–0.767<sup class="texreg-stars">&#42;&#42;</sup></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>(0.235)</td>
+<td>(0.241)</td>
+<td></td>
 </tr>
 <tr class="rule">
 <td>Marginal <i>R</i><sup>2</sup></td>
 <td>&ensp;0.078</td>
+<td>&ensp;0.078</td>
+<td>&ensp;0.072</td>
 <td>&ensp;0.039</td>
 </tr>
 <tr>
 <td>Conditional <i>R</i><sup>2</sup></td>
 <td>&ensp;0.243</td>
+<td>&ensp;0.243</td>
+<td>&ensp;0.239</td>
 <td>&ensp;0.251</td>
 </tr>
 <tr>
 <td>AIC</td>
 <td>3829.891</td>
+<td>3829.891</td>
+<td>3830.611</td>
 <td>3832.866</td>
 </tr>
 <tr>
 <td>BIC</td>
 <td>3890.698</td>
+<td>3890.698</td>
+<td>3886.351</td>
 <td>3883.539</td>
 </tr>
 <tr>
 <td>Num. obs.</td>
 <td>1173</td>
 <td>1173</td>
+<td>1173</td>
+<td>1173</td>
 </tr>
 <tr>
-<td>Num. groups: Participant_ID</td>
+<td>Num. groups: Participant_ID:Study_ID</td>
+<td>533</td>
+<td>533</td>
 <td>533</td>
 <td>533</td>
 </tr>
@@ -150,20 +214,28 @@ table.texreg th, table.texreg td {padding-left: 5px;padding-right: 5px;}
 <td>Num. groups: Study_ID</td>
 <td>7</td>
 <td>7</td>
+<td>7</td>
+<td>7</td>
 </tr>
 <tr>
-<td>Var: Participant_ID (Intercept)</td>
+<td>Var: Participant_ID:Study_ID (Intercept)</td>
 <td>&ensp;0.477</td>
+<td>&ensp;0.477</td>
+<td>&ensp;0.479</td>
 <td>&ensp;0.478</td>
 </tr>
 <tr>
 <td>Var: Study_ID (Intercept)</td>
 <td>&ensp;0.043</td>
+<td>&ensp;0.043</td>
+<td>&ensp;0.046</td>
 <td>&ensp;0.197</td>
 </tr>
 <tr class="bottomrule">
 <td>Var: Residual</td>
 <td>&ensp;2.381</td>
+<td>&ensp;2.381</td>
+<td>&ensp;2.382</td>
 <td>&ensp;2.379</td>
 </tr>
 </tbody>
