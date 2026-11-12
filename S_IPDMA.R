@@ -371,3 +371,28 @@ sample_slope <- plot_grid(
   rel_widths = c(1,1.25))
 
 ggsave("fig/S_sample_slopes.jpeg", sample_slope, width = 12.5, height = 5)
+
+model_1_unfair <- lmerTest::as_lmerModLmerTest(model_1_unfair)
+model_1_fair <- lmerTest::as_lmerModLmerTest(model_1_fair)
+model_1_unfair_60 <- lmerTest::as_lmerModLmerTest(model_1_unfair_60)
+model_1_fair_60 <- lmerTest::as_lmerModLmerTest(model_1_fair_60)
+
+IPD_screened_sample_keys <- distinct(IPD_dat_IO, No., Study, Participant, Participant_ID)
+IPD_model_sample_keys <- lapply(
+  list(unfair_50 = model_1_unfair, fair_50 = model_1_fair,
+       unfair_60 = model_1_unfair_60, fair_60 = model_1_fair_60),
+  function(model) {
+    ids <- stats::model.frame(model)$Participant_ID
+    filter(IPD_screened_sample_keys, Participant_ID %in% ids)
+  }
+)
+IPD_sample_keys <- distinct(bind_rows(IPD_model_sample_keys[c("unfair_50", "fair_50")]))
+
+save(IPD_sample_keys, IPD_screened_sample_keys, IPD_model_sample_keys,
+     Full_model_unfair, Full_model_fair, Full_model_unfair_60, Full_model_fair_60,
+     model_1_unfair, model_2_unfair, model_3_unfair, model_4_unfair,
+     model_1_fair, model_2_fair, model_3_fair, model_4_fair,
+     model_1_unfair_60, model_1_fair_60,
+     EMM_unfair, EMM_fair, unfair_pairs_by_A, unfair_pairs_by_B,
+     fair_pairs_by_A, fair_pairs_by_B, sample_slope,
+     file = "IPD_meta.rds", compress = "xz")

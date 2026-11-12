@@ -1,5 +1,19 @@
 # Notes:       Requires 'Coding Sample - Final Meta Data.csv' in the folder.
 
+analysis_files <- c(data = "Coding Sample - Final Meta Data.csv",
+                    script = "TPP_analysis.R")
+if (!all(file.exists(analysis_files))) {
+  stop("Run this script from the folder containing the analysis script and coding table.")
+}
+analysis_run <- list(
+  status = "running",
+  started_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  input_files = analysis_files,
+  input_md5 = unname(tools::md5sum(analysis_files)),
+  r_version = R.version.string
+)
+saveRDS(analysis_run, "analysis_run.rds")
+
 
 # if rma.mv failed to converge, add control=list(rel.tol=1e-9) in the function
 required_packages <- c("tidyverse", "metafor", "clubSandwich", "MAd", "weightr", "cowplot", "metapower", "rempsyc")
@@ -17,7 +31,7 @@ install_and_Load <- function(packages) {
 install_and_Load(required_packages)
 
 # read the data
-MA_dat <- read_csv("Coding Sample - Final Meta Data.csv", skip = 1)
+MA_dat <- read_csv(analysis_files[["data"]], skip = 1)
 MA_dat$`Action_A_Binary` <- as.numeric(MA_dat$`Action_A_Binary`)
 
 # Main Analysis ================================================================
@@ -117,7 +131,8 @@ V_H1 <- vcalc(vi, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H1_data
 ### Model Fitting ----
 H1_model <- rma.mv(yi, V_H1, random = ~ 1 | No. / Study / effectID, data = H1_data, method = "REML")
 robust(H1_model, cluster = No., clubSandwich=TRUE) %>% predict()
-robust(H1_model, cluster = No., clubSandwich=TRUE) %>% confint()
+H1_heterogeneity_ci <- robust(H1_model, cluster = No., clubSandwich=TRUE) %>% confint()
+H1_heterogeneity_ci
 
 # checking likelihood profile plots
 profile(H1_model)
@@ -613,7 +628,8 @@ V_H5 <- vcalc(vi, cluster = Sample_ID, obs = effectID, rho = 0.5, data = H5_data
 ### Model Fitting ----
 H5_model <- rma.mv(yi, V_H5, random = ~ 1 | No. / effectID, data = H5_data, method = "REML")
 robust(H5_model, cluster = No., clubSandwich=TRUE) %>% predict()
-robust(H5_model, cluster = No., clubSandwich=TRUE) %>% confint()
+H5_heterogeneity_ci <- robust(H5_model, cluster = No., clubSandwich=TRUE) %>% confint()
+H5_heterogeneity_ci
 
 # calculating the overall amount of heterogeneity
 sum(H5_model$sigma2)
@@ -1829,7 +1845,6 @@ ineq_data_fair <- MA_dat %>%
     `Action_A_Binary` == 1,
     `Membership_A` %in% c("Ingroup", "Outgroup")
   )
-plot(ineq_data_fair$Relative_Endowment, ineq_data_fair$Punishment_Mean)
 
 H4_endow_dat <- H4_data_r %>%
   filter(!is.na(Relative_Endowment))
@@ -1842,8 +1857,16 @@ H4_endow_model <- H4_endow_dat %>%
          method = "REML",
   )
 robust(H4_endow_model, cluster = No., clubSandwich=TRUE)
-Wald_test(H4_endow_model, constraints = constrain_equal(1:3), vcov = "CR2")
+H4_endow_test <- Wald_test(H4_endow_model, constraints = constrain_equal(1:3), vcov = "CR2")
 
-
+if (!identical(unname(tools::md5sum(analysis_files)), analysis_run$input_md5)) {
+  stop("Data or analysis code changed during this run. Run the analysis again before updating Word.")
+}
+analysis_run$status <- "complete"
+analysis_run$completed_utc <- format(Sys.time(), tz = "UTC", usetz = TRUE)
+analysis_run$package_versions <- vapply(c("metafor", "clubSandwich"),
+                                       function(pkg) as.character(packageVersion(pkg)), character(1))
 save.image(file = 'TPP_meta.rds', compress = "xz")
+analysis_run$result_md5 <- unname(tools::md5sum("TPP_meta.rds"))
+saveRDS(analysis_run, "analysis_run.rds")
 

@@ -8,7 +8,7 @@ Sun, R., Meng, L., McCart, J., Saboor, D., Kenny, A., & Imada, H. (2026). *Alt
 
 # Main Effect
 
-Download Coding Sample - Coding Merged.csv and save it to the same directory as this README file. Notice: current Coding Sample - Coding Merged need to manually add information for some columns.
+The main analysis uses `Coding Sample - Final Meta Data.csv` in this directory.
 
 ## H1: The Effects of Aggressor’s Identity on Punishment in unfair condition
 
@@ -60,13 +60,13 @@ We analysed how participants’ nationality, the cost of punishment, the experim
 
 ## Group Manipulation
 
-We found that participants tended to punish outgroup aggressors more in the experimental group (red) than in the natural group (blue), in the fair condition (Fig. 6).
+The focal player group membership effect on antisocial TPP was larger in experimental groups (red) than in natural groups (blue; Fig. 7).
 
 ![Fig.7](fig/H5_group_Forest.jpeg)
 
 ## Experimental Platform
 
-We found that in the unfair condition, participants tended to punish outgroup aggressors more in the in-lab study (red) than in the online study (blue). However, this moderation effect was not significant after the CR2 correction (F(1, 1.2) = 24.5, p = .097).
+The focal player group membership effect on altruistic TPP was larger in lab studies (red) than in online studies (blue). The lab versus online contrast did not reach statistical significance in the CR2 test, *F*(1, 1.13) = 52.879, *p* = .070.
 
 ![Fig.8](fig/H1_lab_Forest.jpeg)
 
@@ -74,10 +74,8 @@ However, this moderator was not significant in the fair condition.
 
 ## Nationality
 
-We found that in the unfair condition, participants’ nationality was a significant moderator. For both of aggressors affiliations (Fig. 9) and victims affiliations (Fig. 10).
+Participants’ nationality significantly moderated the focal player group membership effect on altruistic TPP (Fig. 9) and antisocial TPP (Fig. 10). Both omnibus tests yielded *p* < .001.
 
 ![Fig.9](fig/H1_country_Forest.jpeg)
 
 ![Fig.10](fig/H5_country_Forest.jpeg)
-
-However, this moderator was not significant in the unfair condition.
